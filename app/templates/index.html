@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+
+<!-- -->
+<!-- Ocat Data Page related links -->
+<!-- -->
+
+    <h3>Click the link below to open the page on a new tab.</h3>
+    <form  method='post'>
+    <ul>
+        <li>
+                <b style='font-size:120%;'>Ocat Data Page </b> 
+                <span style='padding-right:84px;'></span>
+                <b style='font-size:100%;'> ObsID:</b> 
+                <span style='padding-right:44px;'></span>
+                <input type='text' name='obsid' id='obsid' size=10>
+                <span style='padding-right:10px;'></span>
+                <button onclick="GoToPage()">Open</button>
+        </li>
+        <li>
+                <b style='font-size:120%;'>Parameter Check Page </b> 
+                <b style='font-size:100%;'>&lt;ObsID&gt;.&lt;Rev#&gt;:</b> 
+                <input type='text' name='obsid' id='obsidrev' size=10>
+                <span style='padding-right:10px;'></span>
+        </li>
+        <li style='padding-top:10px;'>
+            <a href="javascript:void(0);" onclick="openTab('../orupdate', 'Orupdate');">
+                <span style='font-weight:bold; font-size:110%;'>
+                Open Target Parameter Status Page
+                </span>
+            </a>
+        </li>
+        <li style='padding-top:20px;'>
+            <a href="javascript:void(0);" onclick="openTab('../express', 'Express');">
+                <span style='font-weight:bold; font-size:110%;'>
+                Open Express Approval Page
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" onclick="openTab('../rm_submission', 'Remove');">
+                <span style='font-weight:bold; font-size:110%;'>
+                Open Remove Accidental Submission Page
+                </span>
+            </a>
+        </li>
+        <li style='padding-top:20px;'>
+            <a href="javascript:void(0);" onclick="openTab('../scheduler', 'Schedule');">
+                <span style='font-weight:bold; font-size:110%;'>
+                Open POC Duty Scheduler
+                </span>
+            </a>
+        </li>
+
+    </ul>
+
+<!-- -->
+<!-- other usint related page links -->
+<!-- -->
+
+    <h3> Other Links </h3>
+    <ul>
+        <li>
+            <a href="javascript:void(0);" 
+                    onclick="openTab('https://cxc.cfa.harvard.edu/mta/CUS/Usint/updated.html', 'Updated');">
+            <span style='font-weight:bold; font-size:110%;'>
+                Updated Targets List
+                </span>
+            </a>
+        </li>
+
+        <li><a href="javascript:void(0);" 
+                    onclick="openTab('https://cxc.cfa.harvard.edu/cgi-bin/target_search/search.html', 'Search');">
+            <span style='font-weight:bold; font-size:110%;'>
+                Chandra Uplink Support Observation Search Form
+            </span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" onclick="openTab('https://cxc.cfa.harvard.edu/cus/', 'Usint');">
+            <span style='font-weight:bold; font-size:110%;'>
+                Chandra Uplink Support Organizational Page
+            </span>
+            </a>
+        </li>
+
+    </ul>
+    </form>
+
+    <p style='padding-top:20px;'>
+    <b>Note</b>: If a tab with the targeted page is already open, the links above won't 
+    open a new tab.  After clicking a link, if nothing happens, check opened tabs to see 
+    whether the page is already open.
+    </p>
+
+{% endblock %}
+
+
+
+<!-- -->
+<!-- javascript to open a page with a sub link only once on another tab -->
+<!-- -->
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function GoToPage(){
+            var tail    = '';
+            var html    = 'ocatdatapage';
+            var  chk    = 0;
+
+            var  tail1  = document.getElementById('obsid').value;
+            var  tail2  = document.getElementById('obsidrev').value;
+
+            if(tail1 !== ''){
+                tail = tail1;
+                html = 'ocatdatapage';
+                chk  = 1;
+
+            }else if(tail2 !== ''){
+                //
+                //--- check input is in <obsid>.<rev#> format
+                //
+                if(tail2.includes("\.")){
+                    tail = tail2;
+                }else{
+                    tail = tail2 + '.000';  //--- adding a fake rev #
+                }
+
+                html = 'chkupdata';
+                chk  = 1;
+            }
+            if(chk > 0){
+                var  url   = '../' + html + '/' + tail;
+                openTab(url, tail)
+            }
+        }
+    </script>
+
+{% endblock %}
+

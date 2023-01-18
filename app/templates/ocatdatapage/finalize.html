@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+<!-- -->
+<!-- this page displays the final page after submitting the update to the database -->
+<!-- -->
+
+{% block title %}Ocat Data Page{% endblock %}
+{% block main_title %}Ocat Data Page{% endblock %}
+
+{% block app_content %}
+
+{% if status in ['scheduled', 'unobserved'] %}
+    <p>
+    <strong>
+        Obsid: {{ obsid }} has been submitted as {{ asis }}. Thank you.
+        {% if asis == 'norm' %}
+            The submitted changes may take 48 hours before appearing in the database.
+        {% elif asis == 'asis' %}
+            Approval occurs immediately.
+        {% elif asis == 'remove' %}
+            The {{ obsid }} was removed from the approved list. 
+        {% elif asis == 'clone' %}
+            The cloning of {{ obsid }} may take 48 hrous.
+        {% endif %}
+    </strong>
+    </p>
+{% else %}
+    <p>
+    <strong style='font-size:150%; color:red;'>
+    The status of Obisid: {{ obsid }} is "{{ status }}".<br>
+    No databases were updated.
+    </strong>
+    </p>
+{% endif %}
+
+<!-- -->
+<!-- if multiple obsids are submitted, display the obsids -->
+<!-- -->
+
+{% if asis != 'clone' %}
+    {% if obsids_disp|length > 0 %}
+        <p>
+        Please make sure that all your obsids submitted are logged correctly,
+        either by checking emails you received, or going to: <br>
+        <a href="{{ url_for('orupdate.index') }}">Target Parameter Status Page</a>
+        </p>
+        <div style='margin-left:40px;padding-bottom:20px;'>
+        {% if obsids_disp|length == 1 %}
+            <p>You also submitted a following obsid: </p>
+        {% else %}
+            <p>You also submitted following obsids: </p>
+        {% endif %}
+   
+        {% set count = namespace(value=0) %}
+        <table border=0>
+        <tr>
+            {% for sobsid in obsids_disp %}
+                {% if count.value % 8 == 0 %}
+                    </tr>
+                    <tr>
+                {% endif %}
+                {% set slink = '../ocatdatapage/' + sobsid %}
+                <td>
+                    <span style='padding-left:5px;'>
+                    &#8729;
+                    <a href="javascript:WindowOpener(' {{ slink }} ')"><b>{{ sobsid }}</b></a>
+                    </span>
+                    </td>
+                {% set count.value = count.value + 1 %}
+            {% endfor %}
+        </tr>
+        </table>
+        </div>
+        <hr>
+    {% endif %}
+<!-- -->
+<!-- if there are obsids which cannot be updated (e.g., already observed), display here -->
+<!-- -->
+    {% if no_process |length > 0 %}
+
+        <div style='margin-left:40px;padding-bottom:20px;'>
+        {% if no_process| length == 1%}
+            <p> The following obsid was not processed due to its inactive status.</p>
+        {% else %}
+            <p> The following obsids were not processed due to thier inactive status.</p>
+        {% endif %}
+   
+        {% set count = namespace(value=0) %}
+        <table border=0>
+        <tr>
+            {% for sobsid in no_process %}
+                {% if count.value % 8 == 0 %}
+                    </tr>
+                    <tr>
+                {% endif %}
+                {% set slink = '../ocatdatapage/' + sobsid %}
+                <td>
+                    <span style='padding-left:5px;'>
+                    &#8729;
+                    <a href="javascript:WindowOpener(' {{ slink }} ')"><b>{{ sobsid }}</b></a>
+                    </span>
+                    </td>
+                {% set count.value = count.value + 1 %}
+            {% endfor %}
+        </tr>
+        </table>
+        </div>
+    {% endif %}
+<!-- -->
+<!-- if the status of the obsids are 'unobserved' or 'scheduled', but none of the parameter -->
+<!-- values met the conditions of the update; no changes are made for these obsids          -->
+<!-- -->
+    {% if no_chages | length >0 %}
+        <div style='margin-left:40px;padding-bottom:20px;'>
+        {% if no_change | length == 1%}
+            <p> The following obsid was not processed becuase parameter values did not 
+                match the condition.</p>
+        {% else %}
+            <p> The following obsids were not processed becuase parameter values did not
+                match the condition.</p>
+        {% endif %}
+   
+        {% set count = namespace(value=0) %}
+        <table border=0>
+        <tr>
+            {% for sobsid in no_change %}
+                {% if count.value % 8 == 0 %}
+                    </tr>
+                    <tr>
+                {% endif %}
+                {% set slink = '../ocatdatapage/' + sobsid %}
+                <td>
+                    <span style='padding-left:5px;'>
+                    &#8729;
+                    <a href="javascript:WindowOpener(' {{ slink }} ')"><b>{{ sobsid }}</b></a>
+                    </span>
+                    </td>
+                {% set count.value = count.value + 1 %}
+            {% endfor %}
+        </tr>
+        </div>
+    {% endif %}
+{% endif %}
+<!-- -->
+<!-- normal ending display; asking the next obsid -->
+<!-- -->
+<form  name='newForm' method='post' onSubmit="openOcatPage(this)">
+
+<p style='padding-top:50px;padding-bottom:100px;'>
+
+<strong>Please Provide Next Obsid:</strong>
+
+<span style='padding-left:10px;'></span>
+<input type='text', id='nobsid' name='nobsid' size=10>
+
+<span style='padding-left:10px;'></span>
+<button onclick='OpenNextPage()'>Submit</button>
+
+</p>
+</form>
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function OpenNextPage(){
+            var obsid = document.getElementById('nobsid').value;
+            var link  = '../ocatdatapage/' + obsid;
+            window.open(link);
+            this.close();
+        }
+    </script>
+
+{% endblock %}
+
+

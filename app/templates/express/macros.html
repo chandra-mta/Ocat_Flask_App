@@ -1,0 +1,57 @@
+##
+##--- macro for express sign off page
+##
+
+##
+##--- macro  to create a table row
+##--- info[0]: obsid
+##--- info[1]: proposal ID
+##--- info[2]: seq #
+##--- info[3]: title
+##--- info[4]: target
+##--- info[5]: pi name
+##--- info[6]: status of verificaiton:  0: can be sign-off
+##---                                   1: already in approved list
+##---                                   2: obsid is not in the database
+##---                                   <user name>: the obsid is under <user name>
+##--                                    <status>: e.g., observed, unobserved, canceled etc.
+##
+
+{% macro cellset(info) %}
+    {%if info[6] != 0 %}
+     <tr style='background-color:rgb(255, 0, 0, 0.2);'>
+    {% else %}
+        <tr>
+    {% endif %}
+        <th class='cent'>
+            <a href="javascript:WindowOpener('../ocatdatapage/{{ info[0] }}', 'express_obsid');">
+                {{ info[0] }}
+            </a>
+        </th>
+        <td>{{ info[1] }}</td>
+        <td>{{ info[2] }}</td>
+        <td>{{ info[3] }}</td>
+        <td>{{ info[4] }}</td>
+        <td>{{ info[5] }}</td>
+
+        {% if info[6] == 0 %}
+            <td>&#160;</td>
+
+        {% elif info[6] == 1 %}
+            <td class='cent'>Already  Approved</td>
+
+        {% elif info[6] == 2 %}
+            <td class='cent'>Obsid is not in the Database</td>
+
+        {% else %}
+            {% if info[6] in ['observed', 'archived', 'canceled', 'discarded'] %}
+                <td class='cent'>This Obsid was <b>{{ info[6] }}</b> </td>
+
+            {% else %}
+                <td class='cent'>This Obsid is under <b>{{ info[6] }}</b> </td>
+            {% endif %}
+
+        {% endif %}
+    </tr>
+{% endmacro %}
+

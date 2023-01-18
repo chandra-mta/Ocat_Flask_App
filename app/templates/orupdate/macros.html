@@ -1,0 +1,139 @@
+##
+##--- macros for target parameter status page
+##
+
+##
+##--- macro for each row
+##
+##--- data[1]: obsid.rev
+##--- data[2]: seq #
+##--- data[3]: user id
+##--- data[4]: general signoff status
+##--- data[5]: acis signoff status
+##--- data[6]: acis si signoff status
+##--- data[7]: hrc si signoff status
+##--- data[8]: verified by
+##
+
+{% macro data_row(data) %}
+    <tr>
+        <th class='cent' style='background-color:{{ data[-1][3] }};'>
+            <a href="javascript:WindowOpener('../chkupdata/{{ data[0] }}', 'orupdate_chkup')">
+                {{ data[0] }}
+            </a><br>
+            {{ data[1] }}<br>
+            {{ data[2] }}<br>
+            {{ data[3] }}
+        </th>
+        <td style='background-color:rgb(0,179,170,0.3);'>
+            {{ cellset(data[4], data[0], 'gen')  }}
+        </td>
+        <td style='background-color:rgb(0,179,170,0.3);'>
+            {{ cellset(data[5], data[0], 'acis') }}
+        </td>
+        <td>
+            {{ cellset(data[6], data[0], 'si')   }}
+        </td>
+        <td>
+            {{ cellset(data[7], data[0], 'hrc')  }}
+        </td>
+        <td>
+<!-- -->
+<!-- if other entries are still open, you cannot sign-off 'verified by -->
+<!-- -->
+            {% if data[4] != 'NA' and data[5] != 'NA' and data[6] != 'NA' and data[7] != 'NA' %}
+                {{ cellset(data[8], data[0], 'verify')  }}
+            {% else %}
+                Not Ready To Verify
+            {% endif %}
+<!-- -->
+<!-- if higher revision is open or already signed-off, show "Close" button -->
+<!-- -->
+            {% if data[-1][1] != 0 or data[-1][0] == 2 %}
+                {% set cname = 'close_' + data[0] %}
+                <br>
+                <input type='submit' name='{{ cname }}' value='Close'>
+<!-- -->
+<!-- if all others are signed-off, show Signoff & Approve button -->
+<!-- -->
+            {% elif (data[4] != 'NA') and (data[5] != 'NA') and (data[6] != 'NA')
+                and (data[7] != 'NA') and (data[8] == 'NA') %}
+                {% set name = 'approve_' + data[0] %}
+                <br>
+                <input type='submit' name='{{ name }}' value='Sign-off & Approve'>
+            {% endif %}
+        </td>
+<!-- -->
+<!-- Note section: large coordinate shift, higher revision etc. -->
+<!-- the last entry of the data list is the indicator of which note to display -->
+<!-- -->
+        <td>
+            {% if data[-1][5] == 1 %}
+                <span style='color:red;'>Large Coordinate Shift</span>
+                <br>
+            {% endif %}
+
+            {% if data[-1][0] > 0 %}
+                <span style='color:chocolate;'>Multiple Revisions Open</span>
+                <br>
+            {% endif %}
+            {% if data[-1][0] >= 0 and data[-1][1] != 0 %}
+                <span style='color:darkorchid;'>
+                Higher Rev # {{ data[-1][1] }} Was Already Signed Off
+                </span>
+                <br>
+            {% endif %}
+
+            {% if data[-1][4] == 1 %}
+
+                <span style='color:darkcyan;'>
+                New Comment
+                </span>
+            {% endif %}
+        </td>
+            
+    </tr>
+        
+{% endmacro %}
+
+
+##
+##--- macro for each cell
+##
+
+{% macro cellset(data, obsrev, head) %}
+    {% if data == 'NA' %}
+        {% set name = head + '_' + obsrev %}
+        <input type='submit' name={{ name }} value='Sign-off'>
+    {% else %}
+        {{ data }}
+    {% endif %}
+{% endmacro %}
+
+##
+##--- popup window for help pages
+##
+
+
+{% macro help_popup_page(html, link_name, font_size=100) %}
+<a href="javascript:WindowOpener('{{ html }}', 'orupdate_help', x=1000, y=600)">
+    <span style="background-color:lime;color:black;font-size:{{ font_size }}%;">
+   {{ link_name }}
+    </span>
+</a>
+{% endmacro %}
+
+##
+##--- order by entry
+##
+
+{% macro order_selection(odered_sel, user) %}
+    <ul>
+        <li> <input type='submit' name='ordered_by'      value='Date of Submission'></li>
+        <li> <input type='submit' name='ordered_by'      value='Obsid'> </li>
+        <li> 
+            <input type='submit' name='ordered_by'      value='User ID:'> 
+            <input type='text'   name='ordered_by_user' value="{{ user }}" size='12'>
+        </li>
+    </ul>
+{% endmacro %}

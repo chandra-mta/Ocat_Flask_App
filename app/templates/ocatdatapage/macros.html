@@ -1,0 +1,286 @@
+##
+##--- macro for ocat data page
+##
+
+{% set null_list  = [None, 'NA', 'N', 'NULL', 'None',  'n', 'null', 'none', ''] %}
+
+
+##
+##--- extract a parameter value for a given parameter (and a rank) and create an input field
+##
+
+{% macro val_disp(param, ct_dict, len=10, rank='') %}
+<!-- -->
+<!-- for the case that the value is a single entry -->
+<!-- -->
+    {% if ct_dict[param][2] == 'v'%}
+        {% if rank == '' %}
+            <input type='text' id={{ param }} name={{ param }} value="{{ ct_dict[param][-1] }}" size= {{ len }}>
+        {% else %}
+            {% set srank = rank|string %}
+            {% set rname = param + '_' + srank %}
+            <input type='text' id={{ param }} name={{ rname }} value="{{ ct_dict[param][-1][rank] }}" size= {{ len }}>
+        {% endif %}
+<!-- -->
+<!-- for the case that the value is a selection list -->
+<!-- -->
+    {% elif ct_dict[param][2] == 'l' %}
+        {% if rank == '' %}
+            {% set rname = param %}
+        {% else %}
+            {% set srank = rank|string %}
+            {% set rname = param + '_' + srank %}
+        {% endif %}
+
+        <select id = {{ rname }} name = {{ rname }}>
+
+        {% if rank == '' %}
+            {% set pval = ct_dict[param][-1] %}
+        {% else %}
+            {% set pval = ct_dict[param][-1][rank] %}
+        {% endif %}
+
+        {% for ent in ct_dict[param][1] %}
+            {% if ent[0] == pval  %}
+                <option value={{ ent[0] }} selected>{{ ent[1] }} </option>
+            {% else %}
+                <option value={{ ent[0] }}>         {{ ent[1] }} </option>
+            {% endif %}
+        {% endfor %}
+
+        </select>
+<!-- -->
+<!-- for the case that it displays a value but not as an input -->
+<!-- -->
+    {% else %}
+        {% if ct_dict[param][1] != '' %}
+            {% for ent in ct_dict[param][1] %}
+                {% if ct_dict[param][-1] == ent[0] %}
+                    {% set val = ent[1] %}
+                    {{ ent[1] }}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {{ ct_dict[param][-1] }}
+        {% endif %}
+    {% endif %}
+        
+{% endmacro %}
+
+##
+##--- fill rank entries  with hidden form
+##
+
+{% macro fill_hidden_ranks(param, ct_dict, nrank) %}
+
+    {% for k in range(nrank, 10) %}
+        {%set sk = k |string %}
+        {%set name = param + '_' + sk %}
+        <input type='hidden' id={{ name }} name={{ name }} value="{{ ct_dict[param][-1][k] }}">
+    {% endfor %}
+{% endmacro %}
+
+##
+##-- create a table format display of a parameter name and its value
+##
+
+{% macro create_entry(param, ct_dict, len=10) %}
+    <th style='padding-left:5px;'> {{ ct_dict[param][0] }}: </th>
+    <td> {{ val_disp(param, ct_dict, len) }} </td>
+{% endmacro %}
+
+##
+##--- sky map opener 
+##
+
+{% macro map_image_opener(sat, color, ct_dict) %}    
+    {% set link = ct_dict[sat][-1] %}
+    {% set usat = sat.upper() %}
+    <a href="javascript:ImageOpener('{{ link }}')">
+    <span style='color:{{ color }};'>{{ usat }}</span>
+    </a>
+{% endmacro %}
+
+##
+##--- popup window opener for a given html address
+##
+
+{% macro window_popup_opener(html, link_name) %}
+    <a href="javascript:WindowOpener('{{ html }}')">
+    {{ link_name }}
+    </a>
+{% endmacro %}
+
+##
+##--- popup window for help pages
+##
+
+{% macro help_popup_page(html, link_name, font_size=100, name='help') %}
+    <a href="javascript:WindowOpener('{{ html }}', '{{ name }}')">
+        <span style="background-color:lime;color:black;font-size:{{ font_size }}%;">
+            {{ link_name }}
+        </span>
+    </a>
+{% endmacro %}
+
+##
+##--- asis radio button
+##
+
+{% macro asis_button(atype, ainput, text) %}
+    <td style='padding: 10px;'>
+    {% if atype == ainput %}
+        <input type='radio' name='asis' value={{ atype }} checked>
+    {% else %}
+        <input type='radio' name='asis' value={{atype }}>
+    {% endif %}
+    <span style='position:relative; bottom: 7px;'>
+    <strong>{{ text }} </strong>
+    </span>
+    </td>
+{% endmacro %}
+
+##
+##-- hidden input
+##
+
+{% macro hidden_input(param, ct_dict, value='') %}
+    {% if value == '' %}
+        <input type='hidden' id={{ param }} name={{ param }} value="{{ ct_dict[param][-1] }}" > 
+    {% else %}
+        <input type='hidden' id={{ param }} name={{ param }} value="{{ value }}" > 
+    {% endif %}
+{% endmacro %}
+
+##
+##--- parameter display page related macro starts here -----
+##
+
+##
+##--- displaying non-rank entries
+##
+
+{% macro  compare_param_values(param, ct_dict, ind_dict) %}
+
+    {% if ind_dict[param]== 1 %}
+        <th>{{ ct_dict[param][0] }} </th>
+        <td>{{ ct_dict[param][-2] }}</td>
+        <td>No Change</td>
+    {% else %}
+        <th><span  style='color:red;'>{{ ct_dict[param][0]  }}</span></th>
+        <td><span  style='color:red;'>{{ ct_dict[param][-2] }}</span></td>
+        <td><span  style='color:red;'>{{ ct_dict[param][-1] }}</span></td>
+    {% endif %}
+{% endmacro %}
+        
+##
+##--- displaying ranked entries
+##
+
+{% macro rank_compare_param_values(rname, ct_dict, p_list, ind_dict) %}
+    {% set top  = ct_dict[rname][-1] |int %}
+    {% set otop = ct_dict[rname][-2] |int %}
+    {% if otop > top %}
+        {%set top = otop %}
+    {% endif %}
+    {% for k in range(0, top) %}
+        {% set rank = (k + 1) |string %}
+        {% if ct_dict[p_list[0]][-1][k] == 'NA' %}
+            <tr><th colspan=7 style='background-color:rgb(255,0,0, 0.2);'>
+                    Order = {{ rank }} (Deleted)
+            </th></tr>
+        {% else %}
+            <tr><th colspan=7 style='background-color:#e6fff2;'>Order = {{ rank }}</th></tr>
+        {% endif %}
+        {% set count = namespace(value=0) %}
+        {% for param in p_list %}
+            {% set count.value = count.value + 1 %}
+
+            {% if count.value % 2 == 1 %}
+                <tr>
+            {% endif %}
+
+            {% if ind_dict[param][k] == 1 %}
+                <th>{{ ct_dict[param][0] }} </th>
+                <td>{{ ct_dict[param][-2][k] }}</td>
+                <td>No Change</td>
+
+            {% else %}
+                <th><span style='color:red;'>{{ ct_dict[param][0] }}    </span></th>
+                <td><span style='color:red;'>{{ ct_dict[param][-2][k] }}</span></td>
+                <td><span style='color:red;'>{{ ct_dict[param][-1][k] }}</span></td>
+            {% endif %}
+
+            {% if count.value % 2 == 0 %}
+                </tr>
+            {% else %}
+                {%if count.value != p_list|length %}
+                <td>&#160;</td>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if count.value % 2 == 1 %}
+            </tr>
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+##
+##--- passing rank entries
+##
+
+{% macro pass_list_back(a_list, ct_dict) %}
+    {% for param in a_list %}
+        {% for k in range(0, 10) %}
+            {% set lk = k|string %}
+            {% set pname = param + '_' + lk  %}
+            <input type='hidden' name='{{ pname }}'[] value='{{ ct_dict[param][-1][k] }}'>
+        {% endfor %}
+    {% endfor %}
+{% endmacro %}
+
+##
+##--- reamrks and comments section: display and passing the texts
+##
+
+{% macro remark_section(param, ct_dict, ind_dict) %}
+
+    <h4 style='text-decoration: underline;'>Original</h4>
+    {% autoescape false %}
+    <p>
+    {% if ct_dict[param][-2].strip() == '' %}
+        <span style='padding-left:50px;font-style:italic;'>NA</span>
+    {% else %}
+        <p style='padding-left:20px;'>
+        {% autoescape false %}
+            {{ ct_dict[param][-2] | replace('\n', '<br/>') }}
+        {% endautoescape %}
+        </p>
+    {% endif %}
+    </p>
+    {% endautoescape %}
+    
+    <hr style='border-top:1px dotted;'>
+    
+    <h4 style='text-decoration: underline;'>New</h4>
+    {% autoescape false %}
+    {% if ind_dict[param] == 1 %}
+        {% set color='black' %}
+    {% else %}
+        {% set color='red' %}
+    {% endif %}
+    
+    {% if ct_dict[param][-1].strip() == '' %}
+        <span style='padding-left:50px;color:{{ color }};font-style:italic'>NA</span>
+    {% else %}
+        <p style='padding-left:20px;color:{{ color }};'>
+        {% autoescape false %}
+            {{ ct_dict[param][-1] | replace('\n', '<br/>') }}
+        {% endautoescape %}
+        </p>
+    {% endif %}
+    </p>
+    {% endautoescape %}
+
+{% endmacro %}

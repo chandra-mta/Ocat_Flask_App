@@ -1,0 +1,141 @@
+##
+##--- macros for chkupdata page
+##
+{% set null_list = [None, 'NA', 'N', 'NULL', 'None',  'n', 'null', 'none', ''] %}
+
+##
+##--- table header
+##
+
+{% macro table_header() %}
+    <tr>
+        <th style='width:25%;'>Parameter</th>
+        <th style='width:25%;'>Original Value</th>
+        <th style='width:25%;'>Requested Value</th>
+        <th style='width:25%;'>Current DB Value</th>
+    </tr>
+{% endmacro %}
+
+##
+##--- color coded table cell
+##
+
+{% macro color_coded(val, code) %}
+    {% if code   == 1 %}
+        <td style='background-color:rgb(124,252,0,0.3);'>{{ val }}</td>
+    {% elif code == 2 %}
+        <td style='background-color:rgb(255,0,255,0.3);'>{{ val }}</td>
+    {% elif code == 3 %}
+        <td style='background-color:rgb(255,69,0, 0.3);'>{{ val }}</td>
+    {%else %}
+        <td>{{ val }}</td>
+    {% endif %}
+{% endmacro %}
+
+##
+##--- top comment section
+##
+
+{% macro check_two_entries(name, data, title) %}
+    {% if data[name][0] %}
+        <h3>Past {{ title }}</h3>
+            <p>{{ data[name][0] }}</p>
+        {% if  data[name][0] != data[name][1] %}
+        <h3 style='color:rgb(255,0,0,0.6);'>New {{ title }}</h3>
+            {% if data[name][1] %}
+                <p>{{ data[name][1] }}</p>
+            {% else %}
+                <p> NA </p>
+            {% endif %}
+        {% endif %}
+
+    {% elif data[name][1] %}
+        <h3>Past {{ title }}</h3>
+            <p> NA </p>
+        <h3 style='color:rgb(255,0,0,0.6);'>New {{ title }}</h3>
+            <p>{{ data[name][1] }}</p>
+    {% endif %}
+{% endmacro %}
+
+##
+##--- table for standard parameter cases
+##
+
+{% macro param_block(data, p_list, title) %}
+    <div style='padding-top:10px;'></div>
+    <table border=1 width=100%>
+    <col style='width:25%' span="4">
+    <tr><th colspan=4 style='background-color:rgb(255,204, 255,0.5);'>{{ title }}</th></tr>
+    {{ table_header() }}
+    {% for param in p_list %}
+        <tr>
+            <th>{{ param }} </th>
+            
+            <td>{{ data[param][0] }}</td>
+            <td>{{ data[param][1] }}</td>
+            {{ color_coded(data[param][2], data[param][3]) }}
+        </tr>
+    {% endfor %}
+    </table>
+{% endmacro %}
+
+##
+##---  table for ordered cases
+##
+
+{% macro ordr_block(data, oparam, p_list, title, tparam) %}
+
+    <div style='padding-top:10px;'></div>
+    <table border=1 width=100%>
+    <col style='width:25%' span="4">
+    <tr><th colspan=4 style='background-color:rgb(255,204, 255,0.5);'>{{ title }}</th></tr>
+    {{ table_header() }}
+    {% if data[tparam][0][0] in null_list and data[tparam][1][0] in null_list 
+            and data[tparam][2][0] in null_list %}
+        <tr><th>{{ oparam }}</th>
+        <td>0</td><td>0</td><td>0</td>
+        </tr>
+    {% else %}
+        <tr>
+            <th>{{ oparam }}</th>
+            <td>{{ data[oparam][0] }}</td>
+            <td>{{ data[oparam][1] }}</td>
+            {{ color_coded(data[oparam][2], data[oparam][3]) }}
+        </tr>
+        {% set top =([data[oparam][0], data[oparam][1], data[oparam][2]]|max) %}
+        {% for k in range(0, top) %}
+            {% for param in p_list %}
+                <tr>
+                    <th>{{ param }} order={{ k + 1 }} </th>
+    
+                    <td>{{ data[param][0][k] }}</td>
+                    <td>{{ data[param][1][k] }}</td>
+                    {{ color_coded(data[param][2][k], data[param][3][k]) }}
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    </table>
+{% endmacro %}
+
+###
+###--- changed param table 
+###
+
+{% macro changed_param(d_dict, title) %}
+
+{% if d_dict.keys() %}
+    <table border=1 style='width:75%;'>
+        <tr><th colspan=3 style='background-color:rgb(255,204, 255,0.5);'>{{ title }}</th></tr>
+        {% for param in  d_dict.keys() %}
+            <tr>
+            <th style='width:33%;'> {{ param }} </th>
+            <td style='width:33%;'> {{ d_dict[param][0] }}
+            <td style='width:33%;'> {{ d_dict[param][1] }}
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% endmacro %}
+

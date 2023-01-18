@@ -1,0 +1,6 @@
+'/data/mta4/obs_ss/':						                        obs_ss
+'/data/mta4/CUS/www/Usint/Pass_dir/':		 		                pass_dir
+'/data/mta4/CUS/www/Usint/ocat/Info_save/':			                data_dir
+'/data/mta4/CUS/www/Usint/Ocat/ocat/other_scripts/house_keeping/':  house_keeping
+'/data/mta4/CUS/www/Usint/Ocat/ocat/':	    	                    ocat_dir
+'/data/mta/Script/Python3.8/MTA/':		    		                mta_dir

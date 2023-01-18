@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% from 'express/macros.html' import cellset %}
+
+{%block title %}Express Approval Page{% endblock %}
+{%block main_title %}Express Approval Page{% endblock %}
+
+
+{% block app_content %}
+
+<!-- -->
+<!-- Page 2: the page to display whether the obsids are already in approved list etc -->
+<!-- -->
+
+{% if stage == 1 %}
+    <form  action ='' method='post'>
+
+<!-- -->
+<!-- if there are some input which are not in correct format, list them here -->
+<!-- -->
+
+    {% if warning|length > 0 %}
+        <h3>The following inputs are not in correct formats</h3>
+            <ul>
+            {% for ent in warning %}
+                <li style='font-weight:bold;'>{{ ent }} </li>
+            {% endfor %}
+            </ul>
+    {% endif %}
+                
+<!-- -->
+<!-- list obsids and their status such as whether they are already in approved list -->
+<!-- -->
+
+    {% if obsids_info | length > 0 %}
+        <h3>Please make sure that you want to approve the following observations:</h3>
+     
+        <table border=1 cellpadding=3 cellspacing=3>
+            <tr>
+            <th class='cent'><span style='padding-left:5px; padding-right:5px;'>ObsID</span></th>
+            <th class='cent'>Prop ID</th>
+            <th class='cent'>
+                <span style='padding-left:5px; padding-right:5px;'>
+                    Sequence Number 
+                </span>
+            </th>
+            <th class='cent'>Title</th>
+            <th class='cent'>Target</th>
+            <th class='cent'>PI</th>
+            <th class='cent'>Note</th>
+            </tr>
+     
+            {% for info in obsids_info %}
+                {{ cellset(info) }}
+            {% endfor %}
+     
+        </table>
+     
+        <p style='padding-top:20px;'>
+        If an observation is  marked by <span style='background-color:rgb(255, 0, 0, 0.2);'>
+        red</span>, it is either already in the approved list, not schedulable, or  another POC 
+        initiated the sign-off process. Please make sure that you did not accidentally include 
+        it in the list.
+        <span style='font-weight:bold;'>
+        Only non-marked entries will be approved by clicking the "Finalize" button.
+        </span>
+        </p>
+
+        <input type='submit' name='finalize', value='Finalize'>
+        <span style='padding-right:20px;'></span>
+
+    {% endif %}
+
+    <input type='submit' name='submit'       value='Back to the Previous Page'>
+    <input type='hidden' name='obsids_input' value='{{ obsids_input }}'>
+    </form>
+
+<!-- -->
+<!-- Page 3: closing page -->
+<!-- -->
+
+{% elif stage == 2 %}
+
+    <h3 style='padding-bottom:50px;'>
+        {% if o_list| length > 0 %}
+            Observations are submitted to the approval process. You will receive a confirmation
+            email of each observation separately.
+
+        {% else %}
+            No ObsIDs that you requested met the conditions for approval;  none of them were
+            approved. Please go back to the main page, and try again.
+        {% endif %}
+    </h3>
+<!-- -->
+<!-- if some of the observations are not approved, list them -->
+<!-- -->
+    {% if o_list |length > 0 %}
+        {%if m_list |length > 0 %}
+            <h4>Following ObsIDs were not approved:</h4>
+            <ul>
+            {% for obsid in m_list %}
+                <li> 
+                    <a href="javascript:WindowOpener('../ocatdatapage/{{ obsid }}', 'express_obsid');">
+                    {{ obsid }}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+
+    <form  action ='' method='post'>
+        <input type='submit' name='submit'    value='Back to the Main Page'>
+    </form>
+
+<!-- -->
+<!-- Page 1: obsid list input page -->
+<!-- -->
+
+{% else %}
+    <p style='font-weight:bold;'>
+        Please provide obsid(s) which you like to approve immediately.
+    </p>
+    
+    <form action ='' method='post' >
+    <input type='text'   name='obsid_list' value="{{ obsids_input }}" size='50'>
+    <input type='submit' name='submit'     value='Submit'>
+    
+    <p style='padding-top:20px;'>
+        Obsids can be delimited by a 'comma', a 'colon', a 'semi-colon', or a blank space.
+        If they are in a sequence, you can connect them with a dash. The values 
+        are inclusive at both ends. You can add as many sequences as you like, 
+        separated by a comma, a colon, a semi-colon, or blank spaces. 
+    </p>
+
+    <p>Examples</p>
+    <ul>
+        <li> 12345, 12346</li>
+        <li> 12345:12346</li>
+        <li> 12345 ; 12346</li>
+        <li> 12345: 12346; 12347, 12348 12349</li>
+        <li> 12345-12349 12352 - 12357,12359- 12362</li>
+    </ul>
+
+    <input type='hidden' name='submit_test', value='submit_test'>
+    </form>
+{% endif %}
+
+{% endblock %}
+

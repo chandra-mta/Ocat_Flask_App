@@ -1,0 +1,41 @@
+{% block app_content %}
+
+<!-- -->
+<!-- when the script cannot find the data file, ask the user to re-enter the <obsid>.<rev> -->
+<!-- -->
+
+<!-- --> 
+<!-- for the case, obsid is correct and there are some revisions related to it -->
+<!-- -->
+{% if other_rev %}
+    <h3><i>&lt;Obsid&gt;.&lt;Rev&gt;</i> Provided Is Not Available</h3>
+    <p style='font-size:105%;'><b>
+        However, the following &lt;Obsid&gt;.&lt;Rev&gt; 
+        {% if other_rev|length > 1 %}
+            are 
+        {% else %}
+            is
+        {% endif %}
+        available:
+    </b></p>
+    <ul>
+        {% for rev in other_rev %}
+            {% if rev %}
+                <li><a href='{{ rev }}'>{{ rev }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+<!-- -->
+<!-- if no <obsid><rev> is provided or no data or no related data are found -->
+<!-- -->
+{% else %}
+    <h3>
+        Please Provide a &lt;Obsid&gt;.&lt;Rev&gt;
+    </h3>
+    <div class='col-md-2' style='width:30%;'>
+        {{ wtf.quick_form(form) }}
+    </div>
+
+{% endif %}
+
+{% endblock %}

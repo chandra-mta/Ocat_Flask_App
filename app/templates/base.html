@@ -1,0 +1,130 @@
+{% extends 'bootstrap/base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block title %}
+    {% if title %}{{ title }}{% else %}{{ 'USINT Ocat Home Page' }}{% endif %}
+{% endblock %}
+
+<!-- -->
+<!-- ocat page style sheet -->
+<!-- -->
+
+{% block styles %}
+    {{ super() }}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='ocat_style.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- -->
+<!-- a title bar at the top of the page -->
+<!-- -->
+
+    <div style='padding-top: 15px;padding-bottom:40px;'>
+    <table border=0 style='background-color: rgb(3, 252, 48, 0.4);width:95%;
+                           margin-left:auto; margin-right:auto;text-align:center;'>
+        <tr style='width:100; line-height:250%;'>
+        <th style='font-size:200%;'>
+            {% block main_title %}
+                {% if main_title %}{{ main_title }}{% else %}{{ 'USINT Ocat Home Page' }}{% endif %}
+            {% endblock %}
+
+        </th>
+        {% if current_user.is_anonymous %}
+            <td style='text-align:right;'><a href="{{ url_for('auth.login') }}">Login</td>
+        {% else %}
+            <td style='text-align:right;'><b>User: {{ current_user.username }}</b>
+            (<a href="{{ url_for('auth.logout') }}">Logout)</td>
+        {% endif %}
+        </tr>
+    </table>
+    </div>
+
+<!-- -->
+<!-- content of each app will be inserted here -->
+<!-- -->
+
+    <div class="container">
+        {% block app_content %}
+        {% endblock %}
+    </div>
+
+<!-- -->
+<!-- closing display -->
+<!-- -->
+
+    <hr style='height: 1px; background:black;opacity:0.5'>
+
+    <p style='float:right;text-align:right;padding-right:30px;'>
+        <b><em>Last Modified: October 28, 2021 (Test Version)</em></b>
+    </p>
+
+    <p style='padding-left:20px;'>
+        If you have any questions about this page, please contact: 
+        <a href='mailto: bwargelin@head.cfa.harvard.edu'>bwargelin@head.cfa.harvard.edu.</a>
+    </p>
+
+{% endblock %}
+
+<!-- ###################################################### -->
+
+<!-- -->
+<!-- java scripts are kept here -->
+<!-- -->
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+<!-- -->
+<!-- script to open a popup window with another html page -->
+<!-- -->
+        function WindowOpener(h_file, name='popup', x=0, y=0) {
+            //
+            //--- if name is given other than 'popup', the popup window will use
+            //--- the same targeted  named popup window. otherwise, this script
+            //--- will open a new popup page every time
+            //
+            //--- first, set a window size accroding to the user's screen size
+            //
+            if(x == 0){
+                y = screen.height * 0.9;
+                x = y * 0.8;
+            }
+            //
+            //--- if the name is the default 'popup', set name of each popup window 
+            //--- differently so that multiple windows can be opened 
+            //
+            if(name == 'popup'){
+                var date = new Date();
+                var mSec = date.getTime();
+                name     = 'popup' + mSec;
+            }
+
+            var w = window.open(h_file, name, "width=500, height=500, scrollbars=yes, resizable=yes");
+            w.resizeTo(x, y);
+        }
+
+<!-- -->
+<!-- script to open a link on the new tab only once -->
+<!-- -->
+
+        function openTab(html, name){
+            var test = window.open('', name, '', true);
+            if(test.location.href == 'about:blank'){
+                name  = window.open(html, name);
+                name.focus();
+            }
+        }
+<!-- -->
+<!-- script to open a popup window with an image for a given image url -->
+<!-- -->
+        function ImageOpener(img) {
+            var w = window.open(img, 'sky map', "width=700, height=700, scrollbars=no, resizable=no");
+            w.resizeTo(700, 700);
+        }
+
+    </script>
+
+{% endblock %}
+

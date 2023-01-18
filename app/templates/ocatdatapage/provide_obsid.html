@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+<!-- -->
+<!-- if obsid is not provided, this page will open -->
+<!-- -->
+{% block title %}Ocat Data Page{% endblock %}
+{% block main_title %}Ocat Data Page{% endblock %}
+{% block app_content %}
+<script type='text/javascript'>
+    function openOcatPage()
+        {
+            var obsid = document.getElementById('obsid').value;
+
+            if (isNaN(obsid)){
+                document.newForm.action='./';
+                alert('Obsid must be an integer number');
+                return false;
+
+            }else{
+                var iobsid = Math.floor(obsid);
+
+                if (obsid == iobsid){
+                    document.newForm.action='./' + obsid;
+
+                }else{
+                    document.newForm.action='./';
+                    alert('Obsid must be an interger number');
+                    return false;
+                }
+            }
+        }
+</script>
+
+<form  name='newForm' method='post' onSubmit="openOcatPage(this)">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <h3 style='color:red;'> {{ message }} </h3>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+<p style='padding-top:50px;padding-bottom:100px;'>
+
+<strong>Please Provide Obsid:</strong>
+
+<span style='padding-left:10px;'></span>
+<input type='text', id='obsid' name='obsid'>
+
+<span style='padding-left:10px;'></span>
+<input type='submit', name='check' value='Submit'>
+
+</p>
+</form>
+
+{% endblock %}
+

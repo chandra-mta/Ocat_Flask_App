@@ -1,0 +1,126 @@
+#
+#	Note
+#	1. Value ranges are delimited by ",", if it is words or discrete values.
+#	2. Value ranges are in "(xxx<>yyy)" format, if it is in a continuous range, such as xxxx <= X <= yyyy
+#	3. If there is no range for the entry, "OPEN" is given for the value range.
+#	4. If there is no range for the entry, but there is restrictions, "REST" is given for the value range.
+#	5. If there is no restriction, "NONE" is given in the restriction condition.
+#	6. If there are more than one possible restricitons, they are delimited by ";".
+#	7. The condition of the restriction is given in "(<condition>)", following "=" after a  related database name.
+#	8. If the restriction value must be null, "NA" is given for the restriction condtion.
+#	9. If the restriction value must have a value, "MUST" is given for the restriction condtion.
+#
+#	The each entry is tab delimited.
+#
+# Name			        database name			    value ranges				restriction
+#
+G	Exp_Time		    approved_exposure_time		OPEN					        NONE
+G	Type			    type				        GO,TOO,GTO,CAL,DDT,CAL_ER,ARCHIVE,CDFS		NONE
+G	TOO_Id			    tooid				        OPEN					        NONE
+G	Target_Name		    targname			        OPEN					        NONE
+G	Target_Description	description			        OPEN					        NONE
+G	Object			    object				        NEW,NONE,COMET,EARTH,JUPITER,MARS,MOON,NEPTUNE,PLUTO,SATURN,URANUS,VENUS,NONE   NONE
+G	Object_flag		    obj_flag			        SS,MT,NO				        NONE
+G	Group_id		    group_id			        NA,REST				            NONE
+G	Preceding_Id		pre_id				        NA,REST				            pre_min_lead=(OPEN),(MUST);pre_max_lead=(OPEN),(MUST)
+G	Pre_Min_Lead		pre_min_lead			    NA,REST				            pre_id=(OPEN),(OPEN)
+G	Pre_Max_Lead		pre_max_lead			    NA,REST				            pre_id=(OPEN),(OPEN)
+G	Instrument		    instrument			        HRC-I,HRC-S,ACIS-I,ACIS-S		NONE
+G	Grating			    grating				        HETG,LETG,NONE				    est_cnt_rate=(MUST),(MUST),(OPEN);forder_cnt_rate=(MUST),(MUST),(OPEN)
+G	SI_Mode			    si_mode				        OPEN 	 				        NONE
+G	ACA_mode		    aca_mode			        DEFAULT,NEW,NA			        NONE
+G	Count_Rate		    est_cnt_rate			    NA,(0<>10000)				    NONE
+G	1st_Order_Rate		forder_cnt_rate			    NA,(0<>10000)				    NONE
+G	Tot_Count_Rate		total_fld_cnt_rate		    OPEN					        NONE
+G	Ext_Source		    extended_src			    NA,Y,N				            NONE
+G	RA			        ra				            (0<>360)            	        NONE
+G	DEC			        dec				            (-90<>90)                       NONE
+G	Y_Det_Offset		y_det_offset			    (-120<>120)				        NONE
+G	Z_Det_Offset		z_det_offset			    (-120<>120)				        NONE
+G	Dither			    dither_flag			        NA,Y,N				            y_amp=(NA),(MUST),(NA);y_freq=(NA),(MUST),(NA);y_phase=(NA),(MUST),(NA);z_amp=(NA),(MUST),(NA);z_freq=(NA),(MUST),(NA);z_phase=(NA),(MUST),(NA)
+G	Raster_Scan		    raster_scan			        OPEN					        NONE
+G	Photometry		    photometry_flag			    NA,Y,N				            NONE
+G	V_Mag			    vmagnitude			        NA,(-15<>20)				    NONE
+G	Roll_Constraint		roll_constraint			    NA,N,Y,P				        roll=(NA),(NA),(MUST),(MUST);roll_tolerance=(NA),(NA),(MUST),(MUST)
+G	Roll_Angle		    roll				        NA,(0<>360)				        roll_constraint=(OPEN),(MUST)
+G	Roll_Tolerance		roll_tolerance			    OPEN					        NONE
+G	Roll_Ordr		    ordr				        (1<>1024)				        NONE
+G	Roll_180		    roll_180			        NA,Y,N				            roll_constraint=(OPEN),(MUST),(OPEN)
+G	Window_Constraint	window_constraint		    NA,N,Y,P				        tstart=(NA),(NA),(MUST),(MUST);tstop=(NA),(NA),(MUST),(MUST);pre_id=(OPEN),(OPEN),(NA),(NA)
+G	Window_Start		tstart				        REST					        window_constraint=(MUST)
+G	Window_Stop		    tstop				        REST					        window_constraint=(MUST)
+G	Seg_Max_Num		    seg_max_num			        OPEN					        NONE
+G	Remarks			    remarks				        OPEN					        NONE
+G	Y_Amplitude		    y_amp				        OPEN					        dither_flag=(MUST);y_freq=(MUST);y_phase=(MUST);z_amp=(MUST);z_freq=(MUST);z_phase=(MUST)
+G	Y_Frequency		    y_freq				        OPEN					        dither_flag=(MUST);y_amp=(MUST);y_phase=(MUST);z_amp=(MUST);z_freq=(MUST);z_phase=(MUST)
+G	Y_Phase			    y_phase				        OPEN					        dither_flag=(MUST);y_amp=(MUST);y_freq=(MUST);z_amp=(MUST);z_freq=(MUST);z_phase=(MUST)
+G	Z_Amplitude		    z_amp				        OPEN					        dither_flag=(MUST);y_amp=(MUST);y_freq=(MUST);y_phase=(MUST);z_freq=(MUST);z_phase=(MUST)
+G	Z_Frequency		    z_freq				        OPEN					        dither_flag=(MUST);y_amp=(MUST);y_freq=(MUST);y_phase=(MUST);z_amp=(MUST);z_phase=(MUST)
+G	Z_Phase			    z_phase				        OPEN					        dither_flag=(MUST);y_amp=(MUST);y_freq=(MUST);y_phase=(MUST);z_amp=(MUST);z_freq=(MUST)
+G	Phase_Constraint	phase_constraint_flag		NA,N,Y,P				        phase_period=(NA),(NA),(MUST),(MUST),(MUST),(NA),(NA);phase_epoch=(NA),(NA),(MUST),(MUST),(MUST),(NA),(NA)
+G	Phase_Period		phase_period			    OPEN					        NONE
+G	Phase_Epoch		    phase_epoch			        NA,(46066.0<>1.0e10)			NONE
+G	Phase_Start		    phase_start			        OPEN					        NONE
+G	Phase_End		    phase_end			        OPEN					        NONE
+G	Phase_Start_Margin	phase_start_margin		    OPEN					        NONE
+G	Phase_End_Margin	phase_end_margin		    OPEN					        NONE
+G	Multitelescope		multitelescope			    Y,P,N					        observatories=(MUST),(MUST),(NA);multitelescope_interval=(MUST),(MUST),(NA)
+G	Observatories		observatories			    REST					        multitelescope=(MUST)
+G	Multitelescope_Interval	multitelescope_interval	REST					        multitelescope=(MUST)
+G	Trans_Offset		trans_offset			    NA,(-190.5<>+126.621)			NONE
+G	Focus_Offset		focus_offset			    OPEN					        NONE
+H	Configuration		hrc_config			        NA,NORMAL,HESF,LESF			    NONE
+H	Fraction		    hrc_chop_fraction		    NA,(0<>1)				        NONE
+H	Zero_block		    hrc_zero_block			    NA,Y,N				            NONE
+H	Chop			    hrc_chop_duty_cycle		    HESF-LESF,LESF-HESF,LESF-NORMAL,NORMAL-LESF,NA	NONE
+H	Chop_number		    hrc_chop_duty_no		    NA,(0<>999)				        NONE
+A	Timing_Mode		    timing_mode			        NA,Y,N				            NONE
+A	Exposure_Mode		exp_mode			        NA,TE,CC				        NONE
+A	BEP_Pack		    bep_pack			        NA,VF,F,F+B,G				    NONE
+A	Most_Efficient		most_efficient			    NA,Y,N				            frame_time=(MUST),(NA),(MUST);primary_exp_time=(MUST),(NA),(NA)
+A	Frame_Time		    frame_time			        NA,(0<>10)				        most_efficient=(OPEN),(N)
+A	I0			        ccdi0_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	I1			        ccdi1_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	I2			        ccdi2_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	I3			        ccdi3_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	S0			        ccds0_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	S1			        ccds1_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	S2			        ccds2_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	S3			        ccds3_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	S4			        ccds4_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	S5			        ccds5_on			        NA,Y,N,O1,O2,O3,O4,O5			NONE
+A	Subarray_Type		subarray			        NONE,CUSTOM			            subarray_start_row=(NA),(MUST);subarray_row_count=(NA),(MUST);subarray_frame_time=(NA),(OPEN)
+A	SA_Start_Row		subarray_start_row		    NA,(1<>925)				        subarray=(OPEN),(CUSTOM)
+A	SA_#Rows		    subarray_row_count		    NA,(100<>1024)			        subarray=(OPEN),(CUSTOM)
+A	SA_Frame_Time		subarray_frame_time		    NA,(0<>10)				        subarray=(OPEN),(CUSTOM)
+A	Duty_Cycle		    duty_cycle			        NA,Y,N				            NONE
+A	Number			    secondary_exp_count		    OPEN					        NONE
+A	Tprimary		    primary_exp_time		    NA,(0.1<>10)				    NONE
+A	Tsecondary		    secondary_exp_time		    OPEN					        NONE
+A	Onchip_Sum		    onchip_sum			        NA,Y,N				            NONE
+A	Rows			    onchip_row_count		    NA,(1<>512)					    NONE
+A	Columns			    onchip_column_count		    NA,(1<>512)					    NONE
+A	Event_Filter		eventfilter			        NA,Y,N				            eventfilter_lower=(NA),(MUST),(NA);eventfilter_higher=(NA),(MUST),(NA)
+A	Lower			    eventfilter_lower		    NA,(0.0<>15.0)			        eventfilter=(NA),(Y)
+A	Range			    eventfilter_higher		    NA,(0.0<>15.0)			        eventfilter=(NA),(Y)
+A	Multi_Spectral_Lines	multiple_spectral_lines	NA,Y,N  				        NONE
+A	Spectra_Max_Count	spectra_max_count		    NA,(1<>100000)			        NONE
+A	Bias			    bias_request			    NA,Y,N				            NONE
+A	Frequency		    frequency			        NA,(0.0<>1.0)				    NONE
+A	Bias_After		    bias_after			        NA,Y,N				            NONE
+A	FEP			        fep				            NA,I0,I1,I2,I3,S0,S1,S2,S3,S4,S5	NONE
+A	Spatial_Win		    spwindow			        NA,Y,N				            chip=(NA),(MUST),(NA)
+A	Order			    ordr				        NA,(1<>6)				        NONE
+A	Chip			    chip				        NA,I0,I1,I2,I3,S0,S1,S2,S3,S4,S5		spwindow=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);start_row=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);start_column=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);height=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);width=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);lower_threshold=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);pha_range=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST);sample=(NA),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST),(MUST)
+A	Include_Flag		include_flag			    NA,Y,N	        			    NONE
+A	Start_Row		    start_row			        NA,(1<>896)				        chip=(NA),(MUST)
+A	Start_Column		start_column			    NA,(1<>896)				        chip=(NA),(MUST)
+A	Height			    height			            NA,(1<>1024)				    chip=(NA),(MUST)
+A	Width			    width				        NA,(1<>1024)				    chip=(NA),(MUST)
+A	Lower_Energy		lower_threshold		        NA,(0.0<>15)				    chip=(NA),(MUST)
+A	Energy_Range		pha_range			        NA,(0.0<>15)				    chip=(NA),(MUST)
+A	Sample_Rate		    sample			            (0<>255)		                NONE
+G	Uninterrupt		    uninterrupt			        NA,P,Y,N				        NONE
+G	Joint_proposal		proposal_joint			    NA,Y,N				            NONE
+G	Constr_in_Remarks	constr_in_remarks		    NA,P,Y,N				        NONE
+G	Time_Ordr		    ordr				        (1<>1024)				        NONE

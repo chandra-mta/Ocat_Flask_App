@@ -1,0 +1,176 @@
+##
+##--- macros for scheduler page
+##
+
+##
+##--- define a month dict and mday list
+##
+
+{% set month_selector  = { '1'  : 'January',
+                           '2'  : 'February',
+                           '3'  : 'March',
+                           '4'  : 'April', 
+                           '5'  : 'May', 
+                           '6'  : 'June',
+                           '7'  : 'July',
+                           '8'  : 'August',
+                           '9'  : 'September',
+                           '10' : 'October',
+                           '11' : 'November',
+                           '12' : 'December'
+                         }
+%}
+{% set  month_day_list = [ '1', '2', '3', '4', '5', '6', '7', '8', '9','10',
+                          '11','12','13','14','15','16','17','18','19','20',
+                          '21','22','23','24','25','26','27','28','29','30',
+                          '31'] 
+%}
+
+##
+##--- selected option for a dropdown list
+##
+
+{% macro list_opt_select(val, comp, lval) %}
+    {% if val == comp %}
+        <option value={{ comp }} selected>{{ lval }}</option>
+    {% else %}
+        <option value={{ comp }}>{{ lval }}</option>
+    {% endif %}
+{% endmacro %}
+    
+##
+##--- poc dropdown list; 'id' is a row number in the table
+##--- poc_list is a list of lists [<user id> <full name> <email>]
+##
+
+{% macro poc_pull_down(val, poc_list, id) %}
+    {% set poc_id = 'poc' +id %}
+    <select name={{ poc_id }} id={{ poc_id }}>
+        {% for poc in poc_list %}
+            {% if val == poc[1] %}
+                <option value={{ poc[0] }} selected>{{ poc[1] }}</option>
+            {% else %}
+                <option value={{ poc[0] }}>{{ poc[1] }} </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+##
+##--- month dropdown list; date related dropdowns have two possible cases: 
+##--- begining and ending period id reflects that with "part"
+##
+
+{% macro month_pull_down(val, part, id) %}
+    {% set mon_id = 'mon'+ part + id %}
+    <select name={{ mon_id }} id={{ mon_id }} >
+        {% for mon in month_selector.keys() %}
+            {{ list_opt_select(val , mon , month_selector[mon]) }}
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+##
+##-- day pulldwon list
+##
+
+{% macro day_pull_down(val, part, id) %}
+    {% set  day_id = 'day' + part + id %}
+    <select name={{ day_id }} id={{ day_id }}>
+    {% for day in  month_day_list %}
+        {{ list_opt_select(val, day, day) }}
+    {% endfor %}
+    </select>
+{% endmacro %}
+
+##
+##--- year dropdown list
+##
+{% macro year_pull_down(val, year_list, part,  id) %}
+    {% set yr_id = 'yr' +part + id %}
+    <select name={{ yr_id }} id={{ yr_id }}>
+    {% for year in  year_list %}
+        {{ list_opt_select(val, year, year) }}
+    {% endfor %}
+    </select>
+{% endmacro %}
+
+##
+##--- closed row entry
+##
+
+{% macro closed_row(data) %}
+
+    <tr style='background-color:rgb(223,132,112,0.3);'>
+    <th class='padded'>{{ data[0] }}</th>
+    <td class='padded'>{{ month_selector[data[2][0]] }} </td>
+    <td class='padded'>{{ data[2][1] }} </td>
+    <td class='padded'>{{ data[2][2] }} </td>
+
+    <td class='padded'>{{ month_selector[data[3][0]] }} </td>
+    <td class='padded'>{{ data[3][1] }} </td>
+    <td class='padded'>{{ data[3][2] }} </td>
+
+    <td class='padded'>{{ data[4] }}    </td>
+    <td class='cent'>Closed             </td>
+    <td>&#160;                          </td>
+    </tr>
+
+{% endmacro %}
+
+##
+##--- filled row entry
+##
+
+{% macro filled_row(data, color) %}
+
+    <tr style='background-color:{{ color }};'>
+    <th class='padded'>{{ data[0] }}</th>
+    <td class='padded'>{{ month_selector[data[2][0]] }} </td>
+    <td class='padded'>{{ data[2][1] }} </td>
+    <td class='padded'>{{ data[2][2] }} </td>
+
+    <td class='padded'>{{ month_selector[data[3][0]] }} </td>
+    <td class='padded'>{{ data[3][1] }} </td>
+    <td class='padded'>{{ data[3][2] }} </td>
+
+    <td class='padded'>{{ data[4] }}    </td>
+    {% set sid = 'unlock' + data[-1] %}
+    <td><input type='submit' id={{ sid }}, name={{ sid }} value="Unlock"></td>
+    <td>&#160;                          </td>
+    </tr>
+
+{% endmacro %}
+
+##
+##--- open row entry
+##
+
+{% macro open_row(data, poc_list, y_list, color, dtype=0) %}
+
+    <tr style='background-color:{{ color }};'>
+    <th class='padded'>{{ poc_pull_down(data[0], poc_list, data[-1])  }}   </th>
+
+    <td class='padded'>{{ month_pull_down(data[2][0], 'bgn', data[-1]) }}  </td>
+    <td class='padded'>{{ day_pull_down(data[2][1],   'bgn', data[-1])  }} </td>
+    <td class='padded'>{{ year_pull_down(data[2][2],  y_list, 'bgn', data[-1]) }} </td>
+
+    <td class='padded'>{{ month_pull_down(data[3][0], 'end', data[-1]) }}  </td>
+    <td class='padded'>{{ day_pull_down(data[3][1],   'end', data[-1])  }} </td>
+    <td class='padded'>{{ year_pull_down(data[3][2],  y_list, 'end', data[-1]) }} </td>
+
+    <td>&#160;</td>
+
+    {% set uid = 'update' + data[-1] %}
+    {% set aid = 'split'  + data[-1] %}
+    {% set did = 'delete' + data[-1] %}
+    <td><input type='submit' id={{ uid }} name={{ uid }} value="Update")></td>
+    <td style='text-align:center;'>
+        <input type='submit' id={{ aid }} name={{ aid }} value="Split">
+        {% if dtype == 0 %}
+            <input type='submit' id={{ did }} name={{ did }} value="Delete">
+        {% endif %}
+    </td>
+    </tr>
+
+{% endmacro %}

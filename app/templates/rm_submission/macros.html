@@ -1,0 +1,76 @@
+##
+##--- macros for remove submission page
+##
+
+##
+##--- macro to create each table row
+##
+##---   data[1]: a position of the sign-off that poc can reverse
+##---   info[0]: obsid.rev
+##---   info[1]: general sign-off
+##---   info[2]: acis sign-off
+##---   info[3]: acis si mode sign-off
+##---   info[4]: hrc  si mode sign-off
+##---   info[5]: verified by
+##---   info[6]: seq number
+##---   info[7]: poc id
+##
+
+{% macro create_row(data) %}
+    {% set info = data[0] %}
+    {% set m    = data[1] %}
+    <tr>
+        <td class='cent'> 
+            <b>{{ info[0] }}</b><br>
+            {% if m == 0 %}
+                {{ set_remove_button(info[0], m) }}
+            {% endif %}
+            {{ info[6] }}<br>
+            {{ info[7] }}
+        </td>
+        <td class='cent'>
+            {{ info[1] }}
+            {% if m == 1 %}
+                {{ set_remove_button(info[0], m) }}
+            {% endif %}
+        </td>
+        <td class='cent'>
+            {{ info[2] }}
+            {% if m == 2 %}
+                {{ set_remove_button(info[0], m) }}
+            {% endif %}
+        </td>
+        <td class='cent'>
+            {{ info[3] }}
+            {% if m == 3 %}
+                {{ set_remove_button(info[0], m) }}
+            {% endif %}
+        </td>
+        <td class='cent'>
+            {{ info[4] }}
+            {% if m == 4 %}
+                {{ set_remove_button(info[0], m) }}
+            {% endif %}
+        </td>
+        <td class='cent'>
+            {{ info[5] }}
+            {% if m in [5, 6] %}
+                {{ set_remove_button(info[0], m) }}
+            {% endif %}
+        </td>
+
+    </tr>
+{% endmacro %}
+
+##
+##--- macro to create a remove button
+##--- each entry is marked by obsidrev and the position of the data
+##--- obsidrev>_<pos> e.g.,:  12345.001_3
+##
+
+{% macro set_remove_button(obsidrev, m) %}
+    {% set spos = m | string %}
+    {% set name = obsidrev + '_' + spos %}
+    <br>
+    <input type='submit' name={{ name }} value='Remove'>
+{% endmacro %}

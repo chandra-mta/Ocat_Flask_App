@@ -1,0 +1,485 @@
+
+###########################
+Usint Ocat Related Scripts
+###########################
+
+==========
+Structure
+==========
+
+    app.db              ---- sql database
+    update_user_database.py --- update user database part in app.db
+    ocat.py             ---- probably we don't need this, but registering the fuctions
+    config.py           ---- config file
+    env/                ---- environment setting; currently set for python3.8
+    other_scripts       ---- a directory to keep related non-flask python scripts
+        house_keeping   ---- a directory to keep files used by non-flask python scripts
+    cdo_warning_list    ---- a file to keep <obsid>.<rev> which needs cdo warining
+                             probably we should move this to somewhere-else
+
+    app:
+            email.py    ---- email related functions
+            __init__.py ---- setting functions
+            model.py    ---- setting models of users
+
+            auth        ---- a directory to keep authentication related scripts
+            chkupdata   ---- a directory to keep checkupdata related scripts
+            errors      ---- a directory to keep error handler related scripts
+            express     ---- a directory to keep express signoff related scripts
+            main        ---- a directory to keep the main page related scripts
+            ocatdatapage---- a directory to keep ocat data page related scripts
+            orupdate    ---- a directory to keep orupdate related scripts
+            scheduler   ---- a directory to keep scheduler related scripts
+            supple      ---- a directory to keep supplemental python scripts
+            
+            static:
+                color_list      ---- a list of color coding
+                dir_list        ---- a list directories used by scripts
+                js              ---- a directory to keep js scripts
+                no_plots.pyg    ---- a png file saying no plot
+                ocat_style.css  ---- ocat css style sheets
+                param_list      ---- a list of parameters used in ocat related scripts
+                ocatdatapage    ---- a directory to keep ocatdatapage related static files/html pages
+                orupdate        ---- a directory to keep orupdate related static html page
+                scheduler       ---- a directroy to keep a schedular related static html page
+
+            templates:  
+                base.html       ---- a base html template
+                index.html      ---  a main index page
+
+                <function dir>  ---- directories to keep templates of the functions
+
+
+====
+auth
+====
+login authetication process. user names/passwords are those of HEAD.
+
+routes.py                   --- a main script
+forms.py                    --- keeps forms based on flask form
+__init__.py                 --- a script to setup the function 
+
+data:                       /data/mta4/CUS/www/Usint/Pass_dir/.htpasswd
+
+templates:  login.html      --- the main page
+            bad_login.html  --- the page to show a wrong authentificaiton
+
+====
+main
+====
+display the top page before going to the indivisual functions
+
+routes.py                   --- a main script
+__init__.py                 --- a script to setup the function 
+
+templates:  index.html      --- the index page (located at ../templates/ level)
+
+=====
+error
+=====
+error handler
+
+handlers.py                 --- a main script
+__init__.py                 --- a script to setup the function 
+
+data:                       none
+
+templete:   404.html        --- 404 error page
+            500.html        --- 500 error page
+
+=========
+chkupdata
+=========
+display all original/requested/current parameter values for a given <obsid>.<rev>.
+
+routes.py                   --- a main script
+__init__.py                 --- a script to setup the function 
+
+related scripts:            supple/read_ocat_data.py
+
+data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
+                            AXAF sybase batabase (via read_ocat_data.py)
+
+templates:  index.html      --- the main page
+            display.html    --- the page to display the parameter list
+            try_agin.html   --- the page to display the notice, when <obsid>.<rev> is not found
+            macros.html     --- macro holder
+
+=======
+express
+=======
+express sign-off/approval page
+
+routes.py                   --- a main script
+__init__.py                 --- a script to setup the function 
+
+related scripts:            ocatdatapage/create_selection_dict.py
+                            ocatdatapage/update_data_record_file.py
+
+data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
+                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/approved
+                            AXAF sybase batabase (via read_ocat_data.py)
+
+templates:  index.html      --- the main page
+            macros.html     --- macro holder
+
+=============
+ocatdatapage
+=============
+ocat data page to udpate the parameter values
+
+routes.py                   --- a main script
+__init__.py                 --- a script to setup the function 
+check_value_range.pyA       --- check whether the values are in the expected range
+create_selection_dict.py    --- create a dict of p_id <--> [<p_id information>] 
+send_notifications.py       --- sending out notificaiton
+submit_other_obsids.py      --- update obsids on a list as the original obsid was update
+update_data_record_file.py  --- create a data recorde file for a given obsid
+
+
+related scripts:            supple/read_ocat_data.py
+                            email.py
+
+data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
+                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/approved
+                            AXAF sybase batabase (via read_ocat_data.py)
+                            <obs_ss>/mp_long_term           --- planned roll angle from MP site
+                            <obs_ss>/scheduled_obs_list     --- scheduled obsids
+
+templates:  index.html              --- the main page/prameter value update page
+            display_parameters.html --- updated parameter value check page
+            finalize.html           --- the page to display the job complete notificaiton
+            provide_obsid.html      --- the page to display <obsid>, if it was not found
+            macros.html             --- macro holder
+
+========
+orupdate
+========
+target parameter status page
+
+routes.py                   --- a main script
+__init__.py                 --- a script to setup the function
+
+related scripts:            supple/get_value_from_sybase.py
+                            ocatdatapage/create_selection_dict.py
+                            ocatdatapage/update_data_record_file.py
+
+data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
+                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/approved
+                            AXAF sybase batabase (via read_ocat_data.py)
+
+templates:  index.html      --- the main page
+            macros.html     --- macro holder
+
+Note: html_base is hard coded in rountes.py: replace when it is moved
+
+      the page is refreshed every 3 minites to display most recent data. this is done
+      becasue multiple users can be updating the databases and someone else might updated
+      them while a user tries to update the database.
+
+==============
+rm_submission
+==============
+remove an accidental submission
+
+routies.py                  --- a main script
+__init__.py                 --- a script to setup the function 
+
+data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
+                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/approved
+
+template:   index.html      --- the main page
+            macros.html     --- macro holder
+
+=========
+scheduler
+=========
+POC duty sign-up sheet
+
+routies.py                  --- a main script
+read_poc_schedule.py        --- a script to read the schedule database and create a data table
+__init__.py                 --- a script to setup the function 
+
+related scripts:            other_scripts/create_schedule_table.py
+                            other_scripts/write_this_week_too_poc.py
+
+data:                       current_app.config['INFO_DIR']/schedule
+
+template:   index.html      --- the main page
+            macros.html     --- macro holder
+
+======
+supple
+======
+provide supplemental scripts used by several groups
+
+get_value_from_sybase.py    --- a script to access AXAF sybase database  and read data values
+ocat_common_functions.py    --- a collection of functions used by other scripts
+read_ocat_data.py           --- a script to ectract all parameter values for a given obsid
+
+==============
+other scripts
+==============
+this directory keeps non-flask python scripts
+
+create_schedule_table.py    --- a create a static html and send out notificaitons
+write_this_week_too_poc.py  --- a write out the current POC at /home/mta/TOO-POC
+
+=================
+related scripnts
+=================
+scripts which create data used by this set of flask scripts
+
+in /data/mta4/obs_ss/
+---------------------
+find_planned_roll.py        --- find a roll angles
+find_scheduled_obs.py       --- find scheduled observations
+
+in  /data/mta4/CUS/www/Usint/
+-----------------------------
+create_schedule_table.py        --- create POC duety table html/send POC duty notificaiton
+signoff_request.py              --- send out sign-off request
+check_hrc_si_mode_sign_off.py   --- check hrc si mode sign off status
+
+in  /data/mta4/CUS/www/Usint/Too_Obs
+-------------------------------------
+too_ddt_update.py           --- check too/ddt observaitons and udpate related information
+
+=========
+Live Data
+=========
+
+Active databases are located in: /data/mta4/CUS/www/Usint/ocat/
+
+* approved  --- a list of approved obsid
+                <obsid> <seq #> <poc>   <date of approved>
+
+* updates_table.list    --- a list of sign-off status
+                <obsid>.<rev>
+                <general sign-off status>
+                <acis sign-off status>
+                <acis si sign-off status>
+                <hrc si sign-off status>
+                <verified by sttus>
+                <seq #>
+                <poc id>
+                NULL    --- the column does not need to sign-off
+                NA      --- the column needs to be signed-off
+
+* updates/<obsid>.<rev> --- a record of updated parameters for <obsid>.<rev>
+
+* /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/schedule
+            --- POC duety schedule
+
+/data/mta4/obs_ss/mp_long_term           --- planned roll angle from MP site
+/data/mta4/obs_ss/scheduled_obs_list     --- scheduled obsids
+
+Note: * replace dir_list with dir_list_live in /data/mta4/CUS/www/Usint/Ocat/ocat/app/static/
+      * html_base is hard coded in orupdate/rountes.py: replace when it is moved
+      * please also edit folowing files to activate a live data access! 
+            config.py                   DEBUG
+            app/__init__.py             create_app
+      * if you change the python path, you also need to update: ocat/env/pyvenv.cfg
+
+
+
+=========
+Test Data
+=========
+
+The test data are located in: /proj/web-cxc/cgi-gen/mta/Obscat/ocat in the similar configulation.
+
+extras:
+copy_data_to_test.py    --- delete any changed made the day before, and copy a live data 
+                            daily to the test site
+comp_list               --- used by copy_data_to_test.py to check what were changed
+
+
+Note: replace dir_list with dir_list_test in /data/mta4/CUS/www/Usint/Ocat/ocat/app/static/
+      and do the reverse of the Live Data case (see "dir_list_live" and "dir_list_test").
+
+/proj/web-cxc/cgi-gen/mta/Obscat/ocat/:                     ocat_dir  <--- this must be changed for live data!
+/data/mta4/obs_ss/:                                         obs_ss   
+/data/mta4/www/CUS/Usint/:                                  cus_dir  
+/data/mta4/CUS/www/Usint/Pass_dir/:                         pass_dir 
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/:  info_dir 
+
+
+====================
+Environment Setting
+====================
+
+setenv SKA /proj/sot/ska
+setenv PYTHONPATH "/data/mta/Script/Python3.8/envs/ska3-shiny/lib/python3.8/site-packages:/data/mta/Script/Python3.8/lib/python3.8/site-packages/"
+
+source /soft/SYBASE16.0/SYBASE.csh
+setenv PYTHONPATH "/soft/SYBASE16.0/OCS-16_0/python/python34_64r/lib:$PYTHONPATH"
+
+setenv FLASK_APP ocat
+setenv FLASK_ENV development
+
+======================
+To start a test server 
+======================
+
+* set the environment above
+* go to  "ocat" directory   (e.g., /data/mta4/CUS/www/Usint/Ocat/ocat)
+* run: /data/mta/Script/Python3.8/bin/flask 
+* open: http://127.0.0.1:5000/ on your browser
+
+===============
+Flask libraries 
+===============
+
+flask-wtf
+flask-sqlalchemy
+flask-migrate
+flask-login
+flask-mail
+flask-bootstrap     (css)
+flask-moment        (time zone)
+
+email-validator
+pyjwt               (json web tokens)
+
+===============
+Other libraries
+===============
+os
+sys
+re
+io
+string
+time
+datetime
+json
+sybpydb
+codecs
+pwd
+crypt
+getpass
+pathlib
+copy
+numpy
+random
+threading
+Chandra.Time
+
+================
+Flask DB update
+================
+
+/data/mta/Script/Python3.8/bin/flask db migrate -m 'followers'
+/data/mta/Script/Python3.8/bin/flask db upgrade
+
+=========
+Cron jobs
+=========
+
+cus on r2d2-v
+-------------
+#
+#---TOO contact information
+#
+3 0 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/create_schedule_table.py >> $HOME/Logs/too_contact.cron 2>&1
+#
+50 *  * * *  /data/mta4/CUS/www/Usint/TOO_Obs/Scripts/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron 2>&1
+#
+#-- Mismatch Observation check
+#
+5 5,8,10,12,14  * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/find_mismatch.py >> $HOME/Logs/find_mismatch.cron 2>&1
+#
+#
+#--- Sign Off Request (formally naggem.pl)
+#
+0 4 * * 0-6 cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/signoff_request.py >> $HOME/Logs/signoff_request.cron 2 >&1
+#
+#--- HRC SI Mode Signoff Checker
+#
+34 5 * * * cd /data/mta4/CUS/www/Usint; /data/mta4/CUS/www/Usint/check_hrc_si_mode_sign_off.py >> $HOME/Logs/check_hrc_si_mode_sign_off.cron 2>&1
+
+
+mta on c3po-v
+-------------
+#
+#--- Read MP Long Term Web Page and Extract OBSID and Planned Roll Angle
+#
+8 1 * * * cd /data/mta4/obs_ss; /data/mta4/obs_ss/find_planned_roll.py >> $HOME/Logs/find_planned_roll.cron 2>&1
+#
+#--- Create an Access List for ocatdata2html.cgi
+#
+6 12,18,23 * * 0-6 cd /data/mta4/obs_ss; /data/mta4/obs_ss/make_access_list.py >> $HOME/Logs/make_access.cron 2>&1
+#
+#--- Scheduled Observation List
+#
+35 * * * * cd  /data/mta4/obs_ss/; /data/mta4/obs_ss/find_scheduled_obs.py >> $HOME/Logs/find_scheduled_obs.cron 2>&1
+#
+#--- SOT Database
+#
+30 * * * * cd  /data/mta4/obs_ss/;  /data/mta4/obs_ss/sot_data.ksh >> $HOME/Logs/sot_data.cron 2>&1
+#
+#--- Copying Data Set
+#
+12 3,9,15,21 * * * cd /data/mta4/CUS/www/Usint/ocat; cp /data/mta4/CUS/www/Usint/ocat/updates_table.list /data/mta4/CUS/www/Usint/ocat/updates_table.list~  >> /dev/null 2>&1
+
+
+cus on r2d2-v
+-------------
+#
+#--- update test data
+#
+14 3 * * * cd /proj/web-cxc/cgi-gen/mta/Obscat/ocat; /proj/web-cxc/cgi-gen/mta/Obscat/ocat/copy_data_to_test.py >  /dev/null 2>&1
+16 3 * * * cd /proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info; /proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/clean_coppy_schedule.py > /dev/null 2>&1
+
+
+
+
+==========
+TRANSITION
+==========
+
+READ: Live Data section!!
+
+Currently, Ocat Data can be written only by a user 'http', not cus. This creates a minor problem
+when you need to transit from the test phase to the actual operation. Here is my suggesiton.
+
+When you decide to activate the flask version of the Ocat Data Page, open:
+
+        https://icxc.harvard.edu/mta/CUS/Usint/change_http_file.cgi
+
+then submit:
+
+chmod 777 /data/mta4/CUS/www/Usint/ocat/approved*
+chmod 777 /data/mta4/CUS/www/Usint/ocat/updates_table.list*
+chmod 777 -R /data/mta4/CUS/www/Usint/ocat/updates
+and 
+chmod 777 /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/schedule*
+
+These commands makes all diretories/files accessible by anyone. I know that this is a major 
+security problem, but the only way that I can think of during the transition. 
+
+Once every users got used to the new setting, and all links are pointing to the new scripts,
+ask sys-help to change the owner of the diretory and all files under it to 'cus'. Then,
+change the permission to 755. I hope that the transition period is not more than a couple of 
+weeks (if not shorter). 
+
+
+Changing the html pointings.
+-----------------------------
+Sub html pages of Updated Target List page must be updated when the transition is finished.
+
+https://cxc.cfa.harvard.edu/mta/CUS/Usint/updated.html
+
+In /data/mta4/CUS/www/Usint/Save_month_html:
+
+Use sed command:
+sed -i "s/https:\/\/cxc.harvard.edu\/mta\/CUS\/Usint\/chkupdata.cgi?/http:\/\/<NEW HTTP ADDRESS>\/chkupdata\//g' *.html
+
+where <NEW HTTP ADDRESS> is the new http address.
+
+In /data/mta4/CUS/www/Usint/updated_fill.py, comment out line 266, and update http address on 267 and un-comment that line.
+

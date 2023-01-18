@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>How to update parameter values on multiple obsids</title>
+</head>
+
+<body style='color:#000000;background-color:#FFFFE0'>
+
+<h3>How To Change The Same Parameter Values In Multiple <em>ObsID</em>s.</h3>
+
+<p>
+When you have several observations with similar sets of parameter values, and you want to change
+a particular parameter value in all <em>ObsID</em>s, type the <em>ObsID</em>s in the space provided.
+The change made on the main <em>ObsID</em> will be propagated to all <em>ObsID</em>s. 
+However, there are some restrictions.
+</p>
+
+<p>
+<em>ObsID</em>s should be delimited by comma, colon, semi-colon, or ' ' (&lt;blank space&gt;). Ranges can
+be specified using '-', e.g., 22608-22612 (inclusive).
+</p>
+
+<p>
+The <em>ObsID</em> for the current page will be automatically included, and you do not need to include 
+it in the list, but if you accidentally do so, the script will not make double submissions.
+</p>
+
+<p>
+Any parameter value changes in the main <em>ObsID</em>, except ranked entries for some Constraints
+(see details below), will be submitted to all secondary <em>ObsID</em>s in the list, and separate 
+notification emails will be sent out to you. The value range checks in the secondary <em>ObsID</em>s 
+won't be performed, so be careful when you change the values.
+</p>
+
+
+<p>
+If you have multiple entries to approve (as is), you can put <em>ObsID</em>s in the space and 
+select <em>"Observation is Approved for flight"</em> button to approve all <em>ObsID</em>s at the same time.
+It works like Express Approval Page.
+</p>
+
+<p>
+Similarly, <em>" ObsID no longer ready to go"</em> also works on all <em>ObsID</em>s in the list, but 
+<em>Split this ObsID</em> will work only on the main <em>ObsID</em> and not others in the list.
+</p>
+
+<h4>Ranked Entries for Constraints</h4>
+<p>
+Changing values in the ranked entries need careful consideration.
+</p>
+<ul>
+<li>
+There are Constraint sections (Time Constraints, Roll Constraints,
+and ACIS Window Constraints) where ticking the box as "Yes" and then
+clicking "Update" will present new fields of "Ranked" entries.
+<br><br>
+</li>
+
+<li>
+If a new rank is added in the main <em>ObsID</em>, a new row of data is added to all secondary 
+<em>ObsID</em>s regardless of how many ranks they have.
+
+<p>
+For example, consider the case that the main <em>ObsID</em> has one <em>time constraint</em> row, 
+and a secondary obisid has three <em>time constraint</em> rows. If you add one new rank on the main 
+<em>ObsID</em>, the the rank of the main one is changed from 1 to 2, and the rank of the secondary 
+<em>ObsID</em> changes from 3 to 4, and the new data set will be in the rank 4 row.
+</p>
+</li>
+
+<li>
+If one of the rank parameter values in the main <em>ObsID</em> is modified:
+    <ul>
+    <li>
+     if a secondary <em>ObsID</em> has the same values for all parameters in the same rank as the main
+     <em>ObsID</em>, the value of the parameter will be updated.
+    </li><li>
+     if a secondary <em>ObsID</em> has a different value in the same rank, no change will be made.
+    </li>
+    </ul>
+
+<!--
+    <p>
+    For example, if the main and a secondary <em>ObsID</em>s have the roll constraint values of:
+    </p>
+
+    <table border=1 cellpadding=2>
+    <tr>
+    <th>&#160;</th><th> Rank</th><th>Type of Constraint</th>
+    <th>Roll180?</th><th>Roll</th><th>Roll Tolerance</th>
+    </tr>
+    <tr>
+    <th> main <em>ObsID</em></th><td> 1   </td><td> PREFERENCE  </td><td> YES </td>
+                                 <td> 270 </td><td>   10         </td>
+    </tr>
+    <tr>
+    <th>&#160;              </th><td> 2   </td><td> PREFERENCE  </td><td> YES </td>
+                                 <td> 180 </td><td>   10         </td>
+    </tr>
+    <tr>
+    <th colspan=6>&#160;</th>
+    </tr>
+    
+    <tr>
+    <th> secondary <em>ObsID</em></th><td> 1   </td><td> PREFERENCE </td><td> YES </td>
+                                      <td> 270 </td><td> 10         </td>
+    </tr>
+    <tr>
+    <th>&#160;                   </th><td> 2   </td><td> PREFERENCE </td><td> YES </td>
+                                      <td> 180 </td><td>   10       </td>
+    </tr>
+    </table>
+    
+    <p>
+    Then the change made in the main <em>ObsID</em> will also change the secondary 
+    <em>ObsID</em>. However, if they are different:
+    </p>
+
+
+    <table border=1 cellpadding=2>
+    <tr>
+    <th>&#160;</th><th> Rank</th><th>Type of Constraint</th>
+    <th>Roll180?</th><th>Roll</th><th>Roll Tolerance</th>
+    </tr>
+    <tr>
+    <th> main <em>ObsID</em></th><td> 1   </td><td> PREFERENCE  </td><td> YES </td>
+                                 <td style='color:red;'> 270 </td><td>   10         </td>
+    </tr>
+    <tr>
+    <th>&#160;              </th><td> 2   </td><td> PREFERENCE  </td><td> YES </td>
+                                 <td> 180 </td><td>   10         </td>
+    </tr>
+    <tr>
+    <th colspan=6>&#160;</th>
+    </tr>
+    
+    <tr>
+    <th> secondary <em>ObsID</em></th><td> 1   </td><td> PREFERENCE </td><td> YES </td>
+                                      <td style='color:red;'> 180 </td><td> 10         </td>
+    </tr>
+    <tr>
+    <th>&#160;                   </th><td> 2   </td><td> PREFERENCE </td><td> YES </td>
+                                      <td> 180 </td><td>   10       </td>
+    </tr>
+    </table>
+-->
+    
+<!-- ###################### -->
+    <p>
+    For example, if the main and a secondary <em>ObsID</em>s have the ACIS window constraint values of:
+    </p>
+<div style='font-size:90%;'>
+<table border=1 cellpadding=2>
+<tr>
+<th>&#160;</th>
+<th>Ordr</th>
+<th>Chip</th>
+<th>Start Row</th>
+<th>Start Column</th>
+<th>Height</th>
+<th>Width</th>
+<th>Lowest Energy</th>
+<th>Energy Range</th>
+<th>Sample Rate</th>
+</tr>
+<tr>
+<th>main <em>ObsId</em></th>
+<td>1</td>
+<td>I3</td>
+<td>874</td>
+<td>864</td>
+<td>150</td>
+<td>150</td>
+<td>0.08</td>
+<td>13</td>
+<td>1</td>
+</tr>
+<tr>
+<td>&#160;</td>
+<td>2</td>
+<td>I3</td>
+<td>1</td>
+<td>1</td>
+<td>1024</td>
+<td>1024</td>
+<td>0.08</td>
+<td>13</td>
+<td>0</td>
+</tr>
+<tr><td colspan=10></td></tr>
+
+<tr>
+<th>Secondary <em>ObsId</em></th>
+<td>1</td>
+<td>I3</td>
+<td>874</td>
+<td>864</td>
+<td>150</td>
+<td>150</td>
+<td>0.08</td>
+<td>13</td>
+<td>1</td>
+</tr>
+<tr>
+<td>&#160;</td>
+<td>2</td>
+<td>I3</td>
+<td>1</td>
+<td>1</td>
+<td>1024</td>
+<td>1024</td>
+<td>0.08</td>
+<td>13</td>
+<td>0</td>
+</tr>
+</table>
+</div>
+
+
+    
+<p>
+Then the change made in the main <em>ObsID</em> will also change the secondary 
+<em>ObsID</em>. However, if they are different:
+</p>
+
+
+
+<div style='font-size:90%;'>
+<table border=1 cellpadding=2>
+<tr>
+<th>&#160;</th>
+<th>Ordr</th>
+<th>Chip</th>
+<th>Start Row</th>
+<th>Start Column</th>
+<th>Height</th>
+<th>Width</th>
+<th>Lowest Energy</th>
+<th>Energy Range</th>
+<th>Sample Rate</th>
+</tr>
+<tr>
+<th>main <em>ObsId</em></th>
+<td>1</td>
+<td>I3</td>
+<td>874</td>
+<td>864</td>
+<td style='color:red;'>150</td>
+<td style='color:red;'>150</td>
+<td>0.08</td>
+<td>13</td>
+<td>1</td>
+</tr>
+<tr>
+<td>&#160;</td>
+<td>2</td>
+<td>I3</td>
+<td>1</td>
+<td>1</td>
+<td>1024</td>
+<td>1024</td>
+<td>0.08</td>
+<td>13</td>
+<td>0</td>
+</tr>
+<tr><td colspan=10></td></tr>
+
+<tr>
+<th>Secondary <em>ObsId</em></th>
+<td>1</td>
+<td>I3</td>
+<td>874</td>
+<td>864</td>
+<td style='color:red;'>160</td>
+<td style='color:red;'>160</td>
+<td>0.08</td>
+<td>13</td>
+<td>1</td>
+</tr>
+<tr>
+<td>&#160;</td>
+<td>2</td>
+<td>I3</td>
+<td>1</td>
+<td>1</td>
+<td>1024</td>
+<td>1024</td>
+<td>0.08</td>
+<td>13</td>
+<td>0</td>
+</tr>
+</table>
+</div>
+
+
+
+
+<!-- ###################### -->
+
+    
+    <p>
+    Then the change made on the first rank of the main  <em>ObsID</em> won't be made 
+    in the secondary <em>ObsID</em>.  You can still make a change on the second rank 
+    in the main <em>ObsID</em>, which will be propagated to the secondary obisd as 
+    all parameter values are identical in both obsids.
+    </p>
+</li>
+
+<li>
+    If you remove one row from the ranked entries in the main <em>ObsID</em>, the same 
+    rank in a secondary <em>ObsID</em> will be removed only when all parameter values 
+    in the same rank are identical to those of the main <em>ObsID</em>.  If they are not,  
+    no row from the secondary <em>ObsID</em> will be removed.
+</li>
+</ul>
+
+<hr>
+
+<div style='padding-bottom:20px;'>
+Last modified: Oct 27, 2020
+</div>
+
+</body>
+</html>

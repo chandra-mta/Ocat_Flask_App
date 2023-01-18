@@ -1,0 +1,189 @@
+{% from 'chkupdata/macros.html' import check_two_entries %}
+{% from 'chkupdata/macros.html' import param_block %}
+{% from 'chkupdata/macros.html' import ordr_block %}
+{% from 'chkupdata/macros.html' import changed_param %}
+{% from 'chkupdata/macros.html' import color_coded %}
+
+{% block app_content %}
+
+<div style='float: right; padding-top:20px;'>
+   <b> (submitted: {{ data['CDATE'][0] }})</b>
+</div>
+
+<h1>Observation: {{ data['OBSREV'][0] }}</h1>
+
+<!-- -->
+<!-- General Information about this observation -->
+<!-- -->
+
+<h3>Observation Information</h3>
+<p><em><b>{{ data['PROPOSAL_TITLE'][2] }}</b></em></p>
+
+<table border=0>
+    <tr>
+        <th>Obsid.Rev:  </th><td class='cent'>{{ data['OBSREV'][2] }}    </td>
+        <td style='padding:5px;'></td>
+        <th>Sequence #: </th><td class='cent'>{{ data['SEQ_NBR'][2] }}   </td>
+        <td style='padding:5px;'></td>
+        <th>Proposal #: </th><td class='cent'>{{ data['PROPOSAL_NUMBER'][2] }}  </td>
+    </tr>
+    <tr>
+        <th>Target Name: </th><td class='cent'>{{ data['TARGNAME'][2] }}  </td>
+        <td style='padding:5px;'></td>
+        <th>Group ID:   </th><td class='cent'>{{ data['GROUP_ID'][2] }}  </td>
+        <td style='padding:5px;'></td>
+        <th>Obs AO:     </th><td class='cent'>{{ data['OBS_AO_STR'][2] }}</td>
+    </tr>
+    <tr>
+        <th>PI Name:    </th><td class='cent'>{{ data['PI_NAME'][2] }}   </td>
+        <td style='padding:5px;'></td>
+        <th>Submitted As:</th>
+        <td class='cent' style='background-color:rgb(255,0,0,0.2);'>
+            {{ data['ASIS'][2] }}     
+        </td>
+    </tr>
+</table>
+
+<!-- -->
+<!-- Listing other revision links -->
+<!-- -->
+
+{% if other_rev %}
+    {% if other_rev|length > 1 %}
+        <h3>Other Revisions Available</h3>
+    {% else %}
+        <h3>Other Revision Available</h3>
+    {% endif %}
+    <ul>
+        {% for rev in other_rev %}
+            {% if rev %}
+                <li><a href='{{ rev }}'>{{ rev }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}
+<hr>
+
+<!-- -->
+<!-- Remarks and Comments -->
+<!-- -->
+    <div style='margin-left:30px; margin-right:60px;'>
+    {{ check_two_entries('REMARKS',  data, 'Remarks') }}
+<hr>
+    {{ check_two_entries('COMMENTS', data, 'Comments') }}
+    </div>
+
+<hr>
+
+<!-- -->
+<!-- List of changed parmaters -->
+<!-- -->
+
+{% if gc_dict.keys() or ac_dict.keys() or awc_dict.keys() %}
+    <h3>Change Requested Parameters</h3>
+
+    {{ changed_param(gc_dict,  'General Change') }}
+    {{ changed_param(ac_dict,  'ACIS Change') }}
+    {{ changed_param(awc_dict, 'ACIS Window  Change') }}
+    
+    <hr>
+{% endif %}
+
+<h3>All Parameters</h3>
+
+<table border=0 style='text-align:left;' >
+<tr><th>Color Coding: </th></tr>
+<tr> <td style='color:lawngreen;'>Requested value is in the database.</td> </tr>
+<tr> <td style='color:orangered;'>Requested value is not in the database yet.</td> </tr>
+<tr> <td style='color:fuchsia;'>  There was no request for the update, but the database value is changed.</td></tr>
+</table>
+
+<!-- -->
+<!-- general parameter list -->
+<!-- -->
+{{ param_block(data, ['SI_MODE', 'INSTRUMENT', 'GRATING','TYPE', 'TARGNAME', 'APPROVED_EXPOSURE_TIME', 'PROPOSAL_JOINT', 'PROPOSAL_HST', 'PROPOSAL_NOAO', 'PROPOSAL_XMM', 'PROPOSAL_RXTE', 'PROPOSAL_VLA', 'PROPOSAL_VLBA', 'SOE_ST_SCHED_DATE', 'LTS_LT_PLAN', 'RA', 'DEC', 'ROLL_OBSR', 'Y_DET_OFFSET', 'Z_DET_OFFSET', 'TRANS_OFFSET', 'FOCUS_OFFSET', 'DEFOCUS', 'RASTER_SCAN', 'DITHER_FLAG', 'UNINTERRUPT', 'OBJ_FLAG', 'OBJECT', 'PHOTOMETRY_FLAG', 'VMAGNITUDE', 'EST_CNT_RATE', 'FORDER_CNT_RATE', 'SPWINDOW_FLAG'] ,'General Parameter') }}
+
+<!-- -->
+<!-- dither parameter list -->
+<!-- -->
+
+{{ param_block(data, ['Y_AMP', 'Y_FREQ', 'Y_PHASE', 'Z_AMP', 'Z_FREQ', 'Z_PHASE'], 'Dither Parameters') }}
+
+<!-- -->
+<!-- time constaint list -->
+<!-- -->
+
+{{ ordr_block(data, 'TIME_ORDR',  ['WINDOW_CONSTRAINT', 'TSTART', 'TSTOP'], 'Time Constraint Parameters', 'WINDOW_CONSTRAINT') }}
+
+<!-- -->
+<!-- roll constaint list -->
+<!-- -->
+
+{{ ordr_block(data, 'ROLL_ORDR',  ['ROLL_CONSTRAINT', 'ROLL_180', 'ROLL', 'ROLL_TOLERANCE'], 'Roll Constraint Parameters', 'ROLL_CONSTRAINT') }}
+
+<!-- -->
+<!-- constraint parameter list -->
+<!-- -->
+
+{{ param_block(data, [ 'CONSTR_IN_REMARKS', 'PHASE_EPOCH', 'PHASE_PERIOD', 'PHASE_START', 'PHASE_START_MARGIN', 'PHASE_END', 'PHASE_END_MARGIN', 'GROUP_ID', 'PRE_ID_GROUP', 'PRE_MIN_LEAD_GROUP', 'PRE_MAX_LEAD_GROUP', 'MONITOR_FLAG', 'PRE_ID', 'PRE_MIN_LEAD', 'PRE_MAX_LEAD', 'MULTITELESCOPE', 'OBSERVATORIES', 'MULTITELESCOPE_INTERVAL' ], 'Constraints') }}
+
+<!-- -->
+<!-- acis parameter list -->
+<!-- -->
+
+{% if data['ACISID'][2] != None %}
+{{ param_block(data, [ 'BEP_PACK', 'FRAME_TIME', 'MOST_EFFICIENT', 'CCDI0_ON', 'CCDI1_ON', 'CCDI2_ON', 'CCDI3_ON', 'CCDS0_ON', 'CCDS1_ON', 'CCDS2_ON', 'CCDS3_ON', 'CCDS4_ON', 'CCDS5_ON', 'SUBARRAY', 'SUBARRAY_START_ROW', 'SUBARRAY_ROW_COUNT', 'DUTY_CYCLE', 'SECONDARY_EXP_COUNT', 'PRIMARY_EXP_TIME', 'ONCHIP_SUM', 'ONCHIP_ROW_COUNT', 'ONCHIP_COLUMN_COUNT', 'EVENTFILTER', 'EVENTFILTER_LOWER', 'EVENTFILTER_HIGHER', 'MULTIPLE_SPECTRAL_LINES', 'SPECTRA_MAX_COUNT', 'DROPPED_CHIP_COUNT' ], 'ACIS Parameters') }}
+{% endif %}
+
+<!-- -->
+<!-- acis window constaint list -->
+<!-- -->
+
+{% if data['ACISID'][2] != None %}
+{{ ordr_block(data, 'AW_ORDR',  ['CHIP', 'START_ROW', 'START_COLUMN', 'HEIGHT', 'WIDTH', 'LOWER_THRESHOLD', 'PHA_RANGE', 'SAMPLE'], 'ACIS Window Constraint Parameters', 'CHIP') }}
+{% endif %}
+
+<!-- -->
+<!-- HRC parameter list -->
+<!-- -->
+
+{% if data['HRCID'][2] != None %}
+{{ param_block(data, ['HRC_ZERO_BLOCK', 'HRC_TIMING_MODE', 'HRC_SI_MODE'], 'HRC Parameters') }} 
+{% endif %}
+
+<!-- -->
+<!-- too parameter list -->
+<!-- -->
+
+{{ param_block(data, ['TOO_TRIG', 'TOO_TYPE', 'TOO_START', 'TOO_STOP', 'TOO_FOLLOWUP', 'TOO_REMARKS'], 'TOO Parameters') }} 
+
+<!-- -->
+<!-- remarks and commnts -->
+<!-- -->
+
+<h3>Reamarks</h3>
+<table border=1 width=100%>
+<tr><th width=10%>Original  </th><td>{{data['REMARKS'][0] }}</td></tr>
+<tr><th width=10%>Requested </th><td>{{data['REMARKS'][1] }}</td></tr>
+<tr><th width=10%>Current DB</th>
+    {{ color_coded(data['REMARKS'][2], data['REMARKS'][3]) }}
+</tr>
+</table>
+
+<h3>Comments</h3>
+<table border=1>
+<tr><th width=10%>Original  </th><td>{{data['COMMENTS'][0] }}</td></tr>
+<tr><th width=10%>Requested </th><td>{{data['COMMENTS'][1] }}</td></tr>
+<tr><th width=10%>Current DB</th>
+    {{ color_coded(data['COMMENTS'][2], data['COMMENTS'][3]) }}
+</tr>
+</table>
+
+
+<div style='padding-bottom:30px;'></div>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,11 @@
+s:most_efficient      primary_exp_time
+s:pre_id              pre_min_lead        pre_max_lead
+s:grating             est_cnt_rate        forder_cnt_rate
+s:duty_cycle          secondary_exp_count primary_exp_time
+s:multitelescope      observatories       multitelescope_interval
+s:eventfilter         eventfilter_lower   eventfilter_higher
+s:subarray            subarray_start_row  subarray_row_count      subarray_frame_time
+s:dither_flag         y_amp               y_freq                  y_phase     z_amp   z_freq          z_phase
+r:window_constraint   tstart              tstop
+r:roll_constraint     roll                roll_tolerance          roll_180
+r:start_row           start_column            height      width   lower_threshold pha_range       sample

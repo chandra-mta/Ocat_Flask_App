@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+<!-- -->
+<!-- this page displays original parameter values and updated parameter values -->
+<!-- -->
+{% from 'ocatdatapage/macros.html' import compare_param_values, rank_compare_param_values %}
+{% from 'ocatdatapage/macros.html' import hidden_input, pass_list_back, remark_section  %}
+{% from 'ocatdatapage/macros.html' import deleted_rank_compare_param_values %}
+
+{% set null_list  = [None, 'NA', 'N', 'NULL', 'None', 'NONE',  'n', 'null', 'none', ''] %}
+
+{% block title %}Ocat Data Page{% endblock %}
+{% block main_title %}Ocat Data Page{% endblock %}
+{% block app_content %}
+
+<!-- -->
+<!-- if some thing went wront with updating the data file... --->
+<!-- -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p style='color:red; font-size:160%;'>
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form action ='' method='post' >
+
+<!-- -->
+<!-- ASIS case -->
+<!-- -->
+{% if asis == 'asis' %}
+
+    {% if ct_dict['approved'][-1] == 0 %}
+        <p style='font-weight:bold;'>
+        You have checked that this Obsid ({{ ct_dict['obsid'][-1] }}) is ready for flight. 
+        Any parameter changes you made will not be submitted with this request.
+        </p>
+    {% else %}
+        <p style='font-weight:bold;color:red;'>
+        You have checked that this Obsid ({{ ct_dict['obsid'][-1] }}) is ready for flight, 
+        but this observation is already on the approved list. Do you want to proceed?
+        </p>
+    {% endif %}
+<!-- -->
+<!-- REMOVE case -->
+<!-- -->
+{% elif asis == 'remove' %}
+
+    {% if ct_dict['approved'][-1] == 1 %}
+        <p style='font-weight:bold;'>
+        You have requested this Obsid ({{ ct_dict['obsid'][-1] }}) 
+        to be removed from the "ready to go" list. 
+        Any parameter changes you made will not be submitted with this request.
+        </p>
+    {% else %}
+        <p style='font-weight:bold;color:red;'>
+        You have requested this Obsid ({{ ct_dict['obsid'][-1] }}) 
+        to be removed from the "ready to go" list. 
+        However, this observation is not on the approved list yet. Do you want to proceed?
+        </p>
+    {% endif %}
+<!-- -->
+<!-- CLONE case -->
+<!-- -->
+{% elif asis == 'clone' %}
+
+    <p style='font-weight:bold;'>
+    You have submitted a request for splitting obsid {{ ct_dict['obsid'][-1] }}. 
+    Any parameter changes you made will not be submitted with this request.
+    </p>
+    
+    {% if ct_dict['comments'][-1] == '' %}
+        <p style='color:red;font-weight:bold;'>
+        You need to explain why you need to split this observation. 
+        If you have not done so, plese go back and add the explanation in the comment area.
+        </p>
+    {% else %}
+        <h4 style='font-size:95%;font-weight:bold;'>
+                <i>A Reason For This Split Request:</i>
+        </h4>
+        <p style='margin-left:30px; margin-right:30px; padding-bottom:30px;'>
+            {% autoescape false %}
+                {{ ct_dict['comments'][-1] | replace('\n', '<br/>') }}
+            {% endautoescape %}
+        </p>
+    {% endif %}
+
+<!-- -->
+<!-- NORMAL submission case -->
+<!-- -->
+{% else %}
+    {% if wnote |length > 0 %}
+                <h3 style='color:red;'>Warning:</h3>
+            <ul>
+            {% for ent in wnote %}
+                {% if ent != '' %}
+                    <li style='color:red;font-size:130%;'>{{ ent }} </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+    {% endif %}
+    
+    <input type='submit' name='return'   value='Previous Page'>
+    <input type='submit' name='finalize' value='Finalize'>
+    <div style='padding-bottom:20px;'></div>
+
+    <h3>You have submitted the following value updates on Obsid {{ct_dict['obsid'][-1] }}.</h3>
+<!-- -->
+<!-- if multiple obsids are submitted, display the obsids -->
+<!-- note that the original input list is passed by ct_dict['obsids_list'][-1] to preserve the format -->
+<!-- -->
+    {% if obsids_disp|length > 0 %}
+        <div style='margin-left: 40px;padding-bottom:30px;'>
+        <h4>The same changes will also apply to obsid(s): </h4>
+
+        {% set count = namespace(value=0) %}
+        {% set orcnt = namespace(value=0) %}
+        <table border=0>
+            <tr>
+        {% for sobsid in obsids_disp %}
+            {% if count.value % 8 == 0 %}
+                </tr>
+                <tr>
+            {% endif %}
+            {% set slink = '../ocatdatapage/' + sobsid %}
+            <td>
+                    <span style='padding-left:5px;'>
+                &#8729;
+                <a href="javascript:WindowOpener(' {{ slink }} ')"><b>
+                {% if or_dict[sobsid] == 1 %}
+                    <span style='color:red;'>
+                        {{ sobsid }}
+                        {% set orcnt.value = orcnt.value + 1 %}
+                    </span>
+                {% else %}
+                        {{ sobsid }}
+                {% endif %}
+                </b></a>
+                </span>
+                </td>
+            {% set count.value = count.value + 1 %}
+        {% endfor %}
+        </tr>
+        </table>
+<!-- -->
+<!-- if some of the obsids are on the active OR list, display the warning -->
+<!-- -->
+        {% if orcnt.value > 0 %}
+            <p>
+                <span style='color:red;'>Warning: </span>
+               obsid(s) marked by <span style='color:red;'>red</span> color is/are
+               on the active OR list. You may want to contact 
+               <a href='mailto:mp@cfa.harvard.edu'>mp@cfa.harvard.edu</a>
+               before submitting the parameter changes.
+            </p>
+        {% endif %}
+        </div>
+    {% endif %}
+<!-- -->
+<!-- parameter table starts here -->
+<!-- -->            
+    <table border=1 class='center' style='border-spacing:5px; border-collapse: separate;'>
+        <tr>
+        <th class='cent'>Paramter</th>
+        <th class='cent'>Original Value</th>
+        <th class='cent'>Requested</th>
+        <th>&#160;</th>
+        <th class='cent'>Paramter</th>
+        <th class='cent'>Original Value</th>
+        <th class='cent'>Requested</th>
+        </tr>
+        {% set count = namespace(value=0) %}
+        {% for param in disp_param_list %}
+
+            {% if not param in ['ordr', 'time_ordr', 'roll_ordr', 'aciswin_no'] %}
+                {% if ct_dict[param][2] in ['v', 'l'] %}
+                    {% set count.value = count.value + 1 %}
+                    {% if  count.value % 2 == 1 %}
+                        <tr> 
+                    {% endif %}
+
+                    {{ compare_param_values(param, ct_dict, ind_dict) }}
+
+                    {% if  count.value % 2 == 0 %}
+                        </tr>
+                    {% else %}
+                        <td> &#160;</td>
+                    {% endif %}
+
+                {% endif %}
+            {% endif %}
+
+        {% endfor %}
+    </table>
+<!-- -->
+<!-- Ordered cases -->
+<!-- -->
+    <h3>Ordered Entries</h3>
+
+    <table border=1 class='center' style='border-spacing:5px; border-collapse: separate;'>
+        <tr>
+        <th class='cent'>Paramter</th>
+        <th class='cent'>Original Value</th>
+        <th class='cent'>Requested</th>
+        <th>&#160;</th>
+        <th class='cent'>Paramter</th>
+        <th class='cent'>Original Value</th>
+        <th class='cent'>Requested</th>
+        </tr>
+<!--   -->
+<!-- Time Constraint -->
+<!-- -->
+        <tr><th colspan=7  style='background-color:#a8f0bb;'>Time Constraints</th></tr>
+        {% set param = 'time_ordr' %}
+        {% if (ct_dict[param][-2] in null_list) and (ct_dict[param][-1] in null_list) %}
+            {{ compare_param_values('window_flag', ct_dict, ind_dict) }}
+            <td>&#160;</td>
+            {{ compare_param_values(param, ct_dict, ind_dict) }}
+        {% else %}
+            {{ compare_param_values('window_flag', ct_dict, ind_dict) }}
+            <td>&#160;</td>
+            {{ compare_param_values(param, ct_dict, ind_dict) }}
+            {{ rank_compare_param_values('time_ordr', ct_dict, time_list, ind_dict) }}
+        {% endif %}
+<!-- -->
+<!-- Roll Constraints -->
+<!-- -->
+        <tr><th colspan=7  style='background-color:#a8f0bb;'>Roll Constraints</th></tr>
+        <tr>
+        {% set param = 'roll_ordr' %}
+        {% if (ct_dict[param][-2] in null_list) and (ct_dict[param][-1] in null_list) %}
+            {{ compare_param_values('roll_flag', ct_dict, ind_dict) }}
+            <td>&#160;</td>
+            {{ compare_param_values(param, ct_dict, ind_dict) }}
+        {% else %}
+            {{ compare_param_values('roll_flag', ct_dict, ind_dict) }}
+            <td>&#160;</td>
+            {{ compare_param_values(param, ct_dict, ind_dict) }}
+            {{ rank_compare_param_values('roll_ordr', ct_dict, roll_list, ind_dict) }}
+        {% endif %}
+<!-- -->
+<!-- ACIS Window Constraints -->
+<!-- -->
+        {% set param = 'aciswin_no' %}
+        {% if ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] or ct_dict['spwindow_flag'][-1] =='Y' %}
+            <tr><th colspan=7  style='background-color:#a8f0bb;'>ACIS Window Constraints</th></tr>
+            <tr>
+            {% if (ct_dict[param][-2] in null_list) and (ct_dict[param][-1] in null_list) %}
+                {{ compare_param_values('spwindow_flag', ct_dict, ind_dict) }}
+                <td>&#160;</td>
+                {{ compare_param_values(param, ct_dict, ind_dict) }}
+            {% else %}
+                {{ compare_param_values('spwindow_flag', ct_dict, ind_dict) }}
+                <td>&#160;</td>
+                {{ compare_param_values(param, ct_dict, ind_dict) }}
+                {{ rank_compare_param_values('aciswin_no', ct_dict, awin_list, ind_dict) }}
+            {% endif %}
+        {% endif %}
+    </table>
+    
+<!-- -->
+<!-- remarks and comments need an extra step to display the format correctly -->
+<!-- -->
+
+    <hr style='border-top: 1px dashed;'>
+
+    <h3>Remarks</h3>
+    <div style='margin-left: 50px; margin-right:50px;'>
+        {{ remark_section('remarks',  ct_dict, ind_dict) }}
+
+    </div>
+    <hr style='border-top: 1px dashed;'>
+
+    <h3>Comments</h3>
+    <div style='margin-left: 50px; margin-right:50px;'>
+        {{ remark_section('comments', ct_dict, ind_dict) }}
+    </div>
+
+    <hr>
+    <p>
+    If these values are correct, click the Finalize button. Otherwise, use the Previous Page button
+    to go back to the main page. 
+    </p>
+{% endif %}
+
+<!-- -->
+<!-- passing back parameter values -->
+<!-- -->
+{% for param in ct_dict.keys() %}
+    <input type='hidden' name={{ param }} value="{{ ct_dict[param][-1] }}" >
+{% endfor %}
+
+<!-- -->
+<!-- passing rank entries separately -->
+<!-- -->
+{{ pass_list_back(time_all_list, ct_dict) }}
+{{ pass_list_back(roll_list, ct_dict) }}
+{{ pass_list_back(awin_list, ct_dict) }}
+
+<input type='hidden' name='asis' value="{{ asis }}">
+
+<input type='submit' name='return'   value='Previous Page'>
+<input type='submit' name='finalize' value='Finalize'>
+
+</form>
+<div style='padding-bottom:30px;'></div>
+
+{% endblock %}
+

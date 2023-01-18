@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Parameter Check Page{% endblock %}
+{% block main_title %}Parameter Check Page{% endblock %}
+{% block app_content %}
+<!-- -->
+<!--- if the data exists, display all parameter values, but if the data does not exits, -->
+<!--- it will open "try_again.html" page and ask to re-input <obsid>.<rev>              -->
+<!-- -->
+
+{% if stage == 1 %}
+    {% include 'chkupdata/display.html'   %}
+{% else %}
+    {% include 'chkupdata/try_again.html' %}
+{% endif %}
+
+{% endblock %}
+

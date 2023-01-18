@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% from 'scheduler/macros.html' import closed_row %}
+{% from 'scheduler/macros.html' import filled_row %}
+{% from 'scheduler/macros.html' import open_row %}
+
+{% block title %}POC Duty Scheduler{% endblock %}
+{% block main_title %}POC Duty Scheduler{% endblock %}
+
+{% block app_content %}
+
+<!-- -->
+<!-- if lchk is not 1, display the warning about wrong time intervals -->
+<!-- -->
+
+{% if lchk != 1 %}
+    <h3>
+        <span style='color:rgb(255,0,0)'><b>Warning: </b></span>
+        <span style='color:#e63cc6;'>The time spans are not set correctely. 
+        Please check the row marked by </span>
+        <span style='color:rgb(255,0,0);'><b>red</b></span> 
+        <span style='color:#e63cc6;'>color.</span>
+    </h3>
+{% endif %}
+
+<form method='post'>
+<!-- -->
+<!-- if someone updated the data while editing, displaying the warning of the double submission -->
+<!-- -->
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p style='color:red; font-size:160%;'> 
+                {{ message }}
+                <input type='submit' name='update'  value='Clear Message' 
+                 style='font-size:60%;color:black;vertical-align:center;'>
+            </p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- -->
+<!-- a javascript to create a help popup page -->
+<!-- -->
+
+<p style='text-align:right; font-size:120%;'>
+<a href="javascript:WindowOpener('../static/scheduler/usage_note.html', 'schedule_help', x=1000, y=600)">
+<span style='background-color:rgb(0,255,0, 0.5);color:black;'>
+<b>Scheduler Usage Note</b>
+</span>
+</a>
+</p>
+
+<!-- -->
+<!-- the main tabile starts here -->
+<!-- -->
+
+<table border=1 cellspacing=2 cellpadding=2 style='margin-left:-70px;'>
+<tr>
+    <th class='cent'>Constact</th>
+    <th class='cent' colspan=3>Start Date</th>
+    <th class='cent' colspan=3>Finish Date</th>
+    <th class='cent'>Assigned By</th>
+    <th class='cent' colspan=2>Status</th>
+</tr>
+<tr>
+    <th>&#160;</th>
+    <th class='shifted'>Month</th><th class='shifted'>Day</th><th class='shifted'>Year</th>
+    <th class='shifted'>Month</th><th class='shifted'>Day</th><th class='shifted'>Year</th>
+    <th>&#160;</th>
+    <th colspan=2>&#160;</th>
+
+<!-- -->
+<!-- if data[-2] is:                                        -->
+<!-- -1  ---- the row is closed for editing                 -->
+<!--  0  ---- the row is filled but can be re-open          -->
+<!--  1  ---- the row is open                               -->
+<!--  2  ---- the row is filled but a wrong time interval   -->
+<!--  3  ---- the row is open with non-standard time span   -->
+<!--  4  ---- same as 1, but without a delete button        -->
+<!--  5  ---- same as 2, but without a delete button        -->
+<!--  6  ---- same as 3, but without a delete button        -->
+<!-- -->
+
+</tr>
+    {% for data in data_list %}
+        {% if data[-2] < 0 %}
+            {{ closed_row(data) }}
+
+        {% elif data[0] == 'TBD' %}
+            {% if data[-2] in [3, 6] %}
+                {% set color = 'rgb(255,153,255,0.8)' %}
+            {% else %}
+                {% set color = 'rgb(254,249,231,0.5)' %}
+            {% endif %}
+            {% if data[-2] in [4, 6] %}
+                {{ open_row(data, poc_list, year_list, color, 1)  }}
+            {% else %}
+                {{ open_row(data, poc_list, year_list, color)  }}
+            {% endif %}
+
+        {% else %}
+            {% if data[-2]  in [2, 5] %}
+                {% set color = 'rgb(255,0,0, 0.6)' %}
+                {% if data[-2] == 2 %}
+                    {{ open_row(data, poc_list, year_list, color)  }}
+                {% else %}
+                    {{ open_row(data, poc_list, year_list, color, 1)  }}
+                {% endif %}
+
+            {% else %}
+                {% set color = 'rgb(241,207,141,0.5)' %}
+                {{ filled_row(data, color) }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</table>
+
+<input type='hidden' name='submit_test'>
+<input type='hidden' name='mtime' value={{ mtime }}>
+</form>
+
+
+{% endblock %}
+

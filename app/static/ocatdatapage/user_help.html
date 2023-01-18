@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obscat Data Help Page
+    </title>
+
+</head>
+<body style='color:#000000;background-color:#FFFFE0'>
+
+ <center><h1>Obscat Data Help Page</h1> </center>
+
+<!-- *******************
+7/13/21
+Edits by Brad Wargelin.  Spell check fixes, changed all http to https,
+corrected outdated POG urls, updated LETG/ACIS ZSIM, updated
+recommended Yoffset for ACIS-S, added links to discussion of dynamic
+aimpoint in POG, added warning about HRC-S Timing mode LLD, etc.
+******************** -->
+
+<!-- <font size=+1> -->
+<b>
+<ol>
+    <li>
+        If a USER Field is in <font color='purple'>purple</font>, the field is editable by observer.
+    </li>
+    <li>
+        If a USER Field is in <font color='red'>red</font>, the field not
+        editable. Although a CDO request is usually sufficient to make a change.
+        Please include justification in your email to CDO in case there is a conflict.
+    </li>
+    <li>
+        If a USER Field is in black, the field is not editable except
+        under unusual circumstances.  A request with detailed justification needs to be
+        made to CDO. In some cases these fields are used for bookkeeping. 
+    <br /><br />
+    </li>
+    <li> 
+        The USER Field is the name of the field on the update form.
+    </li>
+    <li> 
+        The OCat Field is the name of the field in the actual CXC
+        Observation catalog database and the table within the OCat database. 
+        Some of the names are a bit obscure.
+    </li>
+    <li> 
+        Many fields allow both `NULL' and `N', these are
+        equivalent except when noted. `Y' = yes. `P' = preference, we will try
+        to accommodate preferences, but if we fail to do so the observation will
+        still be considered successful and no reobservation will be allowed.
+    </li>
+</ol>
+</b>
+<!-- </font> -->
+
+<p style='padding-left:30px;padding-right:30px'>
+<a name='top'></a>
+<b>Go to: </b>
+<table border=0, cellpadding=5, cellspacing=5>
+<tr>
+<td><a href='#general_parameters'>General Parameters</a></td>
+<td><a href='#time_constraints'>Time Constraints</a></td>
+<td><a href='#roll_constraints'>Roll Constraints</a></td>
+<td><a href='#other_constraints'>Other Constraints</a></td>
+</tr>
+<tr>
+<td><a href='#monitoring_observation'>Monitoring Observation</a></td>
+<td><a href='#coordinated_observation'>Coordinated Observation</a></td>
+<td><a href='#hrc_parameters'>HRC Parameters</a></td>
+<td><a href='#acis_parameters'>ACIS Parameters</a></td>
+</tr>
+<tr>
+<td><a href='#acis_window'>ACIS Window Parameters</a></td>
+<td><a href='#too_parameters'>TOO Parameters</a></td>
+<td><a href='#comments'>Comments and Remarks</a></td>
+</tr>
+</table>
+<br />
+</p>
+
+<table border = 1  cellspacing=0 cellpadding=5>
+
+<!-- ######### General Parameters ###########  -->
+
+<tr><td colspan= "3"><h2><a name='general_parameters'></a>General Parameters <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th><a name='seq_nbr'>Sequence Number</a></th>
+		<td> <font color='#008080'>seq_nbr (target)</font></td>
+		<td> Sequence # of the particular observation.  This
+		is a bookkeeping value and rarely changed. </td></tr>
+
+<tr align = left valign = top>
+<th><a name='status'>Status</a></th>
+		<td> <font color='#008080'>status (target)</font></td>
+		<td> Status of observation.  Again for bookkeeping. </td></tr>
+
+<tr align = left valign = top>
+<th><a name='obsid'>ObsID#</a></th>
+		<td> <font color='#008080'>obsid (target)</font></td>
+		<td> ID # used in ObsCat database and on-board
+		Chandra. A one to one map with individual
+		observations.
+</td></tr>
+
+<tr align = left valign = top>
+<th><a name='proposal_number'>Proposal Number</a></th>
+		<td> <font color='#008080'>prop_num (prop_info)</font></td>
+		<td> Proposal Number.  The proposal from which this
+		and related observations stemmed. </td></tr>
+
+<tr align = left valign = top>
+<th><a name='proposal_title'>Proposal Title</a></th>
+		<td> <font color='#008080'>title (prop_info)</font></td>
+		<td> Title of proposal.</td></tr>
+
+
+<!--
+<tr align = left valign = top>
+<th><a name='group_id'>Group Observation</a></th> 
+		<td> <font color='#008080'>group_obs(target)</font></td>
+		<td> Logical value indicating whether the observation needs to be observed within a relative time 
+             range with other targets in this proposal. The default is 'N'. 
+        </td></tr>
+
+
+<tr align = left valign = top>
+<th><a name='group_id'>Group ID</a></th> 
+		<td> <font color='#008080'>group_id (target)</font></td>
+		<td> Group ID of the observation.  Bookkeeping tool only used for
+		linked observations. </td></tr>
+
+<tr align = left valign = top>
+<th><a name='group_id'>Group Interval</a></th> 
+		<td> <font color='#008080'>group_int (target)</font></td>
+		<td> Relative Time Interval for grouping
+		observations. Valid range is 0.0 - 364.0 days. 
+		Required if <i> Group Observation </i> is 'Y'. </td></tr>
+-->
+
+
+
+<tr align = left valign = top>
+<th><a name='obs_ao_str'>Obs AO Status</a></th>
+		<td> <font color='#008080'>obs_ao_str (target)</font></td>
+		<td> AO status of the observation.  What AO the
+		observation is assigned to. </td></tr>
+
+<tr align = left valign = top>
+<th><a name='targname'>Target Name</a></th>
+		<td> <font color='#008080'>targname (target)</font></td>
+		<td> Normal name for the target.  Taken from proposal.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='si_mode'>SI Mode</a></th>
+		<td> <font color='#008080'>si_mode (target)</font></td>
+		<td> This code is used by the CXC in command generation to select the 
+	    	      	appropriate instrument configuration commands from the controlled 
+			Operations Database in order to configure the observation as is 
+			specified below. Observers do not use this 
+			parameter. It is a reflection of the setting
+			chosen in the HRC and ACIS section below.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='aca_mode'>ACA Mode</a></th>
+</th>
+		<td> <font color='#008080'>aca_mode (target)</font></td>
+		<td> This code is used by the CXC in command generation to select the 
+	    	      	appropriate instrument configuration commands from the controlled 
+			Operations Database in order to configure the observation as is 
+			specified below. Observers do not use this 
+			parameter.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='instrument'>Instrument</a>
+</font>
+</th>
+		<td> <font color='#008080'>instrument (target)</font></td>
+		<td> Specifies which detector will be on the optical axis during the 
+			observation.<br /> <font color='red'> If an instrument change 
+			(ACIS &lt;---&gt; HRC) is required, CDO approval is needed</font><br />
+			<font color='green'> Value Range: ACIS-S, ACIS-I, HRC-S HRC-I</font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='grating'>Grating</a>
+</font>
+</th>
+		<td> <font color='#008080'>grating (target)</font></td>
+		<td> Specifies which grating to use. The default is NONE which specifies 
+			no grating (direct imaging)<br />
+		<font color='red'>All changes require CDO approval. Adding a grating requires
+			<a href='#est_cnt_rate'>count rate</a> and 
+			<a href='#forder_cnt_rate'>1st Order Rate</a>.</font><br />
+			<font color='green'> Value Range: NONE, HETG, LETG</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='type'>Type</a>
+</th>
+		<td> <font color='#008080'>type (target)</font></td>
+		<td> Type of Observation.<br />
+	 	<font color='green'>Value Range: GO, TOO, GTO, CAL, DDT, CAL_ER</font>
+		this is assigned by CDO.  </td></tr>
+
+<tr align = left valign = top>
+<th><a name='PI_name'>PI Name</a></th>
+		<td> <font color='#008080'>person_short (prop_info)</font></td>
+		<td> Last name of Principal Investigator</td></tr>
+
+<tr align = left valign = top>
+<th><a name='coi_contact'>Observer</a></th>
+		<td> <font color='#008080'>coi_contact (prop_info)</font></td>
+		<td> Last name of Observer if it is different from
+		that of PI.  It is the OBSERVER, not the PI who is
+		responsible for the observation setup.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='approved_exposure_time'>Exposure Time</a>
+</font>
+</th>
+		<td> <font color='#008080'>approved_exposure_time (target)</font></td><td> Exposure 
+				time for the Obsid.  If your total
+				time is higher than this it may have
+				been split due to orbital
+				constraints. If the User
+				wants to split the observation, this
+				must be done through a separate CDO request.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='rem_exp_time'>Remaining Exposure Time</a>
+</th>
+		<td> <font color='#008080'>rem_exp_time (target)</font></td>
+		<td> The remaining time which still must be scheduled 
+			on this target to give the Observer the approved
+			<a href='#approved_exposure_time'>exposure time</a>. 
+			It is computed dynamically based on the mission planning and 
+			data analysis processes.  If it is less than
+			20% of the approved time additional
+			observations will not be performed.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='joint'>Joint Proposal</a>
+</th>
+		<td><font color='#008080'>joint (prop_info)</font></td>
+		<td>  A flag for whether this observation is coordinated with 
+				another observatory.  This is only for
+				proposed and approved coordination.
+				For post facto coordination use the
+				"Coordinated" field in the "Other Constraints"
+				section or the "REMARKS" area at the bottom of the
+				form. </td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='prop_hst'>HST Approved Time</a>
+</th>
+		<td> <font color='#008080'>hst_approved_time (prop_info)</font></td>
+		<td> TAC approved HST time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='prop_noao'>NOAO Approved Time</a>
+</th>
+		<td> <font color='#008080'>noao_approved_time (prop_info)</font></td>
+		<td> TAC approved NOAO time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='prop_xmm'>XMM Approved Time</a>
+</th>
+		<td> <font color='#008080'>xmm_approved_time (prop_info)</font></td>
+		<td> TAC approved XMM time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='prop_xte'>RXTE Approved Time</a>
+</th>
+		<td> <font color='#008080'>rxte_approved_time (prop_info)</font></td>
+		<td> TAC approved RXTE time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='prop_vla'>VLA Approved Time</a>
+</th>
+		<td> <font color='#008080'>vla_approved_time (prop_info)</font></td>
+		<td> TAC approved VLA time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='prop_vlba'>VLBA Approved Time</a>
+</th>
+		<td> <font color='#008080'>vlba_approved_time (prop_info)</font></td>
+		<td> TAC approved VLBA time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='soe_st_sched_date'>Schedule Date</a>
+</th>
+		<td> <font color='#008080'>soe_st_sched_date (target)</font></td>
+		<td>Observation schedule date.  This is the date the
+		observation will take place.  This date is not known
+		until the detailed scheduling has begun.  Usually less
+		than 10 days before the observation.  Once this date
+		is know it is virtually impossible to change any
+		setting.  CXC director and CXO flight director
+		approval would be needed.
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='lts_lt_plan'>LTS Date</a>
+</th>
+		<td> <font color='#008080'>lts_lt_plan (target)</font></td>
+		<td> LTS planed date. Week of the observation for
+		planning purposes.  This
+		date may change, especially if the target is
+		considered a pool target.  Typically, 15 observations are moved each
+		week.  See the bottom of the long term schedule for
+		recent changes. </td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='ra'>RA(HMS)</a>
+</font>
+</th>
+				<td>&#160;</td>
+		<td> The Right Ascension of the source in mandatory J2000 coordinate system.  
+			 The standard format is HH MM SS.S -
+			 hours, minutes, seconds, separated by
+			 spaces. Values can be entered in decimal
+			 format as well.  			
+			 <font color='red'>If RA + DEC change is
+			 larger than 8 arc minutes, CDO
+			approval is required and cannot be made from
+			this interface.</font>
+			 (Also see <a href='#dra'>RA</a>).<br /> 
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='dec'>DEC(HMS)</a>
+</font>
+</th>
+			<td>&#160;</td>
+		<td> The declination of the source in mandatory J2000 coordinate system.  
+			The standard format is +/-DD MM
+		  	SS.S - sign, degrees, arcminutes, arcseconds, separated by spaces
+			Values can be entered in decimal
+			 format as well.
+			 <font color='red'>If RA + DEC change is
+			 larger than 8 arc minutes, CDO
+			approval is required and the change cannot be
+			made from this interface. </font>		
+			(Also see <a href='#ddec'>DEC</a>).<br /> 
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='dra'>RA</a>
+</font>
+</th>
+		<td> <font color='#008080'>ra (target)</font></td>
+		<td><a href='#ra'> RA </a>in degrees<br />
+                This is the RA in decimal coordinates.  This is the
+		system used by the mission planners.  The spacecraft
+		will point here.  The HMS version is solely for
+		convenience. 
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='ddec'>DEC</a>
+</font>
+</th>
+			<td> <font color='#008080'>dec (target)</font></td>
+		<td><a href='#dec'> DEC</a> in degrees<br />
+		This is the DEC in decimal coordinates.  This is the
+		system used by the mission planners.  The spacecraft
+		will point here.  The DMS version is solely for
+		convenience. 
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='planned_roll'>Planned Roll</a>
+</font>
+</th>
+		<td> <font color='#008080'>planned__roll (soe)</font></td>
+		<td>This is the MP planned roll.  This is not an
+		editable field.  See <a href='#roll_constraint'>Roll
+		Constraints</a> if you need to constrain the roll. </td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='roll_obsr'>Roll Observed</a>
+</font>
+</th>
+		<td> <font color='#008080'>soe_roll (soe)</font></td>
+		<td>This is the observed roll.  This is not an
+		editable field.  See <a href='#roll_constraint'>Roll
+		Constraints</a> if you need to constrain the roll. </td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='y_det_offset'>Offset Y</a>
+</font>
+</th>
+		<td> <font color='#008080'>y_det_offset (target)</font></td>
+		<td> This motion moves the target position away from the aimpoint (and thus away
+		from the best focus position) by yawing the spacecraft
+		away from the target.
+		Sense: negative Y offset moves the target away from the aimpoint in the direction
+		of S4 on ACIS-S (i.e. further onto the S3 chip). Refer
+		to Figure 
+		<a href="https://cxc.harvard.edu/proposer/POG/html/ACIS.html#fg:FOCAL_PLANE"> 6.1 </a> 
+        and the <a href="https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_sEc6.11">discussion of aimpoints</a>
+		in the Proposers' Guide.
+		<br>
+			<font color='green'> Value Range: -120.0 to +120.0</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='z_det</font></td><td>offset'>Offset Z</a>
+</font>
+</th>
+		<td> <font color='#008080'>z_det_offset (target)</font></td>
+		<td>  This motion moves the target position away from the aimpoint (and thus away
+		from the best focus position) by pitching the spacecraft
+		away from the target. Sense: positive offset moves the
+		target towards the readouts in ACIS-S (i.e. away from
+		ACIS-I). Refer to Figure 
+		<a href="https://cxc.harvard.edu/proposer/POG/html/ACIS.html#fg:FOCAL_PLANE"> 6.1 </a> 
+        and the <a href="https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_sEc6.11">discussion of aimpoints</a>
+in the Proposers' Guide.
+Value is angle in arcmin measured from the aimpoint.<br />
+		       		<font color='green'> Value Range: -120.0 to +120.0</font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='trans_offset'>Z-Sim</a>
+</font>
+</th>
+		<td> <font color='#008080'>trans_offset (sim)</font></td>
+		<td> This is a motion of the SIM and thus the aimpoint away from the 
+		default position on the detector along the z-axis (the
+		SIM Translation direction.
+		Sense: a negative motion moves the aimpoint (and the target) towards the readouts
+		on ACIS-S (ie. away from ACIS-I)
+		Units: mm (scale 2.93mm/arcmin)<br />
+<pre>
+Recommendations (7/13/21: not guaranteed to be current):
+Configuration	Mode	SIM z (mm)
+HETG+ACIS-S	TE	-3
+HETG+ACIS-S	CC	-4
+LETG+ACIS-S	TE	 0
+LETG+ACIS-S	CC	-8
+</pre>
+(note: SIM-Z &gt; -8mm for ACIS-S is not allowed due to fidlight problems)<br />
+
+
+		<font color='green'> Value Range: NULL, -190.5 to 126.621.</font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='focus_offset'>Sim-Focus</a>
+</font>
+</th>
+		<td> <font color='#008080'>focus_offset (sim)</font></td>
+		<td> Focus offset on the SIM, in mm.
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='defocus'>Focus</a>
+</font>
+</th>
+        <td> <font color='#008080'>defocus (target)</font></td>
+        <td> A number determining how far in mm the focal plane will 
+            be moved toward or away from the mirrors.
+            Replaced by Sim-focus.
+        </td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<a name='raster_scan'>Raster Scan</a>
+</th>
+		<td><font color='#008080'> raster_scan (target)</font></td>
+		<td> A flag indicating whether the observation will be a raster scan<br />
+		<font color='green'>Value Ranges: NULL, Y, N </font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='uninterrupt'>Uninterrupted Obs</a>
+</font>
+</th>
+		<td> <font color='#008080'>uninterrupt (target)</font></td>
+		<td> A flag for whether the observation can be interrupted.<br />
+		<font color='red'>CDO approval required to change this
+		to Y </font><br /> 'P' indicates a preference this will be
+		noted by mission planing, but is not included by V&#38;V
+		when evaluating the success for the observation. 
+		<font color='green'> Value Range: Y, P, N, NULL</font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='obj_flag'>Extended SRC</a>
+</font>
+</th>
+		<td> <font color='#008080'>extended_src (target)</font></td>
+        <td> RPS form from the proposal submission.<bd>
+        <font color='green'>Y, N</font>
+        </td></tr>
+        
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='obj_flag'>Solar System Object</a>
+</font>
+</th>
+		<td> <font color='#008080'>obj_flag (target)</font></td>
+		<td> A flag for a solar system observation.<br />
+		<font color='red'>This field is used to allow the
+		ground system to automatically calculate the position
+		of the ss object or moving target for you.  It has not
+		been used in flight.  We recommend working with CDO to 
+		calculate the exact position.</font><br />
+		<font color='green'> Value Range: NO, MT, or SS</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='object'>Object</a>
+</font>
+</th>
+		<td> <font color='#008080'>object (target)</font></td>
+		<td> If you are so bold as to let the ground system
+		calculate the pointing for you, this is where you
+		input the object name.<br />
+		<font color='green'> Value Range:  NONE, NEW, COMET, EARTH, JUPITER,
+			MARS, MOON, NEPTUNE, PLUTO, SATURN, URANUS, or VENUS</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='photometry_flag'>Photometry</a>
+</font>
+</th>
+		<td> <font color='#008080'>photometry_flag (target)</font></td>
+		<td> A flag for photometry which indicates whether
+		observer will use one of the 5 star tracking slots
+		for target photometry.  See the POG section 
+		<a
+		href="https://cxc.harvard.edu/proposer/POG/html/chap5.html#tth_sEc5.8.3">Section 5.8.3</a> for details.<br />
+		<font color='green'> Value Range: NULL, Y, N</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='vmagnitude'>V Mag</a>
+</font>
+</th>
+		<td> <font color='#008080'>vmagnitude (target)</font></td>
+		<td> V Magnitude of the target if optical monitor data is selected<br />
+		<font color='green'> Value Range: NULL, -15 to 20.</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='est_cnt_rate'>Count Rate</a>
+</font>
+</th>
+		<td> <font color='#008080'>est_cnt_rate (target)</font></td>
+		<td> Estimated count rate for the observation counts/sec.
+		A value is required.
+		<font color='green'> Value Range: NULL, 0 to 100,000.</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='forder_cnt_rate'>1st Order Rate</a>
+</font>
+</th>
+		<td> <font color='#008080'>forder_cnt_rate (target)</font></td>
+		<td>  First order count rate in counts/sec for ACIS-S+grating and 
+			HRC-S+grating observations. A value is required, 
+			if a <a href='#grating'>grating</a> is requested.<br />
+		<font color='green'> Value Range: NULL, 0 to 100,000.</font>
+		</td></tr>
+
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='dither_flag'>Dither</a>
+</font>
+</th>
+		<td> <font color='#008080'>dither_flag (target)</font></td>
+		<td> A flag indicating whether a dither is required for the observation.
+			The default "NULL" means dither is preset to 
+			the standard dither pattern <i> It does not mean
+			no dither</i>. 'Y'
+			means that you are using your own dither
+			parameters, these may be rejected on final
+			review, so contact CDO ahead of time for
+			review.  'N'
+			means no dither, again this may be rejected by the
+			SI team during final review so contact CDO to
+			avoid surprises. <br /><br />
+
+			The dither parameters must not violate the requirement 
+			on peak dither rate:<br /><br />
+ 
+			<b>
+  				sqrt((y_ampl*2*PI/y_period)2 
+					+ (z_ampl*2*PI/z_period)2) &lt; 0.22 arcsec/sec
+			</b>
+			<br><br>
+ 
+ 			This peak dither rate can be used to evaluate the effect of 
+			image blurring during an ACIS frame integration.
+			<br />
+
+
+<table border= 1>
+ <tr><th>Parameter</th>    <th> ACIS Default</th>    <th> HRC Default</th></tr>
+ <tr><th>y_amp</th>        <td>8" = 0.002222 deg</td>         <td>20" =0.0056 deg</td></tr>
+ <tr><th>y_frequency</th>  <td>1296"/sec<br />=0.36 deg/sec</td><td>1191"/sec<br />=0.331 deg/sec</td></tr>
+ <tr><th>y_phase</th>      <td>0</td>			      <td>&#160;</td></tr>
+ <tr><th>z_amp</th>        <td>8" = 0.002222 deg</td>         <td>20" = 0.0056 deg</td></tr>
+ <tr><th>z_frequency</th>  <td>1832"/sec<br />=0.509 deg/sec</td><td>1648"/sec<br />= 0.468 deg/sec</td></tr>
+ <tr><th>z_phase</th>      <td>0</td>			      <td>&#160;</td></tr>
+</table>
+
+		<br />
+		<font color='green'> Value Range: Y, N, NULL</font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='y_amp'>Y Amplitude</a>
+</font>
+</th>
+		<td> <font color='#008080'>y_amp (dither)</font></td>
+		<td> <a href='#dither_flag'>Dither</a> Y amplitude<br />
+		in <i> arcseconds </i></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='y_freq'>Y Frequency</a>
+</font>
+</th>
+		<td> <font color='#008080'>y_freq (dither)</font></td>
+		<td> <a href='#dither_flag'>Dither</a> Y frequency<br />
+		in <i> Degree/Sec </i></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='y_phase'>Y Phase</a>
+</font>
+</th>
+		<td> <font color='#008080'>y_phase (dither)</font></td>
+		<td> <a href='#dither_flag'>Dither</a> Y phase<br />
+			in <i> degrees </i></td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='z_amp'>Z Amplitude</a>
+</font>
+</th>
+		<td> <font color='#008080'>z_amp (dither)</font></td>
+		<td> <a href='#dither_flag'>Dither</a> Z amplitude<br />
+			in <i> arcseconds </i></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='z_freq'>Z Frequency</a>
+</font>
+</th>
+		<td> <font color='#008080'>z_freq (dither)</font></td>
+		<td> <a href='#dither_flag'>Dither</a> Z frequency<br />
+			in <i> Degree/sec </i></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='z_phase'>Z Phase</a>
+</font>
+</th>
+		<td> <font color='#008080'>z_phase (dither)</font></td>
+		<td> <a href='#dither_flag'>Dither</a> Z phase<br />
+			in <i> degrees </i></td></tr>
+
+
+
+
+<!-- ######### Time Constraints ########  -->
+
+<tr><td colspan= "3"><h2><a name='time_constraints'></a> Time Constraints <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+Time Constraint
+</font>
+</th>
+		<td> <font color='#008080'></font></td>
+		<td> This can only be set to 'Y' if this is a TAC or CDO
+		approved constraint.  Set to 'P' if you have a
+		preference and we will do the best we can to
+		accommodate your entries below.
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='time_ordr'>Rank</a>
+</font>
+</th>
+		<td> <font color='#008080'>ordr(timereq)</font></td>
+		<td>Order for the time constraint.  You can have
+		multiple time constraints on a given target.  Increase this
+		number to produce multiple windows below.
+        If you change this value,
+			numbers of input windows for <a href='#window_constraint'>window constraint</a>, 
+			<a href='#tstart'>tstart</a>, and <a href='#tstop'>tstop</a>
+			change accordingly </td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='window_constraint'>Window Constraint</a>
+</font>
+</th>
+		<td><font color='#008080'>window_constraint (timereq) 
+		on <a href='#time_ordr'>ordr</a></font></td>
+		<td> A flag indicating whether a time window is required for the observation.<br />
+		<font color='green'> Value Range:  NULL, N, Y, P.</font> 
+        `Y' is only allowed if TAC or CDO approved.
+        </td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='tstart'>Start</a>
+</font>
+</th>
+		<td> <font color='#008080'>tstart (timereq) 
+			on <a href='#time_ordr'>ordr</a></font></td>
+		<td> Date and time to start time critical observation. 
+			Time must be 24 hr system in hh:mm:ss format.
+			<i>Time is in UT.</i>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='tstop'>Stop</a>
+</font>
+</th>
+		<td> <font color='#008080'>tstop (timereq) 
+			on <a href='#time_ordr'>ordr</a></font></td>
+		<td> Date and time to stop time critical observation. 
+			Time must be 24 hr system in hh:mm:ss format.
+						<i>Time is in UT.</i>
+		</td></tr>
+
+<!-- ######### Roll Constraints   #########  -->
+
+<tr><td colspan= "3"><h2><a name='roll_constraints'</a> <a name='roll_constraint'>Roll Constraints</a> <a href='#top'>Top</a></h2></td></tr>
+
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+
+<!-- 
+<tr align = left valign = top>
+<th>
+<font color='red'>
+Roll Constraint
+</font>
+</th>
+		<td> <font color='#008080'></font></td>
+		<td> This can only be set to 'Y' if this is a TAC or CDO
+		approved constraint.  Set to 'P' if you have a
+		preference and we will do the best we can to
+		accommodate your entries below.</td></tr>
+ --> 
+
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='roll_ordr'>Rank</a>
+</font>
+</th>
+		<td> <font color='#008080'>ordr (rollreq)</font></td>
+		<td>Order for the roll constraint. Multiple roll
+		constraints are possible. If you change this value, the
+			numbers of<a href='#roll_constraint'> roll constraint</a>,
+			<a href='#roll_180'> roll180</a>, <a href='#roll'>roll</a>,
+			 and <a href='#roll_tolerance'>roll
+			 tolerance</a> listed below 
+			change accordingly. </td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+Roll Constraint
+</font>
+</th>
+		<td> <font color='#008080'>roll_constraint (rollreq)
+			on <a href='#roll_ordr'>ordr</a></font></td>
+		<td> A flag indicating whether this roll constraint is
+		required for the observation.  This can only be set to
+		'Y' if this is a TAC or CDO
+		approved constraint.  Set to 'P' if you have a
+		preference and we will do the best we can to
+		accommodate your entries. <br />
+		<font color='green'> Value Range: NULL, N, Y, P</font> <br />
+		<font color='red'>`Y' is only allowed if TAC or CDO approved.</font> 
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='roll_180'>Roll180?</a>
+</font>
+</th>
+		<td> <font color='#008080'>roll_180(rollreq)
+			on <a href='#roll_ordr'>ordr</a></font></td>
+		<td> A flag indicating whether 180 degree flip in the
+		roll is acceptable for the observation.<br />
+		<font color='green'> Value Range:  NULL, N,  Y</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='roll'>Roll</a>
+</font>
+</th>
+		<td> <font color='#008080'>roll(rollreq)
+			on <a href='#roll_ordr'>ordr</a></font></td>
+		<td> The spacecraft roll angle is the angle between celestial north 
+			and the spacecraft +Z axis projected on the sky.  Measured in degrees.<br />
+		<font color='green'> Value Range: NULL, 0 to 360.</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='roll_tolerance'>Roll Angle Tolerance</a>
+</font>
+</th>
+		<td> <font color='#008080'>roll_tolerance (rollreq)
+			on <a href='#roll_ordr'>ordr</a></font></td>
+		<td> Tolerance on the Roll Angle.  The amount the roll
+		can deviate from the request and still be acceptable.<br />
+		<font color='green'> Value Range: NULL,0 to 360</font>
+		</td></tr>
+
+<!-- ########### Other Constraints  ############  -->
+
+<tr><td colspan= "3"><h2><a name='other_constraints'></a>Other Constraints <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='constr_in_remarks'>Constraints in Remarks?</a>
+</font>
+</th>
+		<td> <font color='#008080'>constr_in_remarks (target)</font></td>
+		<td>A flag indicating whether there is a description
+		of any constraints in a <a href='#remarks'>remark</a>
+		section.  Note that the Constraint in Remarks section
+		<i> cannot be used to add in 
+constraints that were not approved through peer review,</i> but rather 
+to explain existing constraints and preferences. 
+<br />
+		<font color='green'> Value Range: NULL, Y, N </font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='pointing_constraint'>Pointing Update</a>
+</font>
+</th>
+		<td> <font color='#008080'>pointing_constraint (target)</font></td>
+		<td>
+        New for Cycle 22--A flag indicating whether or not the pointing
+        should be adjusted once the observation date (i.e., roll) is known.
+        If set to Y, the observer must provide a table of pointing versus roll.
+        [See: 
+        <a href="https://cxc.harvard.edu/cal/RollDepTable.html">
+        "table of pointing versus roll"</a> for more information]
+        <br>
+        <font color='red'>CDO approval is required.</font>
+        <br />
+		<font color='green'> Value Range: NULL, Y, N </font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_constraint_flag'>Phase Constraint</a>
+</font>
+</th>
+		<td><font color='#008080'>phase_constraint_flag (target)</font></td>
+			<td> A  flag indicating whether the
+			observation is targeted at a particular
+			orbital phase.  If so, additional data is required.
+			If this is set for Y or P, values for 
+				 The <a href='#phase_epoch'>Epoch</a>
+				 of phase 0, 
+				 The <a
+				 href='#phase_period'>Period</a> of
+				 the phenomena,
+				 <a href='#phase_start'>Phase Start</a>,
+				 <a href='#phase_start_margin'>Phase
+				 Start Margin</a>,
+				 <a href='#phase_end'>Phase Min</a>,
+				 <a href='#phase_end_margin'>Phase Min
+				 Margin</a> are required.	
+			<br />
+			<font color='green'> Value Range: NULL, N, Y, P</font>
+			</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_epoch'>Epoch</a>
+</font>
+</th>
+		<td> <font color='#008080'>phase_epoch (phasereq)</font></td>
+		<td> For Phase Dependent observations, the reference date (MJD). 
+			The observations will be made at an integral number of 
+			<a href='#phase_period'>Periods </a> from this date.<br />
+		<font color='green'>Value Ranges: &gt; 46066.0</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_period'>Period</a>
+</font>
+</th>
+		<td> <font color='#008080'>phase_period (phasereq)</font></td>
+		<td> Period of phenomena in day</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_start'>Phase Start</a>
+</font>
+</th>
+		<td> <font color='#008080'>phase_start (phasereq)</font></td>
+		<td> The earliest phase for the observation.<br />
+		<font color='green'>Value Ranges:  0 to 1</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_start_margin'>Phase Start Margin</a>
+</font>
+</th>
+		<td> <font color='#008080'>phase_start_margin (phasereq)</font></td>
+		<td> The allowable error  for mission planning on the previous entry.
+		Remember to include the observation duration when thinking about
+		this value<font color='green'>Value Ranges: 0 to 0.5</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_end'>Phase End</a>
+</font>
+</th>
+		<td> <font color='#008080'>phase_end (phasereq)</font></td>
+		<td> Maximum orbital phase to be observed.  <br />
+		<font color='green'>Value Ranges:  0 to 1</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='phase_end_margin'>Phase End Margin</a>
+</font>
+</th>
+		<td> <font color='#008080'>phase_end_margin (phasereq)</font></td>
+		<td> Error on the maximum orbital phase. 
+		Include the observation duration when thinking about
+		this value.<br />
+		<font color='green'>Value Ranges: 0 to 0.5</font>
+		</td></tr>
+
+
+<!-- ####### Group ID / Monitoring Observation ######### -->
+
+<tr><td colspan= "3"><h2><a name='monitoring_observation'></a> Monitoring Observation <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+Monitoring Observation
+</font>
+</th>
+
+
+		<td> <font color='#008080'></font></td>
+		<td> The following 3 fields are used for monitoring
+		observations.  While the full pattern of observations
+		can be complicated, here you concern yourself with a
+		previous observation in the group and the time (in
+		days) between that observation and this one.
+		The start time for a monitoring observation is
+		determined by the time the previous observation ENDED, 
+		and only has to BEGIN between Min Int and Max Int, 
+		it does not need to fall fully within these boundaries. <br />
+		<b>Notes:</b> It is possible to have monitoring
+		observations where 
+		each obsid is linked to the first in the series 
+		(ie. you want to space them from the initial obsid by
+		some number of days and don't want that to be impacted
+		by the tolerance on the previous one).  In this case,
+		Follows ObsID# should be the first in the sequence. 
+		It is also possible for the first observation in a
+		monitoring series to be time constrained or otherwise 
+		constrained as specified by the observer, though it 
+		does not become a time constrained observation simply 
+		because it is the 1st observation in a monitoring series.
+
+
+</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='group_id'>Group ID</a>
+</font>
+</th>
+        <td> <font color='#008080'>group_id (target)</font></td> 
+        <td> Group ID of the observation.  Bookkeeping tool only used for
+        linked observations. </td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='pre_id'>Follows ObsID#</a>
+</font>
+</th>
+		<td> <font color='#008080'>pre_id (target)</font></td>
+		<td> Gives the ObsId # in the group  which this observation follows. 
+		There cannot be any <a href='#window_constraint'>time constraints</a>.
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='pre_min_lead'>Min Int</a>
+</font>
+</th>
+		<td> <font color='#008080'>pre_min_lead (target)</font></td>
+		<td> Monitoring Observation: The minimum interval between monitoring 
+			observations.  Units are decimal days<br />
+		<font color='green'>Value Ranges: NULL, 0 to 364</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='pre_max_lead'>Max Int</a>
+</font>
+</th>
+		<td> <font color='#008080'>pre_max_lead (target)</font></td>
+		<td> Monitoring Observation: The maximum interval between monitoring 
+			observations.  Units are decimal days.<br />
+		<font color='green'>Value Ranges: NULL, 0.01 to 365</font>
+		</td></tr>
+
+
+<!-- ####### Coordinated Observation #####  -->
+
+<tr><td colspan= "3"><h2><a name='coordinated_observation'></a> Coordinated Observation <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='multitelescope'>Coordinated Observation</a>
+</font>
+</th>
+		<td> <font color='#008080'>multitelescope (target)</font></td>
+		<td> A flag indicating whether this is coordinated
+		observation.  This differs from a joint proposal in
+		that the telescope time involved comes from multiple
+		TACs.  It Can be listed as a preference if telescope
+		time has been obtained after the TAC approval of this observation.
+		<font color='red'>CDO approval is required to change
+		the value to `Y'.</font><br />
+		<font color='green'>Value Ranges: Y, N, P</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='observatories'>Observatories</a>
+</font>
+</th>
+		<td> <font color='#008080'>observatories (target)</font></td>
+		<td> Names of coordinated observatories.</br> 
+		<font color='red'>CDO approval is required to change
+		the value. If the 'Coordinated Observation' flag is
+		set to `Y'. </font><br />
+		</td></tr> 
+
+
+<tr align = left valign = top>
+<th>
+<font color='red'>
+<a name='multitelescope_interval'>Max Coordination Offset</a>
+</font>
+</th>
+		<td> <font color='#008080'>multitelescope_interval (target)</font></td>
+		<td> The maximum time interval for coordination with ground-based observatories. The units are days (floating point)</br> 
+		<font color='red'>CDO approval is required to change
+		the value. If the 'Coordinated Observation' flag is
+		set to `Y'. </font><br />
+		</td></tr> 
+
+<!-- ######### HRC Parameters ############  -->
+
+<tr><td colspan= "3"><h2><a name='hrc_parameters'></a> HRC Parameters <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='hrc_zero_block'>Zero Block</a>
+</font>
+</th>
+		<td> <font color='#008080'>hrc_zero_block (hrcparam)</font></td>
+		<td> Logical value indicating zero-order blocking. The default is 'N'.  
+			The spectrum's zero order may be blocked if
+			desired. Using zero-block moves a shutter-blade 
+			vignettes much of the central plate of the HRC-S or a large portion of the 
+			center of the HRC-I. The impact on the HRC-S
+			can be seen <a href="https://cxc.harvard.edu/contrib/juda/shutter/zero_block.html">
+			 here</a>.<br />
+		<font color='green'>Value Ranges: "NULL", "YES",
+		"NO"</font> 	</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='hrc_si_mode'>HRC SI Mode</a>
+</font>
+</th>
+		<td><font color='#008080'>si_mode from hrcparam</font></td>
+		<td> A link to a listing of current and default HRCMODEs is
+	<a href="https://cxc.harvard.edu/contrib/juda/hrc_flight/macros/hrcmode.html"> available. </a> 
+	If a user wishes to request the use of one of these or have a custom one built 
+	the request should be put into the comments at the bottom the form.
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='timing_mode'>Timing Mode</a>
+</font>
+</th>
+		<td> <font color='#008080'>timing_mode (hrcparam)</font></td>
+		<td> Logical value indicating Whether timing mode is
+		to be used. See the <a
+		href="https://cxc.harvard.edu/proposer/POG/html/chap7.html#tth_sEc7.14.1">POG</a> 
+		for details on timing mode.  The default is 'N'.  
+        <font color="red">Timing mode raises the LLD.  Currently (Jul 2021), 
+        this will result in roughly half of otherwise valid events falling
+        below the LLD and being discarded.</font>
+		<br />
+		<font color='green'>Value Ranges: "NULL", "Y",
+		"N"</font> 	</td></tr>
+
+
+<!-- ######### ACIS Parameters ##########  -->
+
+<tr><td colspan= "3"><h2><a name='acis_parameters'></a>ACIS Parameters <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='exp_mode'>ACIS Exposure Mode</a>
+</font>
+</th>
+		<td> <font color='#008080'>exp_mode (acisparam)</font></td>
+		<td> The exposure mode for ACIS. See POG 
+<a href= "https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_sEc6.13">
+                section 6.13 </a> for details. <br />
+		<font color='green'>Value Ranges: TE (Timed Exposure), CC (Continuous Clocking)</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='bep_pack'>Event TM Format</a>
+</font>
+</th>
+		<td> <font color='#008080'>bep_pack (acisparam)</font></td>
+		<td> Event Telemetry Format: Event Telemetry Format controls the packing 
+			of the data into the telemetry stream. See POG
+			<a href= "https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_sEc6.15.2">
+                section 6.15.2 </a> for details. <br />
+		<font color='green'>Value Ranges:  Faint (TE,CC), Very
+		Faint(TE), Faint+Bias(TE), Graded(TE,CC), N (HRC in use)</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='frame_time'>Frame Time</a>
+</font>
+</th>
+		<td> <font color='#008080'>frame_time (acisparam)</font></td>
+		<td> User specified frame time (in seconds) to use. 
+		ACIS can accommodate frame times from 0.1 to 10.0 s,
+		however, frame times less than 0.4s will introduce a deadtime.  One
+		CCD can be readout with a 128 row subarray in 0.4s with no deadtime.
+		Any faster than that and there will be deadtime.
+		<a href='#most_efficient'>Most Efficient</a> must be N
+		if frame_time has a value.<br />
+		<font color='green'>Value Ranges:  NULL, 0 to 10</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='most_efficient'>Most Efficient</a>
+</font>
+</th>
+		<td> <font color='#008080'>most_efficient (acisparam)</font></td>
+		<td> A flag indicating whether to use the default
+		frame time which is the
+				efficient setting.<br /> This must be N, if 
+			<a href='#frame_time'>frame_time</a> has a value<br />
+		<font color='green'>Value Ranges: NULL, Y, N</font>
+		</td></tr>
+
+<tr align = left valign = top>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccdi0_on'>I0</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccdi0_on (acisparam)</font></td>
+		<td> Do you want ACIS chip I0 on? There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y, OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccdi1_on'>I1</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccdi1_on (acisparam)</font></td>
+		<td>Do you want  ACIS chip I1 on?There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccdi2_on'>I2</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccdi2_on (acisparam)</font></td>
+		<td> Do you want ACIS chip I2 on?  There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccdi3_on'>I3</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccdi3_on (acisparam)</font></td>
+		<td> Do you want ACIS chip I3 on?  There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccds0_on'>S0</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccds0_on (acisparam)</font></td>
+		<td> Do you want ACIS chip S0 on?  There is a limit of
+		6 chips on. <br /><font color='green'>Value Ranges:Y, N,OPT1, OPT2,OPT3,OPT4,OPT5, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccds1_on'>S1</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccds1_on (acisparam)</font></td>
+		<td> Do you want ACIS chip S1 on? There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.   <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccds2_on'>S2</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccds2_on (acisparam)</font></td>
+		<td> Do you want ACIS chip S2 on? There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.   <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccds3_on'>S3</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccds3_on (acisparam)</font></td>
+		<td> Do you want ACIS chip S3 on?  There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccds4_on'>S4</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccds4_on (acisparam)</font></td>
+		<td>Do you want  ACIS chip S4 on?  There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ccds5_on'>S5</a>
+</font>
+</th>
+		<td> <font color='#008080'>ccds5_on (acisparam)</font></td>
+		<td> Do you want ACIS chip S5 on?  There is a limit of
+		6 chips on. OPT1 will be dropped first, and OPT5 will be the last.  <br /><font color='green'>Value Ranges:Y,OPT1, OPT2,OPT3,OPT4,OPT5, N, NULL</font></td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='subarray'>Use Subarray</a>
+</font>
+</th>
+		<td> <font color='#008080'>subarray (acisparam)</font></td>
+		<td> A subarray is a reduced region of the CCDs (all of the CCDs that are turned on) 
+			that will be read.  A reduced region may also help to reduce the
+	  		effects of pulse pile-up.  The first box indicates whether the 
+			proposer intends to use the subarray capability.  The default is 
+			'None'. If YES is selected, the next three entries (Start, Rows,
+			Frame Time) must be filled. Note that the minimum Frame Time depends 
+			on the size and location of the subarray (see section 
+<a href="https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_tAb6.5">
+6.13.1</a> of the POG). 
+<br>
+			If YES is selected, <a href='#subarray_start_row'>Start</a>,
+			and <a href=;#subarray_row_couont'>Rows</a> must be filled.<br />
+			
+                <br />The old default subarrays are:<br />
+                <table cellpadding=2><tr>
+                <th>subarray:</th><th colspan=2>1/8</th><th colspan=2>1/4</th><th colspan=2>1/2</th>
+                </tr><tr>
+                <th>aimpoint:</th><td>start</td><td>rows</td><td>start</td><td>rows</td><td>start</td><td>rows</td>
+                </tr><tr>
+                <th>ACIS-I  :</th><td>897</td><td>128</td><td>769</td><td>256</td><td>513</td><td>512</td>
+                </tr><tr>
+                <th>ACIS-S  :</th><td>449</td><td>128</td><td>385</td><td>256</td><td>257</td><td>512</td>
+                </tr></table>
+                <br />
+                <font color=green>Value Ranges: N (NO) and CUSTOM (YES)</font><br />
+
+</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='subarray_start_row'>Start</a>
+</font>
+</th>
+		<td> <font color='#008080'>subarray_start_row (acisparam)</font></td>
+		<td> Subarray: The starting row that will be read for processing custom subarrays.
+		If it is not NULL, <a href='#subarray'>Subarray Type</a> must be CUSTOM, and 
+		<a href='#subarray_row_couont'>Rows</a> must be
+		filled. See section 
+<a href="https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_tAb6.5">
+6.13.1</a> of the POG.                      <br />
+		<font color='green'>Value Ranges: NULL, 1 to 925 </font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='subarray_row_couont'>Rows</a>
+</font>
+</th>
+		<td> <font color='#008080'>subarray_row_count (acisparam)</font></td>
+		<td> Subarray: The number of rows that will be read for processing 
+			custom subarrays.  If it is not NULL, <a href='#subarray'>Subarray Type</a> 
+			must be CUSTOM, and <a
+			href='#subarray_start_row'>Start</a> must be
+			filled in.  See section 
+<a href="https://cxc.harvard.edu/proposer/POG/html/chap6.html#tth_tAb6.5">
+6.13.1</a> of the POG for details.
+		<font color='green'>Value Ranges: NULL, 101 to 1024 </font> 
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='subarray_frame_time'>Frame Time</a>
+</font>
+</th>
+		<td> <font color='#008080'>subarray_frame_time (acisparam)</font></td>
+		<td> Subarray - Frame Time (in seconds): The Frame Time is the fundamental 
+			unit of exposure for ACIS. The higher time resolution is achieved by reading 
+			fewer rows of the CCD.  
+			The minimum frame time of 0.2 sec corresponds to reading a subarray of 
+			128 rows.  A frame time of 0.2s can only be achieved with
+			a deadtime.  A frame time of 0.4s for one CCD with a 128 row subarray
+			can be achieved without deadtime. 
+			The maximum time of 3.2 sec corresponds to reading all 1024 rows.  
+			Any value from 0.2 to 3.2 sec is possible by adjusting the number of rows 
+			to be read AND by accepting a deadtime for
+			frame times less than 0.4s. The number of rows to be read and the Subarray Frame Time 
+			should be equivalent; the two values will be compared to see that they are.  
+			The equation for calculating the Frame Time from the number of rows to be 
+			read is included in the Proposer's Guide.<br /> 
+		<font color='green'>Value Ranges: NULL, 0 to 10 </font> 
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='duty_cycle'>Duty Cycle</a>
+</font>
+</th>
+		<td> <font color='#008080'>duty_cycle (acisparam)</font></td>
+		<td> Alternating Exposure Readout: Logical value indicating use of 
+			alternating exposure readout.  The default is 'N'.  Alternating Exposure 
+			Readout observation sets the number of SECONDARY exposures that will 
+			follow each primary exposure.  Unless a
+			subarray is in use, a deadtime will result from the
+	  		short exposure since the electronics still require 3.2 sec to process the 
+			full frame.  Therefore, to minimize the deadtime, the number of short 
+			exposures should be kept to a minimum. If Y is selected, 
+			<a href='#primary_exp_time'>Tprimary</a> and 
+			<a href='#secondary_exp_time'>Tsecondary</a> must be filled.<br />
+		<font color='green'>Value Ranges: NULL, Y, N </font> 
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='secondary_exp_count'>Number</a>
+</font>
+</th>
+		<td> <font color='#008080'>secondary_exp_count (acisparam)</font></td>
+		<td> Alternating Exposure Readout: The number of 
+			<a href='#secondary_exp_time'>secondary exposures</a> 
+			that will follow each <a href='#primary_exp_time'>primary exposure</a>.  
+			If n = 0, only primary exposures are used.  Read the ACIS chapter 
+			of the Proposer's Guide for an estimate of the efficiency.
+			The recommended value is 2.<br />
+		<font color='green'>Value Ranges: 0 to 15</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='primary_exp_time'>Tprimary</a>
+</font>
+</th>
+		<td> <font color='#008080'>primary_exp_time (acisparam)</font></td>
+		<td> Alternating Exposure Readout: Exposure Time for Primary Cycle: 
+			The primary exposure time in seconds.  The recommended time for 
+			a non-zero number of secondary exposures is 0.3.<br />
+		<font color='green'>Value Ranges: NULL, 0 to 10 </font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='secondary_exp_time'>Tsecondary</a>
+</font>
+</th>
+		<td> <font color='#008080'>secondary_exp_time (acisparam)</font></td>
+		<td> Alternating Exposure Readout : Exposure Time for Secondary Cycle: 
+			The secondary exposure time in seconds.  The recommended time for a
+	  		non-zero number of secondary exposures is 3.2</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='onchip_sum'>Onchip Summing</a>
+</font>
+</th>
+		<td> <font color='#008080'>onchip_sum (acisparam)</font></td>
+		<td> Logical value indicating on-chip summation. The default value 
+			is 'N'.  On-chip summation can be used to reduce the number of items per CCD 
+			readout.  The spatial resolution is degraded as is the event splitting information.  
+			Currently, only 2x summation is supported. You can optionally fill
+			<a href='#onchip_row_count'>Rows</a> and <a
+			href='onchip_column_count'>Column</a>. If this
+			is other than 2, 2 expect to be contacted by CDO.<br />
+		<font color='green'>Value Ranges: NULL, N, Y</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='onchip_row_count'>Rows</a>
+</font>
+</th>
+		<td> <font color='#008080'>onchip_row_count (acisparam)</font></td>
+		<td> # of rows for On-Chip Summing.<br /> 
+		<font color='green'>Value Ranges: 1 to 512</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='onchip_column_count'>Columns</a>
+</font>
+</th>
+		<td> <font color='#008080'>onchip_column_count (acisparam)</font></td>
+		<td> # of columns for On-Chip Summing.<br />
+		<font color='green'>Value Ranges: 1 to 512</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='eventfilter'>Energy Filter</a>
+</font>
+</th>
+		<td> <font color='#008080'>eventfilter (acisparam)</font></td>
+		<td> This logical value indicates that the user wishes to filter every 
+			candidate event on the basis of energy before packing into the telemetry stream.  The filter
+	  		applies to all of the active CCDs.  The use of an event filter does NOT 
+			affect pulse pileup, but only reduces the telemetry. 
+			If Y is selected, <a href='#eventfilter_lower'>Lower</a> and 
+			<a href='#eventfilter_higher'>Range</a> must be filled.  <br />
+		<font color='green'>Value Ranges: NULL, Y, N </font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='eventfilter_lower'>Lower Energy</a>
+</font>
+</th>
+		<td> <font color='#008080'>eventfilter_lower (acisparam)</font></td>
+		<td> <a href='#eventfilter'>Event Filter</a>: Lower Event Threshold: 
+			The value of the lower energy threshold that will be applied.  Units are keV. 
+			If it is not NULL, <a href='#eventfilter'>Event filter</a> must be Y.<br />
+		<font color='green'>Value Ranges: NULL, 0.0 to 15 </font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='eventfilter_higher'>Energy Range</a>
+</font>
+</th>
+		<td> <font color='#008080'>eventfilter_higher (acisparam)</font></td>
+		<td> <a href='#eventfilter'>Event Filter</a>: Energy Range
+			The range of the events above the lower threshold which will not be
+			filtered (in keV). (Example: to set an Energy filter from
+			0.1- 13 keV as suggested for VF mode.  Set Lower= 0.1 and range=12.9)<br />
+			<font color=red>In many configurations, an Energy Range above 13 keV will risk telemetry saturation.</font><br />
+			If it is not NULL, Event filter must be Y.<br />
+			<font color=green>Value Ranges: 0.0 to 15.0 </font><br />
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='multiple_spectral_lines'>Multiple Spectral Line</a>
+</font>
+</th>
+		<td> <font color='#008080'>multiple_spectral_lines (acisparam)</font></td>
+		<td> Logical value indicating whether or not more than 2 resolved spectral lines 
+		     are expected in the brightest spectrum to be analyzed from this observation.
+		     "Y" or "N" is required  for any ACIS-I non-grating observation. Both the two
+		     questions above are asked to trigger assessment of the sensitivity
+		     of ACIS-I imaging observations to gain calibration. Science from high S/N ACIS-I
+		     imaging spectroscopy (no gratings) with rich spectra may be affected by
+		     thermally-induced gain drifts.<br />
+		     <font color=green>Value Ranges: NULL, N, Y</font><br />
+		</td></tr>
+
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spectra_max_count'>Spectra Max Count</a>
+</font>
+</th>
+		<td> <font color='#008080'>spectra_max_count (acisparam)</font></td>
+		<td> Total maximum expected number of counts for any spectrum to be scientifically
+		     analyzed from this observation. Input is required for any ACIS-I non-grating
+		     observation. <br />
+		     <font color=green>Value Ranges: NULL, 1 to  100000</font><br />
+		</td></tr>
+
+
+<!--
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_flag'>Window Filter</a>
+</font>
+</th>
+		<td> <font color='#008080'>spwindow_flag (acisparam)</font></td>
+		<td> 	By setting this field to "Y", the user can specify one or more spatial
+			window filters -- rectangular regions on specific chips -- within which
+			event candidates can be rejected according to their energy or to their
+			frequency of occurrence. The use of spatial windows does <i>not</i> affect
+			the way the CCD is read out, so there will be no impact on event pile-up.
+			Spatial windows will reduce the telemetry volume by removing event candidates.
+			As many as six spatial windows may be specified for each chip. If windows
+			overlap, the order in which they are defined in the RPS form is important:
+			for each event candidate centered at (CHIPX=<i>x</i>, CHIPY=<i>y</i>), the
+			on-board software examines all spatial windows defined for that chip,
+			<i>in the order specified in the RPS form, lowest index first</i>, and
+			decides whether to reject the event based on the parameters in the 
+			<i>first</i> window that contains that (<i>x,y</i>).
+			If the event lies outside all windows, it will not be rejected
+			by the window filter.
+			If Y is selected, additional fields (Chip, Photon Inclusion, Start Row,
+			Start Column, Height, Width, Lowest Energy, Energy Range, Sample Rate,
+			Bias, Bias Frequency, Bias After) are valid<br />
+			<font color=green>Value Ranges: NULL, Y, N </font><br />
+		</td></tr>
+
+-->
+
+
+
+<!-- ########### ACIS Window Filter Parameters #########  -->
+
+<tr><td colspan= "3"><h2><a name='acis_window'></a>ACIS Window Filter Parameters <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow'>Window Filter</a>
+</font>
+</th>
+		<td> <font color='#008080'>spwindow (acisparam)</font></td>
+		<td> This set of parameters allows the user to filter the data to reduce the 
+			telemetry load.  The use of a Spatial Window does NOT affect the reading 
+			of the CCD, so there will be no impact on pulse pile-up.  Spatial windows 
+			do reduce the telemetry by selecting photons to insert into the telemetry stream. 
+			Spatial Windows can either Include all of the photons in the defined region or 
+			Exclude all of the photons in the defined
+			region. If Y is selected, additional fields
+			(<a href='#chip'>Chip</a>, 
+			<a href='#include_flag'>Photon Inclusion</a>,
+			<a href='#spwindow_start_row'>Start Row</a>,
+			<a href='#spwindow_start_column'>Start Column</a>,
+			<a href='#spwindow_height'>Height</a>,
+			<a href='#spwindow-width'>Width</a>,
+			<a href='#spwindow_lower_threshold'>Lower Energy</a>,
+			<a href='#spwindow_pha_range'>Energy Range</a>,
+			<a href='#spwindow_sample'>Sample Rate</a>) are
+			valid.<br />
+		<font color='green'>Value Ranges: NULL, Y, N </font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='ordr'>Ordr</a>
+</font>
+</th>
+		<td> <font color='#008080'>ordr (aciswin)</font></td>
+		<td>It is possible to have multiple windows.  With
+		this keyword you can create addition windows or change
+		the order among existing windows.  If you increase this value,
+			numbers of input windows for 
+			<a href='#chip'>Chip</a>, 
+			<a href='#include_flag'>Photon Inclusion</a>,
+			<a href='#spwindow_start_row'>Start Row</a>,
+			<a href='#spwindow_start_column'>Start Column</a>,
+			<a href='#spwindow_height'>Height</a>,
+			<a href='#spwindow-width'>Width</a>,
+			<a href='#spwindow_lower_threshold'>Lower Energy</a>,
+			<a href='#spwindow_pha_range'>Energy Range</a>,
+			<a href='#spwindow_sample'>Sample Rate</a>
+			are also increased.
+		<br />
+		<font color='green'>Value Ranges:  Integer</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='chip'>Chip</a>
+</font>
+</th>
+		<td> <font color='#008080'>chip (asicswin) <br />on <a href='#ordr'>ordr</a></font></td>
+		<td> <a href='#spwindow'>Spatial Window</a> field. A chip name affected 
+			by this ACIS window constraint.<br />
+		<font color='green'>Value Ranges: NULL, I0, I1, I2, I3, S0, S1, S2, S3, S4, S5</font>
+		</td>/</tr>
+
+<!--
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='include_flag'>Photon Inclusion</a>
+</font>
+</th>
+		<td> <font color='#008080'>include_flag (asicswin) <br />on <a href='#ordr'>ordr</a></font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a> field. A flag indicating 
+				whether the area defined below is included (Y),
+				or excluded (E). <br />
+			<font color='green'>Value Ranges: NULL, Y, E/Exculde (only after AO09) </font>
+		</td></tr>
+-->
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_start_row'>Start Row</a>
+</font>
+</th>
+		<td> <font color='#008080'>start_row (asicswin) <br />on 
+			<a href='#ordr'>ordr</a></font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a> field. Starting row: 
+			The starting row that will be read.<br />  
+		<font color='green'>Value Ranges: 1 to 1024</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_start_column'>Start Column</a>
+</font>
+</th>
+		<td> <font color='#008080'>start_column (asicswin) <br />
+			on <a href='#ordr'>ordr</a></font>
+		</td><td>  <a href='#spwindow'>Spatial Window</a> field. 
+			Starting column: The starting column that will be read.<br />
+		<font color='green'>Value Ranges:  1 to 1024</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_height'>Height</a>
+</font>
+</th>
+		<td> <font color='#008080'>height (asicswin) <br />
+			on <a href='#ordr'>ordr</a></font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a> field.  Height of Window: 
+				The number of ROWS of the window that will be read.<br />
+		<font color='green'>Value Ranges: 1 to  1024</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_width'>Width</a>
+</font>
+</th>
+		<td> <font color='#008080'>width (asicswin) <br />
+			on <a href='#ordr'>ordr</a></font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a>: Width of Window: 
+			The number of COLUMNS of the window that will be read.<br /> 
+		<font color='green'>Value Ranges: 1 to 1024</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_lower_threshold'>Lower Energy</a>
+</font>
+</th>
+		<td> <font color='#008080'>lower_threshold (asicswin) <br />
+			on <a href='#ordr'>ordr</a></font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a> field. Lower Threshold: 
+			The value for the lower discrimination threshold.  
+			Units are keV. <b>This keyword only has meaning
+			within the context of a spatial filter,
+			otherwise use the ENERGY FILTER above.</b><br />
+		<font color='green'>Value Ranges: 0.0 to 15</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_pha_range'>Energy Range</a>
+</font>
+</th>
+		<td> <font color='#008080'>pha_range (asicswin) <br />
+			on <a href='#ordr'>ordr</a</font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a> field. Energy Range 
+			for Window: The value for the energy range.  
+			Units are keV.  <b>This keyword only has meaning
+			within the context of a spatial filter,
+			otherwise use the ENERGY FILTER above. </b><br />
+		<font color='green'>Value Ranges: 0.0 to 15</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='spwindow_sample'>Sample Rate</a>
+</font>
+</th>
+		<td> <font color='#008080'>sample (asicswin) <br />
+				on <a href='#ordr'>ordr</a></font></td>
+		<td>  <a href='#spwindow'>Spatial Window</a> field. Sampling Rate: 
+			The value for the window readout rate.  A value of '1' 
+			indicates that every event will 
+			be read.  A value of '2' means that every 2nd event will
+		  	be read, etc.<br />
+            <b>Note</b>: By default, the sample rate is 0 and the window
+            specified is an <b>EXCLUSION</b> area.
+            To set as INCLUSION, set the sample rate to 1 in the desired
+            window and then  an exclusion window
+            for 1024 x 1024, with a sample value of 0.
+            <br>
+		<font color='green'>Value Ranges: 0 to 255</font>
+		</td></tr>
+
+<!--
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='bias_request'>Bias</a>
+</font>
+</th>
+		<td> <font color='#008080'>bias_request (asicswin) <br />
+		<td>  <a href='#spwindow'>Spatial Window</a> field. 
+			Spatial Window: To request a bias different from normal.
+			<font color=green>Value Ranges:  N (after AO9) </font><br />
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='frequency'>Bias Frequency</a>
+</font>
+</th>
+		<td> <font color='#008080'>frequency (asicswin) <br />
+		<td>  <a href='#spwindow'>Spatial Window</a> field. 
+			Spatial Window: Designates how often to check the bias.
+			<font color=green>Value Ranges: NULL, 0 to 1</font><br />
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='bias_after'>Bias After</a>
+</font>
+</th>
+		<td> <font color='#008080'>bias_after (asicswin) <br />
+		<td>  <a href='#spwindow'>Spatial Window</a> field. 
+			Spatial Window: The algorithm used for checking the bias.
+			<font color=green>Value Ranges: NULL, Y, N</font><br />
+		</td></tr>
+-->
+
+<!-- ########### TOO Parameters ###########  -->
+
+<tr><td colspan= "3"><h2><a name='too_parameters'></a>TOO Parameters <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_trig'>TOO</a>
+</th>
+		<td>&#160;</td>
+		<td> <font color='RED'> TOO parameters can only be
+		edited through CDO.</font> </td></tr>
+<tr align = left valign = top>
+<th>
+<a name='too_trig'>TOO ID</a>
+</th>
+		<td> <font color='#008080'>too_id (too)</font></td>
+		<td> TOO observation ID</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_trig'>TOO Trigger</a>
+</th>
+		<td> <font color='#008080'>too_trig (too)</font></td>
+		<td> Conditions what trigger this TOO observation</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_type'>TOO Type</a>
+</th>
+		<td> <font color='#008080'>too_type (too)</font></td>
+		<td> TOO Type describes the general lag interval 
+		in which the observation can be done after submission 
+		(categories: 0-4days, 4-12days, 12-30days, &gt;30days) - 
+		before AO 4 the options were just "fast" or "slow".</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_start'>Start</a>
+</th>
+		<td> <font color='#008080'>too_start (too)</font></td>
+		<td> A TOO observation start time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_stop'>Stop</a>
+</th>
+		<td> <font color='#008080'>too_stop (too)</font></td>
+		<td> A TOO observation stop time</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_followup'># of Follow-up Observations</a>
+</th>
+		<td> <font color='#008080'>too_followup (too)</font></td>
+		<td> Numbers of follow up observation for this TOO event</td></tr>
+
+<tr align = left valign = top>
+<th>
+<a name='too_remarks'>TOO Remarks</a>
+</th>
+		<td> <font color='#008080'>too_remarks (too)</font></td>
+		<td> A remarks for this TOO observation</td></tr>
+
+<!-- ########### Comments #############  -->
+
+<tr><td colspan= "3"><h2><a href='comments'></a>  Comments and Remarks <a href='#top'>Top</a></h2></td></tr>
+
+<tr align = left valign = top><th>USER Field</th><th>OCat Field (database)</th><th>Description</th></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='remarks'>Remarks</a>
+</font>
+</th>
+		<td> <font color='#008080'>remarks (target)</font></td>
+		<td> The remark area is reserved for
+		constraints. First set <a href='#constr_in_remarks'>'Constraints in Remarks?'</a>
+			 to Y. All other comments should be written in comment area.</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='purple'>
+<a name='comments'>Comments</a>
+</font>
+</th>
+		<td> <font color='#008080'>comments (target)</font></td>
+		<td> This area is kept as a record of why a change was
+		made. Comments here are read by OCat staff. But if the
+		comment impact the observation contact CDO for follow
+		through. 
+		Changes to HRC SI mode are made here as well.<br />
+		</td></tr>
+
+
+<!-- ########################################  -->
+
+<!-- 
+<tr><td colspan= "3"><h2>Obviated Parameters </h2></td></tr>
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='defocus'>Focus</a>
+</font>
+</th>
+		<td> <font color='#008080'>defocus (target)</font></td>
+		<td> A number determining how far in mm the focal plane will 
+			be moved toward or away from the mirrors.
+			Replaced by Sim-focus.
+		</td></tr>
+		
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='defocus'>FEP</a>
+</font>
+</th>
+		<td> <font color='#008080'>FEP (acicparam)</font></td>
+		<td> The CCD for FEP 0 to be assigned. FEP 0 has not
+		been a problem since AO 1.
+		In case of a problem we follow these
+		rules: (1) When the Obscat lists the science instrument as ACIS-I, chips
+		are assigned to FEPs 1, 2, 3, 4, 5, 0 in the following order:
+		 S3, S1, I3, I2, I1, I0, S2, S4, S5, S0 (2) When the
+		 Obscat lists the science instrument as ACIS-S, chips
+		 are assigned in the following order:
+		 S3, S1, S2, I3, S4, I2, S5, I1, I0, S0<br />
+
+
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='standard_chips'>Standard Chips</a>
+</font>
+</th>
+		<td> <font color='#008080'>standard_chips (acisparam)</font></td>
+		<td> <b>The value in this field is superseded by the
+		chip selection. </b>It is a logical value indicating that the standard ACIS chips should 
+			be used. The default is 'N'.  A 'Y' answer will activate 
+			the 6 standard ACIS chips. If N is selected, user needs to
+			select ccd chips from:
+			<a href='#ccdi0_on'>I0</a>,
+			<a href='#ccdi1_on'>I1</a>,
+			<a href='#ccdi2_on'>I2</a>,
+			<a href='#ccdi3_on'>I3</a>,
+			<a href='#ccds0_on'>S0</a>,
+			<a href='#ccds1_on'>S1</a>,
+			<a href='#ccds2_on'>S2</a>,
+			<a href='#ccds3_on'>S3</a>,
+			<a href='#ccds4_on'>S4</a>,
+			<a href='#ccds5_on'>S5</a>.<br />
+		 <font color='green'>Value Ranges: NULL, Y, N</font></td></tr>
+ 
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='bias_request'>Bias</a>
+</font>
+</th>
+		<td> <font color='#008080'>bias_request (acisparam)</font></td>
+		<td> 
+			To request an additional bias or biases.  We
+			don't recommend doing this.
+		<font color='green'>Value Ranges: NULL, Y, N </font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='frequency'>Frequency</a>
+</font>
+</th>
+		<td> <font color='#008080'>frequency(acisparam)</font></td>
+		<td> 
+			Designates how often to compute a new bias.<br />
+		<font color='green'>Value Ranges: NULL, 0 to 1</font>
+		</td></tr>
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='bias_after'>After</a>
+</font>
+</th>
+		<td> <font color='#008080'>bias_after(acisparam)</font></td>
+		<td> 
+			to request a bias to be computed after the observation.<br />
+		<font color='green'>Value Ranges: NULL, Y, N</font>
+		</td></tr>
+
+
+<tr align = left valign = top>
+<th>
+<font color='black'>
+<a name='hrc_config'>HRC Configuration</a>
+</font>
+</th>
+		<td> <font color='#008080'>hrc_config (hrcparam)</font></td>
+		<td> HRC Configuration<br /> A Shorthand for a specific
+		SIM motion.  No longer used.
+		<font color='green'>Value Ranges: "NORMAL",
+ 		"HESF", "LESF", "CHOP"</font>
+		</td></tr>
+-->
+
+             
+
+</table>
+
+<p>
+<a href='#top'><strong>Back to Top</strong></a>
+</p>
+
+<div style='padding-bottom:800px;'>
+</div>
+
+<hr>
+<div style='padding-top:10px;, padding-bottom:20px;'>
+<b>Last Update: Aug 24, 2021</b>
+</div>
+
+</body>
+</html>
+
