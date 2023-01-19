@@ -70,7 +70,7 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index():
 #
 #--- showing the status of input obsids (page 2)

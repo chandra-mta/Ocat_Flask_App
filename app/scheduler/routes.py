@@ -78,7 +78,7 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index():
     """
     schedule data table content:

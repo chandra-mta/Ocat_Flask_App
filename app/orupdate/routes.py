@@ -80,14 +80,13 @@ def before_request():
 #
         ocf.clean_tmp_files()
 
-
 #----------------------------------------------------------------------------------
 #-- index: this is the main function to dispaly orupdate page                    --
 #----------------------------------------------------------------------------------
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index():
     user         = current_user.username
 #

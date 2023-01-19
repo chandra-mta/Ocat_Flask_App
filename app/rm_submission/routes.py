@@ -73,7 +73,7 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index():
 #
 #--- data:      a list form of updates_table.list

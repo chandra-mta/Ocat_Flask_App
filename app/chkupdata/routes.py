@@ -91,7 +91,7 @@ def before_request():
 @bp.route('/',             methods=['GET', 'POST'])
 @bp.route('/<name>',       methods=['GET', 'POST'])
 @bp.route('/index/<name>', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index(name=''):
 #
 #--- initialize
