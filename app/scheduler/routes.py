@@ -24,6 +24,7 @@ from flask_login        import current_user, login_required
 
 from app.scheduler      import bp
 from app.email          import send_email
+from app.models         import register_user
 
 import app.supple.ocat_common_functions     as ocf  #--- save commonly used functions
 import app.scheduler.read_poc_schedule      as rps  #--- create a data table from the database
@@ -71,6 +72,8 @@ def before_request():
 #--- remove old temp files
 #
         ocf.clean_tmp_files()
+    else:
+        register_user()
 
 #-------------------------------------------------------------------
 #-- index: this is the main function to display scheduler page    --

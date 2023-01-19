@@ -22,7 +22,7 @@ from flask          import request, g, jsonify, current_app
 from flask_login    import current_user, login_required
 
 from app            import db
-from app.models     import User 
+from app.models     import User, register_user 
 from app.express    import bp
 
 import app.supple.ocat_common_functions         as ocf
@@ -63,6 +63,8 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
+    else:
+        register_user()
 
 #----------------------------------------------------------------------------------
 #-- index: this is the main function to dispaly express submission page          --

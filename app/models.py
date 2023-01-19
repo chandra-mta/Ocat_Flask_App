@@ -7,9 +7,9 @@
 #           last update: May 24, 2021                                               #
 #                                                                                   #
 #####################################################################################
-
+import os
 from flask              import current_app
-from flask_login        import UserMixin
+from flask_login        import UserMixin, login_user
 from werkzeug.security  import generate_password_hash, check_password_hash
 import jwt
 
@@ -26,6 +26,16 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+#----------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------
+
+def register_user():
+    username = 'waaron'
+    #username = os.environ['REMOTE_USER'] #Depends on Apache Web Server
+    user = User.query.filter_by(username=username).first()
+    login_user(user)
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------

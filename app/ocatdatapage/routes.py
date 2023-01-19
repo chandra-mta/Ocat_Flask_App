@@ -23,7 +23,7 @@ from flask              import session, request, current_app, escape
 from flask_login        import current_user, login_required
 
 from app                import db
-from app.models         import User 
+from app.models         import User, register_user 
 from app.ocatdatapage   import bp
 from app.ocatdatapage.forms import OcatParamForm
 
@@ -95,6 +95,8 @@ def before_request():
 #--- remove old temp files
 #
         ocf.clean_tmp_files()
+    else:
+        register_user()
 
 #--------------------------------------------------------------------------
 #-- index: this is the main function to display ocatdata page            --
