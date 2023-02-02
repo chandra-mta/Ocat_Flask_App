@@ -8,7 +8,8 @@
 #                                                                                   #
 #####################################################################################
 import os
-from flask              import current_app
+import Chandra.Time
+from flask              import current_app, session
 from flask_login        import UserMixin, login_user
 from werkzeug.security  import generate_password_hash, check_password_hash
 import jwt
@@ -32,6 +33,10 @@ class User(UserMixin, db.Model):
 #----------------------------------------------------------------------------------------
 
 def register_user():
+    session.clear()
+    session['session_start'] = int(Chandra.Time.DateTime().sec)
+    session.permanent = True
+    session.modified = True
     username = 'waaron'
     #username = os.environ['REMOTE_USER'] #Depends on Apache Web Server
     user = User.query.filter_by(username=username).first()

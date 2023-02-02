@@ -18,7 +18,6 @@ from app            import db
 from app.main.forms import EmptyForm
 from app.models     import User, register_user
 from app.main       import bp
-
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
 #----------------------------------------------------------------------------------
@@ -31,8 +30,8 @@ def before_request():
         db.session.commit()
     else:
         print(f'current_user.is authenticated is {current_user.is_authenticated}')
+        print(f'Running Main before_request')
         register_user()
-        print(f'current_user.is authenticated is {current_user.is_authenticated}')
 
 #----------------------------------------------------------------------------------
 #-- index: this is the main function to dispaly main page                        --
