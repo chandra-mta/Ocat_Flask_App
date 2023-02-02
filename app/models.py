@@ -37,8 +37,7 @@ def register_user():
     session['session_start'] = int(Chandra.Time.DateTime().sec)
     session.permanent = True
     session.modified = True
-    username = 'waaron'
-    #username = os.environ['REMOTE_USER'] #Depends on Apache Web Server
+    username = os.environ['REMOTE_USER'] #Similar Terminology to Apache Web Server, but assigned in test environment setup
     user = User.query.filter_by(username=username).first()
     login_user(user)
 

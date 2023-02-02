@@ -6,4 +6,4 @@ setenv PYTHONPATH "/soft/SYBASE16.0/OCS-16_0/python/python34_64r/lib:$PYTHONPATH
 
 setenv FLASK_APP ocat
 setenv FLASK_ENV development
-
+setenv REMOTE_USER $USER

@@ -25,12 +25,9 @@ from app.main       import bp
 @bp.before_app_request
 def before_request():
     if current_user.is_authenticated:
-        print(f'current_user.is authenticated is {current_user.is_authenticated}')
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
     else:
-        print(f'current_user.is authenticated is {current_user.is_authenticated}')
-        print(f'Running Main before_request')
         register_user()
 
 #----------------------------------------------------------------------------------
