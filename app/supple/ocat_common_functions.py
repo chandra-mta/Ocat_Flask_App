@@ -25,7 +25,7 @@ import getpass
 import pathlib
 from hmac import compare_digest as compare_hash
 
-sys.path.append('/data/mta/Script/Python3.8/envs/ska3-shiny/lib/python3.8/site-packages')
+sys.path.append('/proj/sot/ska3/flight/lib/python3.8/site-packages')
 import Chandra.Time
 
 from flask  import current_app
