@@ -1,25 +1,9 @@
 #!/proj/sot/ska3/flight/bin/python -E
 
-#########################################################################################
-#                                                                                       #
-#       update_user_database.py: create user name/email sqlite database                 #
-#                                                                                       #
-#           author: w.aaron (william.aaron@cfa.harvard.edu                              #
-#                                                                                       #
-#           last update: Feb 06, 2023                                                   #
-#                                                                                       #
-#########################################################################################
-
-
-
 import sys
 import os
 import sqlite3
 
-
-#-----------------------------------------------------
-#--- find_email: pull user's email from getent aliases
-#-----------------------------------------------------
 
 
 def find_email(member):
@@ -36,20 +20,22 @@ def find_email(member):
 cmd = 'mv -f app.db app.db~'
 os.system(cmd)
 
-#.groups file controls access to web directory. This file should be the primary file for where we record users.
 with open('/data/mta4/CUS/www/.groups', 'r') as f:
     data = [line.strip() for line in f.readlines()]
 
+#Including a test user for the sake of development.
 
-id_list    = []
-user_list  = []
-mail_list  = []
-group_list = []
+id_list    = [0]
+user_list  = ['testUSINT']
+mail_list  = ['waaron@head.cfa.harvard.edu']
+group_list = ['test']
 
 k = 0
-for ent in data:
+for ent in data:#Must change
+    print(ent)
     atemp = [a.strip() for a in ent.split(':')]
-    if (len(atemp) == 2) and (atemp[0][0] !='#'): #Cleanup for comments or ill-formated lines in .groups file
+    #Cleanup
+    if (len(atemp) == 2) and (atemp[0][0] !='#'): #cleanup for comments or ill-formated lines in .groups file
         groupname = atemp[0]
         groupmember = atemp[1].split()
         for member in groupmember:
@@ -80,3 +66,4 @@ for k in range(0, dlen):
     cur.execute(user_sql, (id_list[k], user_list[k], mail_list[k], group_list[k]))
 
 con.commit() 
+
