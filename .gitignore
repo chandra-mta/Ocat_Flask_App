@@ -1,0 +1,5 @@
+#Ignore Pycache Files
+__pycache__/
+
+#Ignore Database Files
+*.db
