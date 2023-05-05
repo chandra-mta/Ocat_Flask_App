@@ -47,7 +47,7 @@ bcc          = 'cus@cfa.harvard.edu'
 #--- closing of email text
 #
 mail_end = '\n\nIf you have any questions about this email, please contact '
-mail_end = mail_end + 'bwargelin@head.cfa.harvard.edu.\n'
+mail_end = mail_end + 'bwargelin@cfa.harvard.edu.\n'
 
 #-----------------------------------------------------------------------------------------------
 #-- send_notifications: send notificaiton email to POC, MP, ARCORP, and HRC                   --

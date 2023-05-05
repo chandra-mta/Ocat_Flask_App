@@ -852,9 +852,9 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
 
                 mc   = re.search('acis', inst.lower())
                 if mc is not None:
-                    recipient = 'acisdude@head.cfa.harvard.edu'
+                    recipient = 'acisdude@cfa.harvard.edu'
                 else:
-                    recipient = 'hrcdude@head.cfa.harvard.edu'
+                    recipient = 'hrcdude@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
                 text = text + "Please  verify it, then go to: " + html_base + 'orupdate'
@@ -884,7 +884,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
 
                 subject = otype.upper() + ' General/ACIS Status Signed Off Request: OBSID: ' + obsid
 
-                recipient = 'arcops@head.cfa.harvard.edu'
+                recipient = 'arcops@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
                 text = text + "Please  verify it, then go to: " + html_base + 'orupdate'

@@ -27,7 +27,7 @@ with open('/data/mta4/CUS/www/.groups', 'r') as f:
 
 id_list    = [0]
 user_list  = ['testUSINT']
-mail_list  = ['waaron@head.cfa.harvard.edu']
+mail_list  = ['william.aaron@cfa.harvard.edu']
 group_list = ['test']
 
 k = 0
