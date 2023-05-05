@@ -22,7 +22,7 @@ class Config(object):
 #
 #--- database and csrf need secret_key
 #
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    #SECRET_KEY = os.environ.get('SECRET_KEY')
 #
 #--- database
 #

@@ -24,7 +24,7 @@ from flask          import request, g, jsonify, current_app
 from flask_login    import current_user, login_required
 
 from app            import db
-from app.models     import User
+from app.models     import User, register_user
 from app.chkupdata  import bp
 from app.chkupdata.forms import SubmitForm
 
@@ -83,6 +83,8 @@ def before_request():
 #--- remove old temp files
 #
         ocf.clean_tmp_files()
+    else:
+        register_user()
 
 #--------------------------------------------------------------------------
 #-- index: this is the main function to display chkupdata page           --
@@ -91,7 +93,7 @@ def before_request():
 @bp.route('/',             methods=['GET', 'POST'])
 @bp.route('/<name>',       methods=['GET', 'POST'])
 @bp.route('/index/<name>', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index(name=''):
 #
 #--- initialize

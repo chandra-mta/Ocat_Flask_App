@@ -22,7 +22,7 @@ from flask          import request, g, jsonify, current_app
 from flask_login    import current_user, login_required
 
 from app            import db
-from app.models     import User 
+from app.models     import User, register_user 
 from app.rm_submission    import bp
 import app.email    as email
 
@@ -66,6 +66,8 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
+    else:
+        register_user()
 
 #----------------------------------------------------------------------------------
 #-- index: this is the main function to dispaly remove submission page           --
@@ -73,7 +75,7 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def index():
 #
 #--- data:      a list form of updates_table.list

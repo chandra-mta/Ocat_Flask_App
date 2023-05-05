@@ -1,5 +1,5 @@
 /data/mta4/CUS/www/Usint/ocat/:                             ocat_dir :#   a ocat data directory
 /data/mta4/obs_ss/:                                         obs_ss   :#   a directory to keep obs related files
-/data/mta4/www/CUS/Usint/:                                  cus_dir  :#   a USINT script holding directory
+/data/mta4/CUS/www/Usint/:                                  cus_dir  :#   a USINT script holding directory
 /data/mta4/CUS/www/Usint/Pass_dir/:                         pass_dir :#   a directory contatins user name file etc
 /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/:  info_dir :#   observation information directory

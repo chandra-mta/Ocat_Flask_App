@@ -1,8 +1,8 @@
-#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #########################################################################################
 #													                                    #
-#	write_this_week_too_poc.py: write out this week's POC to /data/mta/TOO-POC			#
+#	write_this_week_too_poc.py: write out this week's POC to /home/mta/TOO-POC			#
 #													                                    #
 #       Note: this script is run by mta, not cus                                        #
 #                                                                                       #
