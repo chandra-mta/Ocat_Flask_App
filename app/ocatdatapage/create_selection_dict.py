@@ -318,7 +318,7 @@ def create_selection_dict(obsid):
 
     p_id         = 'grating'
     label        = 'Grating'
-    choice       = ('NONE', 'LETG', 'HETG', 'TEST')
+    choice       = ('NONE', 'LETG', 'HETG')
     choices      = [(x, x) for x in choice]
     lind         = 'l'
     group        = 'gen'
