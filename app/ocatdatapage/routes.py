@@ -245,12 +245,6 @@ def update_ct_dict(ct_dict, f_data):
         ct_dict['roll_ordr'][-1]            =  1
         ct_dict['roll_constraint'][-1][0]   = 'Y'
 
-    if 'acis_edit' in f_data:
-        ct_dict['acis_open'][-1]            = 'open'
-
-    if 'hrc_edit'  in f_data:
-        ct_dict['hrc_open'][-1]             = 'open'
-
     if 'awin_edit' in f_data:
         ct_dict['spwindow_flag'][-1]        = 'Y'
         ct_dict['aciswin_no'][-1]           =  1

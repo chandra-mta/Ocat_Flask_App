@@ -490,10 +490,7 @@
 
     {% if not ct_dict['instrument'][-1] in ['HRC-I', 'HRC-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation.
-            <span style='font-size:65%;'>
-            <input type='submit' name='hrc_edit' value='Open to Edit'>
-            </span>
+            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation. Instrument is {{ct_dict['instrument'][-1]}}.
         </h3>
     {% else %}
     </h2>
@@ -515,10 +512,7 @@
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation.
-            <span style='font-size:65%;'>
-            <input type='submit' name='acis_edit' value='Open to Edit'>
-            </span>
+            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation. Instrument is {{ct_dict['instrument'][-1]}}.
         </h3>
     {% else %}
         <table>
@@ -612,7 +606,7 @@
     {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Help Page)', 55) }}
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
-        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation.</h3>
+        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation. Instrument is {{ct_dict['instrument'][-1]}}</h3>
 
     {% elif ct_dict['spwindow_flag'][-1] in null_list %}
         <input type='submit' name='awin_edit' value = 'Open to Edit'>
