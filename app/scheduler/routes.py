@@ -23,7 +23,7 @@ from flask              import request, current_app
 from flask_login        import current_user, login_required
 
 from app.scheduler      import bp
-from app.email          import send_email
+from app.emailing       import send_email
 from app.models         import register_user
 
 import app.supple.ocat_common_functions     as ocf  #--- save commonly used functions

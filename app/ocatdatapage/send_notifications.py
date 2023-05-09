@@ -19,7 +19,7 @@ from flask_login        import current_user
 from flask              import current_app
 
 import app.supple.ocat_common_functions         as ocf
-import app.email                                as email
+import app.emailing                             as email
 import app.ocatdatapage.create_selection_dict   as csd
 #
 #--- directory

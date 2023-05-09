@@ -29,7 +29,7 @@ import app.supple.ocat_common_functions         as ocf
 import app.supple.get_value_from_sybase         as gvfs
 import app.ocatdatapage.create_selection_dict   as csd
 import app.ocatdatapage.update_data_record_file as udrf
-import app.email                                as email
+import app.emailing                             as email
 #
 #--- directory
 #

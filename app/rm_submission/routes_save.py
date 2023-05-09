@@ -24,7 +24,7 @@ from flask_login    import current_user, login_required
 from app            import db
 from app.models     import User 
 from app.rm_submission    import bp
-import app.email    as email
+import app.emailing as email
 
 import app.supple.ocat_common_functions         as ocf
 #
