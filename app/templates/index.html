@@ -19,37 +19,39 @@
                 <span style='padding-right:10px;'></span>
                 <button onclick="GoToPage()">Open</button>
         </li>
+        <!-- Option for viewing Parameter Check Page for specific revision. Need to uncomment obsidrev selection in GoToPage function to allow this to work
         <li>
                 <b style='font-size:120%;'>Parameter Check Page </b> 
                 <b style='font-size:100%;'>&lt;ObsID&gt;.&lt;Rev#&gt;:</b> 
                 <input type='text' name='obsid' id='obsidrev' size=10>
                 <span style='padding-right:10px;'></span>
         </li>
+        -->
         <li style='padding-top:10px;'>
             <a href="javascript:void(0);" onclick="openTab('../orupdate', 'Orupdate');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open Target Parameter Status Page
+                Target Parameter Status Page
                 </span>
             </a>
         </li>
         <li style='padding-top:20px;'>
             <a href="javascript:void(0);" onclick="openTab('../express', 'Express');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open Express Approval Page
+                Express Approval Page
                 </span>
             </a>
         </li>
         <li>
             <a href="javascript:void(0);" onclick="openTab('../rm_submission', 'Remove');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open Remove Accidental Submission Page
+                Remove Accidental Submission Page
                 </span>
             </a>
         </li>
         <li style='padding-top:20px;'>
             <a href="javascript:void(0);" onclick="openTab('../scheduler', 'Schedule');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open POC Duty Scheduler
+                TOO POC Duty Scheduler
                 </span>
             </a>
         </li>
@@ -112,7 +114,8 @@
             var  chk    = 0;
 
             var  tail1  = document.getElementById('obsid').value;
-            var  tail2  = document.getElementById('obsidrev').value;
+            //Uncomment this section to allow for the main page to open the Parameter Check Page for specific revisions
+            //var  tail2  = document.getElementById('obsidrev').value;
 
             if(tail1 !== ''){
                 tail = tail1;
