@@ -19,14 +19,14 @@
                 <span style='padding-right:10px;'></span>
                 <button onclick="GoToPage()">Open</button>
         </li>
-        <!-- Option for viewing Parameter Check Page for specific revision. Need to uncomment obsidrev selection in GoToPage function to allow this to work
+        <!-- Option for viewing Parameter Check Page for specific revision. Need to uncomment obsidrev selection in GoToPage function to allow this to work -->
         <li>
                 <b style='font-size:120%;'>Parameter Check Page </b> 
                 <b style='font-size:100%;'>&lt;ObsID&gt;.&lt;Rev#&gt;:</b> 
                 <input type='text' name='obsid' id='obsidrev' size=10>
                 <span style='padding-right:10px;'></span>
         </li>
-        -->
+        <!---->
         <li style='padding-top:10px;'>
             <a href="javascript:void(0);" onclick="openTab('../orupdate', 'Orupdate');">
                 <span style='font-weight:bold; font-size:110%;'>
@@ -91,12 +91,6 @@
     </ul>
     </form>
 
-    <p style='padding-top:20px;'>
-    <b>Note</b>: If a tab with the targeted page is already open, the links above won't 
-    open a new tab.  After clicking a link, if nothing happens, check opened tabs to see 
-    whether the page is already open.
-    </p>
-
 {% endblock %}
 
 
@@ -115,7 +109,7 @@
 
             var  tail1  = document.getElementById('obsid').value;
             //Uncomment this section to allow for the main page to open the Parameter Check Page for specific revisions
-            //var  tail2  = document.getElementById('obsidrev').value;
+            var  tail2  = document.getElementById('obsidrev').value;
 
             if(tail1 !== ''){
                 tail = tail1;

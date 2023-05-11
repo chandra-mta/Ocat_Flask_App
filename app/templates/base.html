@@ -115,6 +115,8 @@
             if(test.location.href == 'about:blank'){
                 name  = window.open(html, name);
                 name.focus();
+            }else{
+                test.focus(); //If Tab already open, redirects browser to that tab.
             }
         }
 <!-- -->
