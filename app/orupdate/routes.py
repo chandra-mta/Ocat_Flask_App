@@ -45,11 +45,7 @@ for ent in data:
     exec("%s = '%s'" %(var, line))
 
 s_dir    = os.path.join(basedir, '../static/')
-#
-#--- temprary writing space
-#
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
+
 #
 #--- current chandra time
 #
