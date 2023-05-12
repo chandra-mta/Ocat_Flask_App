@@ -48,6 +48,11 @@ for ent in data:
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
 #
+#--- set a temporary wrting space
+#
+tail   = int(time.time() * random.random())
+zspace = '/tmp/zspace' + str(tail)
+#
 #--- read ocat parameter list
 #
 basedir = os.path.abspath(os.path.dirname(__file__))

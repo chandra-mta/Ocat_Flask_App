@@ -40,7 +40,11 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-
+#
+#--- temprary writing space
+#
+rtail  = int(time.time() * random.random())
+zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time and a day and a half ago
 #

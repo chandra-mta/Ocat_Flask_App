@@ -34,6 +34,11 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+#
+#--- temprary writing space
+#
+rtail  = int(time.time() * random.random())
+zspace = '/tmp/zspace' + str(rtail)
 
 http_address = '127.0.0.1:5000/'                #--- UPDATE UPDATE UPDATE!!!!
 sender       = 'cus@cfa.harvard.edu'

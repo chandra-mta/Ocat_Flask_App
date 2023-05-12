@@ -41,7 +41,11 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-
+#
+#--- temporary file location/name
+#
+rtail  = int(time.time() * random.random())
+zspace = '/tmp/zspace' + str(rtail)
 #
 #--- set a list of years (from the last year to five year from the last year)
 #
