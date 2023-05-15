@@ -13,7 +13,7 @@ import os
 import sys
 import re
 import string
-import random
+#import random
 import time
 from datetime import datetime
 import Chandra.Time
@@ -46,8 +46,8 @@ for ent in data:
 #
 #--- set a temprary wrting space
 #
-tail = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(tail)
+#tail = int(time.time() * random.random())
+#zspace = '/tmp/zspace' + str(tail)
 #
 #--- read ocat parameter list
 #
@@ -82,7 +82,7 @@ def before_request():
 #
 #--- remove old temp files
 #
-        ocf.clean_tmp_files()
+        #ocf.clean_tmp_files()
     else:
         register_user()
 

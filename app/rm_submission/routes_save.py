@@ -43,8 +43,8 @@ for ent in data:
 #
 #--- temprary writing space
 #
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
+#rtail  = int(time.time() * random.random())
+#zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time and a day and a half ago
 #

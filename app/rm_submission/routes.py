@@ -13,7 +13,7 @@ import re
 import string
 import Chandra.Time
 import time
-import random
+#import random
 import threading
 from datetime       import datetime
 
@@ -43,8 +43,8 @@ for ent in data:
 #
 #--- temprary writing space
 #
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
+#rtail  = int(time.time() * random.random())
+#zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time and a day and a half ago
 #

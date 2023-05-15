@@ -12,7 +12,7 @@ import sys
 import os
 import re
 import time
-import random 
+#import random 
 import copy
 import Chandra.Time
 
@@ -45,8 +45,8 @@ null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'Non
 #
 #--- temprary writing space
 #
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
+#rtail  = int(time.time() * random.random())
+#zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time
 #
@@ -1487,16 +1487,19 @@ def create_selection_dict(obsid):
     part = 'https://cxc.harvard.edu/targets/'  + str(ct_dict['seq_nbr']) + '/'
     part = part + str(ct_dict['seq_nbr'])      + '.' + str(ct_dict['obsid'])   + '.'
 
-    cmd  = 'ls /data/targets/' + str(ct_dict['seq_nbr']) + '/*.gif >' + zspace
-    os.system(cmd)
+    test = ''.join([each for each in os.listdir(f"/data/targets/{str(ct_dict['seq_nbr'])}") if each.endswith('.gif')])
 
-    with open(zspace, 'r') as f:
-        test = f.read()
+    #cmd  = 'ls /data/targets/' + str(ct_dict['seq_nbr']) + '/*.gif >' + zspace
+    #os.system(cmd)
 
-    cmd  = 'rm -rf ' + zspace
-    os.system(cmd)
+    #with open(zspace, 'r') as f:
+    #    test = f.read()
+
+    #cmd  = 'rm -rf ' + zspace
+    #os.system(cmd)
 
     mc   = re.search('soe', test)
+
     if mc is not None:
         rass  = part + 'soe.rass.gif'
         rosat = part + 'soe.pspc.gif'

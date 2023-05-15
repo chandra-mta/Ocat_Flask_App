@@ -418,11 +418,12 @@ def find_other_revisions(obsid, rev=0):
                             if 0, find all revisions
     output: other_rev   --- a list of html link to the other rev
     """
-    cmd  = 'ls ' + ocat_dir + 'updates/' + obsid + '.* > ' + zspace
-    os.system(cmd)
+    #cmd  = 'ls ' + ocat_dir + 'updates/' + obsid + '.* > ' + zspace
+    #os.system(cmd)
 
-    data = read_data_file(zspace, remove=1)
+    #data = read_data_file(zspace, remove=1)
 
+    data = [each for each in os.listdir(f"{ocat_dir}/updates/") if each.startswith(str(obsid)+".")]
     rev       = int(rev)
     other_rev = []
     for ent in data:
@@ -588,7 +589,7 @@ def sleep_while_locked(ifile, tmax=10):
 #-------------------------------------------------------------------
 #-- clean_tmp_files: remove temp files kept in /tmp/ directory    --
 #-------------------------------------------------------------------
-
+#If no futher errors for the removal of zspace directorys, then this cleanupfunction can safely be removed.
 def clean_tmp_files():
     """
     remove temp files kept in /tmp/ directory  (a day old)

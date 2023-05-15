@@ -13,7 +13,7 @@ import re
 import string
 import time
 import Chandra.Time
-import random
+#import random
 import copy
 from   datetime         import datetime
 import numpy
@@ -50,8 +50,8 @@ for ent in data:
 #
 #--- set a temporary wrting space
 #
-tail   = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(tail)
+#tail   = int(time.time() * random.random())
+#zspace = '/tmp/zspace' + str(tail)
 #
 #--- read ocat parameter list
 #
@@ -94,7 +94,7 @@ def before_request():
 #
 #--- remove old temp files
 #
-        ocf.clean_tmp_files()
+        #ocf.clean_tmp_files()
     else:
         register_user()
 
@@ -118,7 +118,7 @@ def index(obsid=''):
 #
         try:
             ct_dict  = csd.create_selection_dict(obsid)
-        except:
+        except Exception as e: #use variable e for debugging purposes beyond failure to find Obsid in the database.
             session.pop('_flashes', None)
             flash('Obsid is not found in the database!')
 

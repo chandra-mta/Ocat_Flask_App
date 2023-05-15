@@ -12,7 +12,7 @@ import os
 import sys
 import re
 import string
-import random
+#import random
 import time
 import copy
 import threading
@@ -44,8 +44,8 @@ for ent in data:
 #
 #--- temporary file location/name
 #
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
+#rtail  = int(time.time() * random.random())
+#zspace = '/tmp/zspace' + str(rtail)
 #
 #--- set a list of years (from the last year to five year from the last year)
 #
@@ -71,7 +71,7 @@ def before_request():
 #
 #--- remove old temp files
 #
-        ocf.clean_tmp_files()
+        #ocf.clean_tmp_files()
     else:
         register_user()
 
