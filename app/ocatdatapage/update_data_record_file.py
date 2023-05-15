@@ -14,7 +14,6 @@ import re
 import math
 import time
 import Chandra.Time
-#import random
 import threading
 from flask          import flash, current_app
 from flask_login    import current_user
@@ -35,11 +34,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- temprary writing space
-#
-#rtail  = int(time.time() * random.random())
-#zspace = '/tmp/zspace' + str(rtail)
 
 null_list = [None, 'NA', 'N', 'NULL', 'None', 'NONE',  'n', 'null', 'none', '', ' ']
 skip_list = ['monitor_series', 'obsids_list', 'remarks', 'comments', 'approved',\
@@ -763,10 +757,6 @@ def set_obsidrev(ct_dict):
     output: obsidrev    --- <obsid>.<rev#> with the latest revision #
     """
     obsid = ct_dict['obsid'][-1]
-    #cmd   = 'ls ' + ocat_dir + 'updates/' + str(obsid) + '.* > ' + zspace
-    #os.system(cmd)
-    #data  = ocf.read_data_file(zspace, remove=1)
-
     data = [each for each in os.listdir(f"{ocat_dir}/updates/") if each.startswith(str(obsid)+".")]
     if len(data) > 0:
         atemp = re.split('\.', data[-1])

@@ -12,7 +12,6 @@ import os
 import sys
 import re
 import string
-import random
 import time
 import math
 import numpy
@@ -42,11 +41,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- temporary writing space
-#
-tail = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(tail)
 
 #--------------------------------------------------------------------------
 #-- read_data_file: read a data file and create a data list              --
@@ -418,11 +412,6 @@ def find_other_revisions(obsid, rev=0):
                             if 0, find all revisions
     output: other_rev   --- a list of html link to the other rev
     """
-    #cmd  = 'ls ' + ocat_dir + 'updates/' + obsid + '.* > ' + zspace
-    #os.system(cmd)
-
-    #data = read_data_file(zspace, remove=1)
-
     data = [each for each in os.listdir(f"{ocat_dir}/updates/") if each.startswith(str(obsid)+".")]
     rev       = int(rev)
     other_rev = []
@@ -585,34 +574,6 @@ def sleep_while_locked(ifile, tmax=10):
             break
 
     return chk 
-
-#-------------------------------------------------------------------
-#-- clean_tmp_files: remove temp files kept in /tmp/ directory    --
-#-------------------------------------------------------------------
-#If no futher errors for the removal of zspace directorys, then this cleanupfunction can safely be removed.
-def clean_tmp_files():
-    """
-    remove temp files kept in /tmp/ directory  (a day old)
-    input:  none but check /tmp/zspace*
-    output: cleaned /tmp/ dir
-    """
-    now = Chandra.Time.DateTime().secs
-    cmd = 'touch ' + zspace
-    os.system(cmd)
-    cmd = 'ls /tmp/zspace* > ' + zspace 
-    os.system(cmd)
-
-    data = read_data_file(zspace, remove=1)
-    for ent in data:
-        if os.path.isfile(ent):
-            stime = find_file_creation_time(ent)
-            diff  = now - stime
-            if diff > 86000:
-                try:
-                    rm_files(ent)
-                except:
-                    pass
-
 #-----------------------------------------------------------------------------------------------
 #-- find_file_creation_time: find out a file creation time in Chandra Time                    --
 #-----------------------------------------------------------------------------------------------

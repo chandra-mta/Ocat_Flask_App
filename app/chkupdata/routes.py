@@ -13,7 +13,6 @@ import os
 import sys
 import re
 import string
-#import random
 import time
 from datetime import datetime
 import Chandra.Time
@@ -43,11 +42,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- set a temprary wrting space
-#
-#tail = int(time.time() * random.random())
-#zspace = '/tmp/zspace' + str(tail)
 #
 #--- read ocat parameter list
 #
@@ -79,10 +73,6 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
-#
-#--- remove old temp files
-#
-        #ocf.clean_tmp_files()
     else:
         register_user()
 

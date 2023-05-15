@@ -13,7 +13,6 @@ import re
 import string
 import Chandra.Time
 import time
-#import random
 from datetime           import datetime
 import threading
 
@@ -46,11 +45,6 @@ for ent in data:
 
 s_dir    = os.path.join(basedir, '../static/')
 #
-#--- temprary writing space
-#
-#rtail  = int(time.time() * random.random())
-#zspace = '/tmp/zspace' + str(rtail)
-#
 #--- current chandra time
 #
 now    = int(Chandra.Time.DateTime().secs)
@@ -75,10 +69,6 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
-#
-#--- remove old temp files
-#
-        #ocf.clean_tmp_files()
     else:
         register_user()
 

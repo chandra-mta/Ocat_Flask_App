@@ -12,7 +12,6 @@ import sys
 import os
 import re
 import time
-#import random 
 import copy
 import Chandra.Time
 
@@ -42,11 +41,6 @@ choice_nncp = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
 choice_cstm = (('N','NO'), ('CUSTOM','YES'),)
 
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
-#
-#--- temprary writing space
-#
-#rtail  = int(time.time() * random.random())
-#zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time
 #
@@ -1488,16 +1482,6 @@ def create_selection_dict(obsid):
     part = part + str(ct_dict['seq_nbr'])      + '.' + str(ct_dict['obsid'])   + '.'
 
     test = ''.join([each for each in os.listdir(f"/data/targets/{str(ct_dict['seq_nbr'])}") if each.endswith('.gif')])
-
-    #cmd  = 'ls /data/targets/' + str(ct_dict['seq_nbr']) + '/*.gif >' + zspace
-    #os.system(cmd)
-
-    #with open(zspace, 'r') as f:
-    #    test = f.read()
-
-    #cmd  = 'rm -rf ' + zspace
-    #os.system(cmd)
-
     mc   = re.search('soe', test)
 
     if mc is not None:

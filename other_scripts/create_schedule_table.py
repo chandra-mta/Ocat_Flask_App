@@ -39,12 +39,7 @@ sys.path.append(odir)
 #--- cus common functions
 #
 import ocat_common_functions         as ocf
-#
-#--- temp writing file name
-#
-#import random
-#rtail     = int(time.time() * random.random())
-#zspace    = '/tmp/zspace' + str(rtail)
+
 #
 #--- a few emails addresses
 #

@@ -10,10 +10,6 @@
 
 import os
 import time
-#import random
-
-#rtail  = int(time.time() * random.random())
-#zspace = '/tmp/zspace' + str(rtail)
 
 from threading      import Thread               #--- setting for asynchormous email
 from flask          import current_app
@@ -37,8 +33,6 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
             bcc         --- bcc email address. default ""
     output: email sent out
     """
-    #with open(zspace, 'w') as fo:
-    #    fo.write(text_body)
 #
 #--- if this is a test say so
 #
@@ -54,16 +48,7 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
     else:
         cmd = f"echo '{text_body}' | mailx -s '{subject}' {recipients}"
     os.system(cmd)
-    #if bcc:
-    #    cmd = 'cat ' + zspace + ' | mailx -s"' + subject + '"  -b ' + bcc + ' '  + recipients
-    #else:
-    #    cmd = 'cat ' + zspace + ' | mailx -s"' + subject + '" ' + recipients
-    #os.system(cmd)
-
-    #cmd = 'rm -rf ' + zspace
-    #os.system(cmd)
     
-
 #-------------------------------------------------------------
 #-- CURRENTLY NOT USED!!! -------------------------------------
 #--------------------------------------------------------------
