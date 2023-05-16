@@ -125,6 +125,12 @@
         {{ create_entry('grating',    ct_dict) }}
         {{ create_entry('type',       ct_dict) }}
         </tr>
+        <tr>
+        <td colspan="6" style="padding-left:5px">
+        Click <input type='submit' name='check'  value='Refresh'>
+        to unlock ACIS/HRC Parameter options after updating Instrument.
+        </td>
+        </tr>
     </table>
     <table vorder=0>
         <tr>
@@ -167,22 +173,13 @@
         </tr>
     </table>
 
-
-    <p style='padding-top:20px;'>
-    Please enter RA and Dec in HMS/DMS format (separated by colons, 
-    e.g. 16:22:04.8 -27:43:04.0). The original OBSCAT 
-    decimal degree values are provided below the update boxes. 
-    After updating the RA/Dec, please click Update button at the bottom.
-    It will update the decimal RA/Dec values. 
-    </p>
-    <p>
+    <p style='padding-top:20px'>
     If you like to see the current viewing orientation, open: 
             {{ map_image_opener('dss',   'blue', ct_dict) }},
             {{ map_image_opener('rosat', 'blue', ct_dict) }},
             {{ map_image_opener('rass',  'blue', ct_dict) }}
     (Note: These figures do not always exist.)
     </p>
-
     <table border=0>
         <tr>
         {{ create_entry('dra',          ct_dict) }}
@@ -195,7 +192,15 @@
         {{ create_entry('soe_roll',     ct_dict) }}
         </tr>
     </table>
-    <table bordder=0>
+    <p style="padding-top:10px">
+    Please enter RA and Dec in HMS/DMS format (separated by colons, 
+    e.g. 16:22:04.8 -27:43:04.0). The original OBSCAT 
+    decimal degree values are provided below the update boxes.
+    After updating the RA/Dec, click:
+    <input type='submit' name='check'  value='Refresh'>
+    It will update the decimal RA/Dec values.
+    </p>
+    <table border=0>
         <tr>
         {{ create_entry('y_det_offset', ct_dict) }}<td>(arcmin)</td>
         {{ create_entry('z_det_offset', ct_dict) }}<td>(arcmin)</td>
@@ -240,7 +245,6 @@
 
     {% else %}
         {{ create_entry('dither_flag',  ct_dict) }}
-        <input type='submit' name='check' value='Update'>
         <div style='margin-left:40px;'>
             <table border=0>
                 <tr>
@@ -268,8 +272,8 @@
         </div>
 
         <p style='padding-top:10px;'>
-        To reflect the changes made in arcsec windows to degree displays, click:
-        <input type='submit' name='check'  value='Update'>
+        To reflect the changes made in arcsec windows to degree displays or Dither YES/NO/NA confirmation, click:
+        <input type='submit' name='check'  value='Refresh'>
         </p>
     {% endif %}
 
@@ -490,7 +494,7 @@
 
     {% if not ct_dict['instrument'][-1] in ['HRC-I', 'HRC-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation. Instrument is {{ct_dict['instrument'][-1]}}.
+            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation. Instrument {{ct_dict['instrument'][-1]}} is selected.
         </h3>
     {% else %}
     </h2>
@@ -512,7 +516,7 @@
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation. Instrument is {{ct_dict['instrument'][-1]}}.
+            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation. Instrument {{ct_dict['instrument'][-1]}} is selected.
         </h3>
     {% else %}
         <table>
@@ -606,7 +610,7 @@
     {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Help Page)', 55) }}
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
-        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation. Instrument is {{ct_dict['instrument'][-1]}}</h3>
+        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation. Instrument {{ct_dict['instrument'][-1]}} is selected.</h3>
 
     {% elif ct_dict['spwindow_flag'][-1] in null_list %}
         <input type='submit' name='awin_edit' value = 'Open to Edit'>
@@ -808,7 +812,7 @@
         <div style='padding-top:30px;'></div>
     
         <input type='submit' name='submit' value='Submit'>
-        <input type='submit' name='check'  value='Update'>
+        <input type='submit' name='check'  value='Refresh'>
 <!-- -->
 <!-- Warning: observation is already obiserved, archived etc  -->
 <!-- -->

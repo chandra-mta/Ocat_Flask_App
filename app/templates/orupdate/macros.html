@@ -68,6 +68,18 @@
 <!-- the last entry of the data list is the indicator of which note to display -->
 <!-- -->
         <td>
+            {% if data[-1][4] == 1 %}
+                <span style='color:darkcyan;'>
+                New Comment
+                </span>
+                <br>
+            {% elif data[-1][4] == 2 %}
+                <span style='color:darkred;'>
+                Unknown Comment Status. Revision File Not Found
+                </span>
+                <br>    
+            {% endif %}
+
             {% if data[-1][5] == 1 %}
                 <span style='color:red;'>Large Coordinate Shift</span>
                 <br>
@@ -82,13 +94,6 @@
                 Higher Rev # {{ data[-1][1] }} Was Already Signed Off
                 </span>
                 <br>
-            {% endif %}
-
-            {% if data[-1][4] == 1 %}
-
-                <span style='color:darkcyan;'>
-                New Comment
-                </span>
             {% endif %}
         </td>
             

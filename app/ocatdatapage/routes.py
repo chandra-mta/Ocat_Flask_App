@@ -108,7 +108,7 @@ def index(obsid=''):
 #
         try:
             ct_dict  = csd.create_selection_dict(obsid)
-        except Exception as e: #use variable e for debugging purposes beyond failure to find Obsid in the database.
+        except Exception as create_selection_dict_exc: #use variable e for debugging purposes beyond failure to find Obsid in the database.
             session.pop('_flashes', None)
             flash('Obsid is not found in the database!')
 
@@ -123,7 +123,7 @@ def index(obsid=''):
         if 'submit_test' in request.form:
             ct_dict, obsids_list = update_ct_dict(ct_dict, request.form)
 #
-#--- if Update button was pushed, usually rank related update
+#--- if Refresh button was pushed, usually rank related update
 #
             if 'check' in request.form:
                 ct_dict = update_values(request.form, ct_dict)
@@ -507,7 +507,7 @@ def update_values(form, ct_dict):
 #
 #--- opening rank entries
 #
-    if chk == 'Update':
+    if chk == 'Refresh':
         if ct_dict['window_flag'][-1] == 'Y':
             if ct_dict['time_ordr'][-1] == 0:
                 ct_dict['time_ordr'][-1] = 1

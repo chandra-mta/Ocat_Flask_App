@@ -73,7 +73,7 @@ def before_request():
         register_user()
 
 #----------------------------------------------------------------------------------
-#-- index: this is the main function to dispaly orupdate page                    --
+#-- index: this is the main function to display orupdate page                    --
 #----------------------------------------------------------------------------------
 
 @bp.route('/',      methods=['GET', 'POST'])
@@ -396,8 +396,13 @@ def check_comment(obsidrev):
     outpu:  1 if there is a large coordinate shift, otherwise, 0
     """
     ifile = ocat_dir + '/updates/' + str(obsidrev)
-    with open(ifile, 'r') as f:
-        text = f.read()
+    #If data directory corrupted/missing revision file, bigger problems exist
+    #yet this comment check can act as a safety check.
+    try:
+        with open(ifile, 'r') as f:
+            text = f.read()
+    except Exception as check_comment_exc:
+        return 2
 
     mc = re.search('NEW COMMENTS', text)
     if mc is not None:
