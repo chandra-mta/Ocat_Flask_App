@@ -19,7 +19,7 @@ import numpy
 
 from flask              import render_template, flash, redirect, url_for
 from flask              import session, request, current_app, escape
-from flask_login        import current_user, login_required
+from flask_login        import current_user
 
 from app                import db
 from app.models         import User, register_user 
@@ -95,7 +95,6 @@ def before_request():
 @bp.route('/',              methods=['GET', 'POST'])
 @bp.route('/<obsid>',       methods=['GET', 'POST'])
 @bp.route('/index/<obsid>', methods=['GET', 'POST'])
-#@login_required
 def index(obsid=''):
 
     form     = OcatParamForm()

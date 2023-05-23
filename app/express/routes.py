@@ -18,7 +18,7 @@ from datetime       import datetime
 
 from flask          import render_template, flash, redirect, url_for, session
 from flask          import request, g, jsonify, current_app
-from flask_login    import current_user, login_required
+from flask_login    import current_user
 
 from app            import db
 from app.models     import User, register_user 
@@ -66,7 +66,6 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-#@login_required
 def index():
 #
 #--- showing the status of input obsids (page 2)

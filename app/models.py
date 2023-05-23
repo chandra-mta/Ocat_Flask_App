@@ -9,7 +9,7 @@
 #####################################################################################
 import os
 import Chandra.Time
-from flask              import current_app, session
+from flask              import current_app, session, request
 from flask_login        import UserMixin, login_user
 from werkzeug.security  import generate_password_hash, check_password_hash
 import jwt
@@ -38,13 +38,16 @@ def register_user():
     session['session_start'] = int(Chandra.Time.DateTime().sec)
     session.permanent = True
     session.modified = True
+    #assign username, pulls from LDAP authentication login popup which is defined only in the apache server env scope
+    #unless the REMOTE_USER variable is defined preemptively
     if os.getenv("FLASK_ENV") == 'development':
-        if os.getenv("REMOTE_USER") == None:
-            username = 'testUSINT'
-        else:
+        if os.getenv("REMOTE_USER") != None:
             username = os.getenv("REMOTE_USER")
+        else:
+            username = request.environ.get("REMOTE_USER")
     else:
-        username = os.getenv("REMOTE_USER") #Similar Terminology to Apache Web Server, but assigned in Test Environment Setup
+        username = request.environ.get("REMOTE_USER")#Similar Terminology to Apache Web Server, but assigned in Test Environment Setup
+    
     user = User.query.filter_by(username=username).first()
     login_user(user)
 
