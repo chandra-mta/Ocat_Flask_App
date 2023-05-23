@@ -111,6 +111,8 @@
 <!-- -->
 
         function openTab(html, name){
+            window.open(html,name,'',true);
+            /*
             var test = window.open('', name, '', true);
             if(test.location.href == 'about:blank'){
                 name  = window.open(html, name);
@@ -118,6 +120,7 @@
             }else{
                 test.focus(); //If Tab already open, redirects browser to that tab.
             }
+            */
         }
 <!-- -->
 <!-- script to open a popup window with an image for a given image url -->
