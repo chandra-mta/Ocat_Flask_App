@@ -36,7 +36,7 @@
         {% else %}
             <!-- <td style='text-align:right;'><b>User: {{ current_user.username }}</b>
             (<a href="{{ url_for('auth.logout') }}">Logout)</td> Version including Logout button. Intended for Removal.-->
-	    <td style='text-align:right;'><b>User: {{ current_user.username }}</b></td>
+	    <td style='text-align:right;'><b>User: {{ current_user.username }} - Groups: {{current_user.groups_string}}</b></td>
         {% endif %}
         </tr>
     </table>
