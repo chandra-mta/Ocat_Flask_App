@@ -89,7 +89,7 @@
 <!-- Opened ObsIds -->
 <!-- -->
     {% for ent in odata %}
-        {{ data_row(ent) }}
+        {{ data_row(ent, current_user) }}
     {% endfor %}
 <!-- -->
 <!-- spacer between two tables -->
@@ -101,7 +101,7 @@
 <!-- Closed ObsIds -->
 <!-- -->
     {% for ent in cdata %}
-        {{ data_row(ent) }}
+        {{ data_row(ent, current_user) }}
     {% endfor %}
 <!-- -->
 <!-- if there is no applicable data to display, say so -->

@@ -121,7 +121,8 @@ def index():
                             odata = odata,
                             cdata = cdata,
                             mtime = mtime,
-                            warning = warning
+                            warning = warning,
+                            current_user = current_user
                             )
 
 #----------------------------------------------------------------------------------
