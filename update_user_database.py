@@ -6,17 +6,18 @@ import sqlite3
 
 ifile = "/data/mta4/CUS/www/.groups"
 
+search = os.popen(f'getent aliases').read().split('\n')
+
+cmd = 'cp -f app.db app.db~'
+os.system(cmd)
+
 def find_email(member):
-    search = os.popen(f'getent aliases | grep {member}').read().split('\n')
     for result in search:
         atemp = [a.strip() for a in result.split(':')]
         if atemp[0] == member:
             return atemp[1] #email string
     raise RuntimeError('find_email did not find member email in getent aliases\n')
     return None
-
-cmd = 'mv -f app.db app.db~'
-os.system(cmd)
 
 with open(ifile, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -47,7 +48,7 @@ for ent in data:
 #print(member_dict)
 #Creating SQL table
 
-con = sqlite3.connect('app.db')
+con = sqlite3.connect('tmp.db')
 cur = con.cursor()
 
 usr_table = """
@@ -63,3 +64,8 @@ for member, info in member_dict.items():
     groups_string = ':'.join(info['groups'])
     cur.execute(user_sql,(info['id'], info['name'], info['mail'], groups_string))
 con.commit()
+
+cmd = "rm app.db; mv tmp.db app.db"
+os.system(cmd)
+
+
