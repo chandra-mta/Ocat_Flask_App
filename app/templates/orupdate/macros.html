@@ -57,8 +57,11 @@
 <!-- -->
             {% if data[-1][1] != 0 or data[-1][0] == 2 %}
                 {% set cname = 'close_' + data[0] %}
+                <!--NOTE Turning off close button until we can understnad who shoudl have access.-->
+                <!--
                 <br>
                 <input type='submit' name='{{ cname }}' value='Close'>
+                -->
 <!-- -->
 <!-- if all others are signed-off, show Signoff & Approve button -->
 <!-- -->

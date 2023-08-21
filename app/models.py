@@ -11,8 +11,8 @@ import os
 import Chandra.Time
 from flask              import current_app, session, request
 from flask_login        import UserMixin, login_user
-from werkzeug.security  import generate_password_hash, check_password_hash
-import jwt
+#from werkzeug.security  import generate_password_hash, check_password_hash
+#import jwt
 
 from app                import db, login
 

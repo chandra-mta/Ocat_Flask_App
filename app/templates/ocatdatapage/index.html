@@ -52,7 +52,7 @@
 <!-- -->
     <p>
     <b>A brief description of the listed parameters is given in: 
-    {{ help_popup_page('../static/ocatdatapage/user_help.html', 'Ocat Data Help Page') }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html', 'Ocat Data Help') }}
    </b>
     </p>
 <!-- -->
@@ -89,7 +89,7 @@
 <!-- General Parameters -->
 <!-- -->
     <h2>General Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#general_parameters', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#general_parameters', ' (Help)', 55) }}
     </h2>
     <table border=0>
         <tr>
@@ -174,7 +174,7 @@
     </table>
 
     <p style='padding-top:20px'>
-    If you like to see the current viewing orientation, open: 
+    If you'd like to see the current viewing orientation, open: 
             {{ map_image_opener('dss',   'blue', ct_dict) }},
             {{ map_image_opener('rosat', 'blue', ct_dict) }},
             {{ map_image_opener('rass',  'blue', ct_dict) }}
@@ -193,12 +193,10 @@
         </tr>
     </table>
     <p style="padding-top:10px">
-    Please enter RA and Dec in HMS/DMS format (separated by colons, 
-    e.g. 16:22:04.8 -27:43:04.0). The original OBSCAT 
-    decimal degree values are provided below the update boxes.
-    After updating the RA/Dec, click:
+    Enter RA and Dec in HMS/DMS format (separated by colons, 
+    e.g. 16:22:04.8 -27:43:04.0) then click:
     <input type='submit' name='check'  value='Refresh'>
-    It will update the decimal RA/Dec values.
+    to update the decimal RA/Dec values.
     </p>
     <table border=0>
         <tr>
@@ -238,7 +236,7 @@
 <!-- Dither -->
 <!-- -->
     <h2>Dither
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#dither_flag', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#dither_flag', ' (Help)', 55) }}
     </h2>
     {% if ct_dict['dither_flag'][-1] in null_list %}
         <input type='submit' name='dither_edit' value='Open to Edit'>
@@ -282,7 +280,7 @@
 <!-- Time Constraint -->
 <!-- -->
     <h2>Time Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#time_constraints', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#time_constraints', ' (Help)', 55) }}
     </h2>
     <p>{{ help_popup_page('../static/ocatdatapage/ranked_entries.html', 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints')}}</p>
 
@@ -347,7 +345,7 @@
 <!-- Roll Constraint -->
 <!-- -->
     <h2>Roll Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#roll_constraints', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#roll_constraints', ' (Help)', 55) }}
 
     </h2>
     <p>{{ help_popup_page('../static/ocatdatapage/ranked_entries.html', 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints')}}</p>
@@ -402,7 +400,7 @@
 <!-- Other Constraints -->
 <!-- -->
     <h2>Other Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#other_constraints', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#other_constraints', ' (Help)', 55) }}
 
     </h2>
 
@@ -490,7 +488,7 @@
 <!-- HRC Parameters -->
 <!-- -->
     <h2>HRC Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#hrc_parameters', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#hrc_parameters', ' (Help)', 55) }}
 
     {% if not ct_dict['instrument'][-1] in ['HRC-I', 'HRC-S'] %}
         <h3>
@@ -512,7 +510,7 @@
 <!-- ACIS Parameters -->
 <!-- -->
     <h2>ACIS Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_parameters', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_parameters', ' (Help)', 55) }}
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
         <h3>
@@ -607,7 +605,7 @@
 <!-- ACIS Window Constraints -->
 <!-- -->
     <h2>ACIS Window Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Help)', 55) }}
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
         <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation. Instrument {{ct_dict['instrument'][-1]}} is selected.</h3>
@@ -632,7 +630,7 @@
         a desired inclusion area.
         In the second window, set the sample rate to 0 and the window area to 1024 x 1024.
         For the case with the sample rate > 1, please refer to:
-        {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', 'Help Page') }}.
+        {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', 'Help') }}.
         </p>
     
     
@@ -680,7 +678,7 @@
 <!-- TOO Parameters -->
 <!-- -->
     <h2>TOO Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#too_parameters', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#too_parameters', ' (Help)', 55) }}
     </h2>
     {% if ct_dict['tooid'][-1] in null_list %}
         <h3>ObsID: {{ ct_dict['obsid'][-1]}} is not a DDT/TOO observation.</h3>
@@ -721,7 +719,7 @@
 <!-- Comments and Remarks -->
 <!-- -->
     <h2>Comments and Remarks
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#comments', ' (Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#comments', ' (Help)', 55) }}
     </h2>
     <p>
     <strong>
@@ -839,7 +837,7 @@
     <p style="padding-bottom:20px;">
     <span style="font-size:110%;">Link to:</span><br>
     <a href="javascript:void(0);" onclick="openTab('../express', 'Express');">
-        Express Approval Page
+        Express Approval
     </a>
     <br>
 
@@ -853,7 +851,7 @@
     <br>
 
     <a href='https://cxc.cfa.harvard.edu/cgi-bin/target_search/search.html'>
-    Chandra User Observation Search Page</a>
+    Chandra User Observation Search</a>
     </p>
 
 <!-- -->
