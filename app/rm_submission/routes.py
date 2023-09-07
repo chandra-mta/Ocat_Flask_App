@@ -13,18 +13,17 @@ import re
 import string
 import Chandra.Time
 import time
-import random
 import threading
 from datetime       import datetime
 
 from flask          import render_template, flash, redirect, url_for, session
 from flask          import request, g, jsonify, current_app
-from flask_login    import current_user, login_required
+from flask_login    import current_user
 
 from app            import db
 from app.models     import User, register_user 
 from app.rm_submission    import bp
-import app.email    as email
+import app.emailing as email
 
 import app.supple.ocat_common_functions         as ocf
 #
@@ -40,11 +39,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- temprary writing space
-#
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time and a day and a half ago
 #
@@ -75,7 +69,6 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-#@login_required
 def index():
 #
 #--- data:      a list form of updates_table.list

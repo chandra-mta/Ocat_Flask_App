@@ -12,7 +12,6 @@ import os
 import sys
 import re
 import string
-import random
 import time
 import copy
 import threading
@@ -20,10 +19,10 @@ import Chandra.Time
 
 from flask              import render_template, flash, redirect, url_for, session
 from flask              import request, current_app
-from flask_login        import current_user, login_required
+from flask_login        import current_user
 
 from app.scheduler      import bp
-from app.email          import send_email
+from app.emailing       import send_email
 from app.models         import register_user
 
 import app.supple.ocat_common_functions     as ocf  #--- save commonly used functions
@@ -41,11 +40,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- temporary file location/name
-#
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
 #
 #--- set a list of years (from the last year to five year from the last year)
 #
@@ -68,10 +62,6 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
-#
-#--- remove old temp files
-#
-        ocf.clean_tmp_files()
     else:
         register_user()
 
@@ -81,7 +71,6 @@ def before_request():
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-#@login_required
 def index():
     """
     schedule data table content:

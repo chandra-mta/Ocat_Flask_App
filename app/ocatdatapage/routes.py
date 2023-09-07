@@ -13,14 +13,13 @@ import re
 import string
 import time
 import Chandra.Time
-import random
 import copy
 from   datetime         import datetime
 import numpy
 
 from flask              import render_template, flash, redirect, url_for
 from flask              import session, request, current_app, escape
-from flask_login        import current_user, login_required
+from flask_login        import current_user
 
 from app                import db
 from app.models         import User, register_user 
@@ -47,11 +46,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- set a temporary wrting space
-#
-tail   = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(tail)
 #
 #--- read ocat parameter list
 #
@@ -91,10 +85,6 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
-#
-#--- remove old temp files
-#
-        ocf.clean_tmp_files()
     else:
         register_user()
 
@@ -105,7 +95,6 @@ def before_request():
 @bp.route('/',              methods=['GET', 'POST'])
 @bp.route('/<obsid>',       methods=['GET', 'POST'])
 @bp.route('/index/<obsid>', methods=['GET', 'POST'])
-#@login_required
 def index(obsid=''):
 
     form     = OcatParamForm()
@@ -118,7 +107,7 @@ def index(obsid=''):
 #
         try:
             ct_dict  = csd.create_selection_dict(obsid)
-        except:
+        except Exception as create_selection_dict_exc: #use variable e for debugging purposes beyond failure to find Obsid in the database.
             session.pop('_flashes', None)
             flash('Obsid is not found in the database!')
 
@@ -133,7 +122,7 @@ def index(obsid=''):
         if 'submit_test' in request.form:
             ct_dict, obsids_list = update_ct_dict(ct_dict, request.form)
 #
-#--- if Update button was pushed, usually rank related update
+#--- if Refresh button was pushed, usually rank related update
 #
             if 'check' in request.form:
                 ct_dict = update_values(request.form, ct_dict)
@@ -244,12 +233,6 @@ def update_ct_dict(ct_dict, f_data):
         ct_dict['roll_flag'][-1]            = 'Y'
         ct_dict['roll_ordr'][-1]            =  1
         ct_dict['roll_constraint'][-1][0]   = 'Y'
-
-    if 'acis_edit' in f_data:
-        ct_dict['acis_open'][-1]            = 'open'
-
-    if 'hrc_edit'  in f_data:
-        ct_dict['hrc_open'][-1]             = 'open'
 
     if 'awin_edit' in f_data:
         ct_dict['spwindow_flag'][-1]        = 'Y'
@@ -523,7 +506,7 @@ def update_values(form, ct_dict):
 #
 #--- opening rank entries
 #
-    if chk == 'Update':
+    if chk == 'Refresh':
         if ct_dict['window_flag'][-1] == 'Y':
             if ct_dict['time_ordr'][-1] == 0:
                 ct_dict['time_ordr'][-1] = 1

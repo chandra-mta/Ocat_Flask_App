@@ -23,7 +23,7 @@ from app            import db
 from app.auth       import bp
 from app.auth.forms import LoginForm
 from app.models     import User
-from app.email      import send_email
+from app.emailing   import send_email
 
 import app.supple.ocat_common_functions as ocf
 #

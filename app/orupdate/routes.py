@@ -13,13 +13,12 @@ import re
 import string
 import Chandra.Time
 import time
-import random
 from datetime           import datetime
 import threading
 
 from flask              import render_template, flash, redirect, url_for, session
 from flask              import request, g, jsonify, current_app
-from flask_login        import current_user, login_required
+from flask_login        import current_user
 
 from app                import db
 from app.models         import User, register_user 
@@ -29,7 +28,7 @@ import app.supple.ocat_common_functions         as ocf
 import app.supple.get_value_from_sybase         as gvfs
 import app.ocatdatapage.create_selection_dict   as csd
 import app.ocatdatapage.update_data_record_file as udrf
-import app.email                                as email
+import app.emailing                             as email
 #
 #--- directory
 #
@@ -45,11 +44,6 @@ for ent in data:
     exec("%s = '%s'" %(var, line))
 
 s_dir    = os.path.join(basedir, '../static/')
-#
-#--- temprary writing space
-#
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
 #
 #--- current chandra time
 #
@@ -75,20 +69,15 @@ def before_request():
         session['session_start'] = int(Chandra.Time.DateTime().secs)
         session.permanent        = True
         session.modified         = True
-#
-#--- remove old temp files
-#
-        ocf.clean_tmp_files()
     else:
         register_user()
 
 #----------------------------------------------------------------------------------
-#-- index: this is the main function to dispaly orupdate page                    --
+#-- index: this is the main function to display orupdate page                    --
 #----------------------------------------------------------------------------------
 
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
-#@login_required
 def index():
     user         = current_user.username
 #
@@ -132,7 +121,8 @@ def index():
                             odata = odata,
                             cdata = cdata,
                             mtime = mtime,
-                            warning = warning
+                            warning = warning,
+                            current_user = current_user
                             )
 
 #----------------------------------------------------------------------------------
@@ -406,8 +396,13 @@ def check_comment(obsidrev):
     outpu:  1 if there is a large coordinate shift, otherwise, 0
     """
     ifile = ocat_dir + '/updates/' + str(obsidrev)
-    with open(ifile, 'r') as f:
-        text = f.read()
+    #If data directory corrupted/missing revision file, bigger problems exist
+    #yet this comment check can act as a safety check.
+    try:
+        with open(ifile, 'r') as f:
+            text = f.read()
+    except Exception as check_comment_exc:
+        return 2
 
     mc = re.search('NEW COMMENTS', text)
     if mc is not None:
@@ -852,9 +847,9 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
 
                 mc   = re.search('acis', inst.lower())
                 if mc is not None:
-                    recipient = 'acisdude@head.cfa.harvard.edu'
+                    recipient = 'acisdude@cfa.harvard.edu'
                 else:
-                    recipient = 'hrcdude@head.cfa.harvard.edu'
+                    recipient = 'hrcdude@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
                 text = text + "Please  verify it, then go to: " + html_base + 'orupdate'
@@ -884,7 +879,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
 
                 subject = otype.upper() + ' General/ACIS Status Signed Off Request: OBSID: ' + obsid
 
-                recipient = 'arcops@head.cfa.harvard.edu'
+                recipient = 'arcops@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
                 text = text + "Please  verify it, then go to: " + html_base + 'orupdate'

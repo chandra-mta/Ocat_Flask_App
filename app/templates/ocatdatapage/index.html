@@ -52,7 +52,7 @@
 <!-- -->
     <p>
     <b>A brief description of the listed parameters is given in: 
-    {{ help_popup_page('../static/ocatdatapage/user_help.html', 'Ocat Data Help Page') }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html', 'Ocat Data Help') }}
    </b>
     </p>
 <!-- -->
@@ -72,7 +72,7 @@
 <!-- -->
     <p style='padding-top:10px;'>
     {{ help_popup_page(hlink, 'Sequence  # Summary', 120, 'seq_nbr') }}
-    (with Roll/Pitch/Visibility)
+    (with Roll/Pitch/Visibility Plots)
     </p>
 
 <!-- -->
@@ -89,7 +89,7 @@
 <!-- General Parameters -->
 <!-- -->
     <h2>General Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#general_parameters', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#general_parameters', ' (Help)', 55) }}
     </h2>
     <table border=0>
         <tr>
@@ -124,6 +124,12 @@
         {{ create_entry('instrument', ct_dict) }}
         {{ create_entry('grating',    ct_dict) }}
         {{ create_entry('type',       ct_dict) }}
+        </tr>
+        <tr>
+        <td colspan="6" style="padding-left:5px">
+        Click <input type='submit' name='check'  value='Refresh'>
+        to unlock ACIS/HRC Parameter options after updating Instrument.
+        </td>
         </tr>
     </table>
     <table vorder=0>
@@ -167,22 +173,13 @@
         </tr>
     </table>
 
-
-    <p style='padding-top:20px;'>
-    Please enter RA and Dec in HMS/DMS format (separated by colons, 
-    e.g. 16:22:04.8 -27:43:04.0). The original OBSCAT 
-    decimal degree values are provided below the update boxes. 
-    After updating the RA/Dec, please click Update button at the bottom.
-    It will update the decimal RA/Dec values. 
-    </p>
-    <p>
-    If you like to see the current viewing orientation, open: 
+    <p style='padding-top:20px'>
+    If you'd like to see the current viewing orientation, open: 
             {{ map_image_opener('dss',   'blue', ct_dict) }},
             {{ map_image_opener('rosat', 'blue', ct_dict) }},
             {{ map_image_opener('rass',  'blue', ct_dict) }}
     (Note: These figures do not always exist.)
     </p>
-
     <table border=0>
         <tr>
         {{ create_entry('dra',          ct_dict) }}
@@ -195,7 +192,13 @@
         {{ create_entry('soe_roll',     ct_dict) }}
         </tr>
     </table>
-    <table bordder=0>
+    <p style="padding-top:10px">
+    Enter RA and Dec in HMS/DMS format (separated by colons, 
+    e.g. 16:22:04.8 -27:43:04.0) then click:
+    <input type='submit' name='check'  value='Refresh'>
+    to update the decimal RA/Dec values.
+    </p>
+    <table border=0>
         <tr>
         {{ create_entry('y_det_offset', ct_dict) }}<td>(arcmin)</td>
         {{ create_entry('z_det_offset', ct_dict) }}<td>(arcmin)</td>
@@ -233,14 +236,13 @@
 <!-- Dither -->
 <!-- -->
     <h2>Dither
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#dither_flag', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#dither_flag', ' (Help)', 55) }}
     </h2>
     {% if ct_dict['dither_flag'][-1] in null_list %}
         <input type='submit' name='dither_edit' value='Open to Edit'>
 
     {% else %}
         {{ create_entry('dither_flag',  ct_dict) }}
-        <input type='submit' name='check' value='Update'>
         <div style='margin-left:40px;'>
             <table border=0>
                 <tr>
@@ -268,8 +270,8 @@
         </div>
 
         <p style='padding-top:10px;'>
-        To reflect the changes made in arcsec windows to degree displays, click:
-        <input type='submit' name='check'  value='Update'>
+        To reflect the changes made in arcsec windows to degree displays or Dither YES/NO/NA confirmation, click:
+        <input type='submit' name='check'  value='Refresh'>
         </p>
     {% endif %}
 
@@ -278,8 +280,9 @@
 <!-- Time Constraint -->
 <!-- -->
     <h2>Time Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#time_constraints', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#time_constraints', ' (Help)', 55) }}
     </h2>
+    <p>{{ help_popup_page('../static/ocatdatapage/ranked_entries.html', 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints')}}</p>
 
     {% if ct_dict['window_flag'][-1] in null_list %}
             <input type='submit' name='window_edit' value='Open to Edit'>
@@ -342,9 +345,10 @@
 <!-- Roll Constraint -->
 <!-- -->
     <h2>Roll Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#roll_constraints', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#roll_constraints', ' (Help)', 55) }}
 
     </h2>
+    <p>{{ help_popup_page('../static/ocatdatapage/ranked_entries.html', 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints')}}</p>
 
     {% if ct_dict['roll_flag'][-1] in null_list %}
             <input type='submit' name='roll_edit' value='Open to Edit'>
@@ -365,7 +369,7 @@
         <table border=0>
             <tr>
             <th style='padding-right:10px;'>Rank</th><th>Type of Constraint</th>
-            <th>Roll 180?</th><th>Roll</th><th>Roll Toelrance</th>
+            <th>Roll 180?</th><th>Roll</th><th>Roll Tolerance</th>
             </tr>
             {% set order = namespace(value=0) %}
             {% for k in range(0, 10) %}
@@ -396,7 +400,7 @@
 <!-- Other Constraints -->
 <!-- -->
     <h2>Other Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#other_constraints', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#other_constraints', ' (Help)', 55) }}
 
     </h2>
 
@@ -484,14 +488,11 @@
 <!-- HRC Parameters -->
 <!-- -->
     <h2>HRC Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#hrc_parameters', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#hrc_parameters', ' (Help)', 55) }}
 
     {% if not ct_dict['instrument'][-1] in ['HRC-I', 'HRC-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation.
-            <span style='font-size:65%;'>
-            <input type='submit' name='hrc_edit' value='Open to Edit'>
-            </span>
+            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation. Instrument {{ct_dict['instrument'][-1]}} is selected.
         </h3>
     {% else %}
     </h2>
@@ -509,14 +510,11 @@
 <!-- ACIS Parameters -->
 <!-- -->
     <h2>ACIS Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_parameters', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_parameters', ' (Help)', 55) }}
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation.
-            <span style='font-size:65%;'>
-            <input type='submit' name='acis_edit' value='Open to Edit'>
-            </span>
+            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation. Instrument {{ct_dict['instrument'][-1]}} is selected.
         </h3>
     {% else %}
         <table>
@@ -607,10 +605,10 @@
 <!-- ACIS Window Constraints -->
 <!-- -->
     <h2>ACIS Window Constraints
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Help)', 55) }}
     </h2>
     {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
-        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation.</h3>
+        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation. Instrument {{ct_dict['instrument'][-1]}} is selected.</h3>
 
     {% elif ct_dict['spwindow_flag'][-1] in null_list %}
         <input type='submit' name='awin_edit' value = 'Open to Edit'>
@@ -632,7 +630,7 @@
         a desired inclusion area.
         In the second window, set the sample rate to 0 and the window area to 1024 x 1024.
         For the case with the sample rate > 1, please refer to:
-        {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', 'Help Page') }}.
+        {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', 'Help') }}.
         </p>
     
     
@@ -680,7 +678,7 @@
 <!-- TOO Parameters -->
 <!-- -->
     <h2>TOO Parameters
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#too_parameters', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#too_parameters', ' (Help)', 55) }}
     </h2>
     {% if ct_dict['tooid'][-1] in null_list %}
         <h3>ObsID: {{ ct_dict['obsid'][-1]}} is not a DDT/TOO observation.</h3>
@@ -721,7 +719,7 @@
 <!-- Comments and Remarks -->
 <!-- -->
     <h2>Comments and Remarks
-    {{ help_popup_page('../static/ocatdatapage/user_help.html#comments', ' (Open Help Page)', 55) }}
+    {{ help_popup_page('../static/ocatdatapage/user_help.html#comments', ' (Help)', 55) }}
     </h2>
     <p>
     <strong>
@@ -812,7 +810,7 @@
         <div style='padding-top:30px;'></div>
     
         <input type='submit' name='submit' value='Submit'>
-        <input type='submit' name='check'  value='Update'>
+        <!--<input type='submit' name='check'  value='Refresh'>-->
 <!-- -->
 <!-- Warning: observation is already obiserved, archived etc  -->
 <!-- -->
@@ -839,7 +837,7 @@
     <p style="padding-bottom:20px;">
     <span style="font-size:110%;">Link to:</span><br>
     <a href="javascript:void(0);" onclick="openTab('../express', 'Express');">
-        Express Approval Page
+        Express Approval
     </a>
     <br>
 
@@ -853,7 +851,7 @@
     <br>
 
     <a href='https://cxc.cfa.harvard.edu/cgi-bin/target_search/search.html'>
-    Chandra User Observation Search Page</a>
+    Chandra User Observation Search</a>
     </p>
 
 <!-- -->

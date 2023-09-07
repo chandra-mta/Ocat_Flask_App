@@ -111,7 +111,7 @@
     <td class='padded'>{{ data[3][1] }} </td>
     <td class='padded'>{{ data[3][2] }} </td>
 
-    <td class='padded'>{{ data[4] }}    </td>
+    <!--<td class='padded'>{{ data[4] }}    </td>--><!--Assigned By Column-->
     <td class='cent'>Closed             </td>
     <td>&#160;                          </td>
     </tr>
@@ -134,7 +134,7 @@
     <td class='padded'>{{ data[3][1] }} </td>
     <td class='padded'>{{ data[3][2] }} </td>
 
-    <td class='padded'>{{ data[4] }}    </td>
+    <!--<td class='padded'>{{ data[4] }}    </td>--><!--Assigned by Column-->
     {% set sid = 'unlock' + data[-1] %}
     <td><input type='submit' id={{ sid }}, name={{ sid }} value="Unlock"></td>
     <td>&#160;                          </td>
@@ -159,7 +159,7 @@
     <td class='padded'>{{ day_pull_down(data[3][1],   'end', data[-1])  }} </td>
     <td class='padded'>{{ year_pull_down(data[3][2],  y_list, 'end', data[-1]) }} </td>
 
-    <td>&#160;</td>
+    <!--<td>&#160;</td>--><!--Assigned By Column-->
 
     {% set uid = 'update' + data[-1] %}
     {% set aid = 'split'  + data[-1] %}

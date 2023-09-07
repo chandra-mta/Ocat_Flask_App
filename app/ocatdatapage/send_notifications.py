@@ -13,13 +13,12 @@ import os
 import re
 import math
 import time
-import random
 import threading
 from flask_login        import current_user
 from flask              import current_app
 
 import app.supple.ocat_common_functions         as ocf
-import app.email                                as email
+import app.emailing                             as email
 import app.ocatdatapage.create_selection_dict   as csd
 #
 #--- directory
@@ -34,11 +33,6 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-#
-#--- temprary writing space
-#
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
 
 http_address = '127.0.0.1:5000/'                #--- UPDATE UPDATE UPDATE!!!!
 sender       = 'cus@cfa.harvard.edu'
@@ -47,7 +41,7 @@ bcc          = 'cus@cfa.harvard.edu'
 #--- closing of email text
 #
 mail_end = '\n\nIf you have any questions about this email, please contact '
-mail_end = mail_end + 'bwargelin@head.cfa.harvard.edu.\n'
+mail_end = mail_end + 'bwargelin@cfa.harvard.edu.\n'
 
 #-----------------------------------------------------------------------------------------------
 #-- send_notifications: send notificaiton email to POC, MP, ARCORP, and HRC                   --

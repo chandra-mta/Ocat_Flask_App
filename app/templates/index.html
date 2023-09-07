@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+
 {% block app_content %}
 
 <!-- -->
@@ -11,7 +12,7 @@
     <form  method='post'>
     <ul>
         <li>
-                <b style='font-size:120%;'>Ocat Data Page </b> 
+                <b style='font-size:120%;'>Ocat Data </b> 
                 <span style='padding-right:84px;'></span>
                 <b style='font-size:100%;'> ObsID:</b> 
                 <span style='padding-right:44px;'></span>
@@ -19,37 +20,39 @@
                 <span style='padding-right:10px;'></span>
                 <button onclick="GoToPage()">Open</button>
         </li>
-        <li>
-                <b style='font-size:120%;'>Parameter Check Page </b> 
+        <!-- Option for viewing Parameter Check Page for specific revision. Need to uncomment obsidrev selection in GoToPage function to allow this to work -->
+        <!---<li>
+                <b style='font-size:120%;'>Parameter Check </b> 
                 <b style='font-size:100%;'>&lt;ObsID&gt;.&lt;Rev#&gt;:</b> 
                 <input type='text' name='obsid' id='obsidrev' size=10>
                 <span style='padding-right:10px;'></span>
-        </li>
+        </li>--->
+        <!---->
         <li style='padding-top:10px;'>
             <a href="javascript:void(0);" onclick="openTab('../orupdate', 'Orupdate');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open Target Parameter Status Page
+                Target Parameter Status
                 </span>
             </a>
         </li>
         <li style='padding-top:20px;'>
             <a href="javascript:void(0);" onclick="openTab('../express', 'Express');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open Express Approval Page
+                Express Approval
                 </span>
             </a>
         </li>
         <li>
             <a href="javascript:void(0);" onclick="openTab('../rm_submission', 'Remove');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open Remove Accidental Submission Page
+                Remove Accidental Submission
                 </span>
             </a>
         </li>
         <li style='padding-top:20px;'>
             <a href="javascript:void(0);" onclick="openTab('../scheduler', 'Schedule');">
                 <span style='font-weight:bold; font-size:110%;'>
-                Open POC Duty Scheduler
+                TOO POC Duty Scheduler
                 </span>
             </a>
         </li>
@@ -81,19 +84,20 @@
         <li>
             <a href="javascript:void(0);" onclick="openTab('https://cxc.cfa.harvard.edu/cus/', 'Usint');">
             <span style='font-weight:bold; font-size:110%;'>
-                Chandra Uplink Support Organizational Page
+                Chandra Uplink Support Organizational
             </span>
             </a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" onclick="openTab('https://cxc.cfa.harvard.edu/cus/Usint/go_form/AO24.html', 'Letter');">
+                <span style='font-weight:bold; font-size:110%;'>
+                    Cycle 24 Contact Letter Generator
+                </span> 
+                </a>
         </li>
 
     </ul>
     </form>
-
-    <p style='padding-top:20px;'>
-    <b>Note</b>: If a tab with the targeted page is already open, the links above won't 
-    open a new tab.  After clicking a link, if nothing happens, check opened tabs to see 
-    whether the page is already open.
-    </p>
 
 {% endblock %}
 
@@ -106,13 +110,15 @@
 {% block scripts %}
     {{ super() }}
     <script>
+        window.name = 'Main';
         function GoToPage(){
             var tail    = '';
             var html    = 'ocatdatapage';
             var  chk    = 0;
 
             var  tail1  = document.getElementById('obsid').value;
-            var  tail2  = document.getElementById('obsidrev').value;
+            //Uncomment this section to allow for the main page to open the Parameter Check Page for specific revisions
+            //var  tail2  = document.getElementById('obsidrev').value;
 
             if(tail1 !== ''){
                 tail = tail1;

@@ -56,14 +56,15 @@
 <!-- -->
 
     <hr style='height: 1px; background:black;opacity:0.5'>
-
     <p style='float:right;text-align:right;padding-right:30px;'>
-        <b><em>Last Modified: October 28, 2021 (Test Version)</em></b>
+        <!--<b><em>Last Modified: October 28, 2021 (Test Version)</em></b>-->
+        <b><em>Last Modified: May 25, 2023 (Test Version)</em></b>
     </p>
 
     <p style='padding-left:20px;'>
         If you have any questions about this page, please contact: 
-        <a href='mailto: bwargelin@head.cfa.harvard.edu'>bwargelin@head.cfa.harvard.edu.</a>
+        Admin: <a href='mailto: bwargelin@cfa.harvard.edu'>bwargelin@cfa.harvard.edu.</a>
+        Tech: <a href='mailto: william.aaron@cfa.harvard.edu'>william.aaron@cfa.harvard.edu.</a>
     </p>
 
 {% endblock %}
@@ -111,11 +112,16 @@
 <!-- -->
 
         function openTab(html, name){
+            window.open(html,name,'',true);
+            /*
             var test = window.open('', name, '', true);
             if(test.location.href == 'about:blank'){
                 name  = window.open(html, name);
                 name.focus();
+            }else{
+                test.focus(); //If Tab already open, redirects browser to that tab.
             }
+            */
         }
 <!-- -->
 <!-- script to open a popup window with an image for a given image url -->
@@ -128,4 +134,3 @@
     </script>
 
 {% endblock %}
-

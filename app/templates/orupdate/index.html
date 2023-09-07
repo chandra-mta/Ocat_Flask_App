@@ -12,6 +12,12 @@
     This form contains all requested updates which have either 
     not been verified or have been verified in the last 24 hours.
     </p>
+    <p>
+    When you are ready to sign-off the box, just click the "Sign-off" button. Your name and the sign-off date will appear in that box.
+    </p>
+    <p>
+    If "Sign-off & Approve" button appears, by clicking it, you can sign it off, and also approve that obsid. You will receive a confirmation email of the submission. 
+    </p>
 <!-- -->
 <!-- form start here -->
 <!-- -->
@@ -28,14 +34,19 @@
 <!-- -->
     <p style='padding-bottom:14px;'>
     <div style='font-size:110%;'>
-    {{ help_popup_page('../static/orupdate/help.html', 'Open Help Page') }}
+    {{ help_popup_page('../static/orupdate/help.html', 'Help Page') }}
     </div>
+
+    <!--<a href="javascript:void(0);" onclick="openTab('../main/','Main');" >
+        Ocat Home Page    
+    </a>
+    <br>-->
     <a href="javascript:void(0);" onclick="openTab('../rm_submission/','Remove');" >
-        Open Remove Accidental Submission Page
+        Remove Accidental Submission Page
     </a>
     <br>
     <a href="javascript:void(0);" onclick="openTab('../express', 'Express');">
-        Open Express Approval Page
+        Express Approval Page
     </a>
 
     </p>
@@ -66,11 +77,11 @@
     <table  border=1 class='cent wide' style='margin-left:auto;margin-right:auto;'>
     <tr>
         <th class='cent'>OBSID.revision</th>
-        <th class='cent' style='background-color:rgb(0,179,170,0.3);'>General edits by</th>
-        <th class='cent' style='background-color:rgb(0,179,170,0.3);'>ACIS edits by</th>
-        <th class='cent'>ACIS SI Mode edits by</th>
-        <th class='cent'>HRC  SI Mode edits by</th>
-        <th class='cent'> Verified by</th>
+        <th class='cent' style='background-color:rgb(0,179,170,0.3);'>General edits</th>
+        <th class='cent' style='background-color:rgb(0,179,170,0.3);'>ACIS edits</th>
+        <th class='cent'>ACIS SI Mode edits</th>
+        <th class='cent'>HRC  SI Mode edits</th>
+        <th class='cent'> USINT Verification</th>
         <th class='cent'>
             <span style='padding-left:20px;padding-right:20px'>Note</span>
         </th>
@@ -79,7 +90,7 @@
 <!-- Opened ObsIds -->
 <!-- -->
     {% for ent in odata %}
-        {{ data_row(ent) }}
+        {{ data_row(ent, current_user) }}
     {% endfor %}
 <!-- -->
 <!-- spacer between two tables -->
@@ -91,7 +102,7 @@
 <!-- Closed ObsIds -->
 <!-- -->
     {% for ent in cdata %}
-        {{ data_row(ent) }}
+        {{ data_row(ent, current_user) }}
     {% endfor %}
 <!-- -->
 <!-- if there is no applicable data to display, say so -->
