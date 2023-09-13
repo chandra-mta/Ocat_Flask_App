@@ -7,13 +7,3 @@ from cus_app            import create_app, db       #--- in app/__init__.py
 from cus_app.models     import User
 
 application = create_app()
-"""
-#
-#--- register the funion as a shell context function
-#--- probably I don't need this
-#
-@application.shell_context_processor
-def make_shell_context():
-    return {'db': db, 'User': User}
-
-"""

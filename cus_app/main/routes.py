@@ -37,6 +37,6 @@ def before_request():
 @bp.route('/', methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    return render_template('main/ocatindex.html')
 
 

@@ -50,16 +50,7 @@ def create_app(config_class= DevConfig):
 #
     from cus_app.errors       import bp as errors_bp
     app.register_blueprint(errors_bp)
-#
-#--- authetication
-#
-    from cus_app.auth         import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-#
-#--- main page
-#
-    from cus_app.main         import bp as main_bp
-    app.register_blueprint(main_bp, url_prefix='/main')
+    
 #
 #--- ocat data page
 #
@@ -92,11 +83,11 @@ def create_app(config_class= DevConfig):
     app.register_blueprint(sch_bp, url_prefix='/scheduler')
 
 #
-#--- Index Page
+#--- Main Usint Page
 #
     @app.route("/")
     def index():
-        return render_template('cus.html')
+        return render_template('index.html')
 
 #
 #--- if this is not a testing, setup a few other things
