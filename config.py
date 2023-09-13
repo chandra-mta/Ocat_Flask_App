@@ -27,6 +27,7 @@ class Config(object):
 #--- database
 #
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:////data/mta4/CUS/Data/Users/app.db' or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 #
@@ -43,7 +44,7 @@ class Config(object):
     MAIL_USE_SSL    = True
     MAIL_USERNAME   = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD   = os.environ.get('MAIL_PASSWORD')
-    ADMINS          = ['lina.pulgarin-duque@cfa.harvard.edu']
+    ADMINS          = ['william.aaron@cfa.harvard.edu', 'bwargelin@cfa.harvard.edu']
 #
 #--- session activity
 #
