@@ -24,8 +24,10 @@ from config             import Config, ProdConfig, DevConfig
 db                  = SQLAlchemy()
 migrate             = Migrate()
 login               = LoginManager()
+"""
 login.login_view    = 'auth.login'
 login.login_message = 'Please log in to access this page.'
+"""
 mail                = Mail()
 bootstrap           = Bootstrap()
 
@@ -50,7 +52,7 @@ def create_app(config_class= DevConfig):
 #
     from cus_app.errors       import bp as errors_bp
     app.register_blueprint(errors_bp)
-    
+
 #
 #--- ocat data page
 #
