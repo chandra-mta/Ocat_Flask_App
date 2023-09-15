@@ -1,12 +1,14 @@
 import os
 from   datetime import timedelta
 from   dotenv   import load_dotenv
+import binascii
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 #
 #--- loading the "environment" from .env
 #
-load_dotenv(os.path.join(basedir, '.env'))
+#load_dotenv(os.path.join(basedir, '.env'))
+load_dotenv("/data/mta4/CUS/Data/.env")
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
@@ -18,23 +20,24 @@ class Config(object):
 #
 #--- application directory
 #
-    BASE_DIR   = os.path.abspath(os.path.dirname(__file__))
+    BASE_DIR = basedir
+    LOG_DIR = os.path.join(basedir,'logs')
 #
 #--- database and csrf need secret_key
 #
     #SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = binascii.b2a_hex(os.urandom(15)).decode()
 #
 #--- database
 #
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:////data/mta4/CUS/Data/Users/app.db' or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
+        'sqlite:////data/mta4/CUS/Data/Users/app.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 #
-#--- cross-site request forgery proteciton
+#--- cross-site request forgery protection
 #
     CSRF_ENABLED    = True
-    CSRF_SESSON_KEY ='some_secret-key'
+    #CSRF_SESSON_KEY ='some_secret-key'
 #
 #--- mail 
 #
@@ -44,7 +47,7 @@ class Config(object):
     MAIL_USE_SSL    = True
     MAIL_USERNAME   = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD   = os.environ.get('MAIL_PASSWORD')
-    ADMINS          = ['william.aaron@cfa.harvard.edu', 'bwargelin@cfa.harvard.edu']
+    ADMINS          = ['william.aaron@cfa.harvard.edu']
 #
 #--- session activity
 #
@@ -57,6 +60,7 @@ class Config(object):
 
 class ProdConfig(Config):
     DEBUG    = False
+    DEVELOPMENT = False
 #
 #--- data directory  (MOVED TO app/static/dir_list)
 #
@@ -73,9 +77,12 @@ class ProdConfig(Config):
 class DevConfig(Config):
     ENV         = 'development'
     DEVELOPMENT = True
-    SECRET_KEY  = 'secret_key_for_test'
+    #SECRET_KEY  = 'secret_key_for_test'
     
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
+    
+    if os.path.isfile(os.path.join(basedir, 'app.db')):
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 #
 #--- data directory  (MOVED TO app/static/dir_list)
 #

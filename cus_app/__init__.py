@@ -11,6 +11,8 @@
 import os
 import logging
 from logging.handlers   import SMTPHandler, RotatingFileHandler
+#logdir = os.path.join(os.getcwd(),'logs')
+#logdir = '/proj/web-r2d2-v/wsgi-scripts/aaron/logs'
 
 from flask              import Flask, request, current_app, render_template
 from flask_sqlalchemy   import SQLAlchemy
@@ -33,10 +35,9 @@ bootstrap           = Bootstrap()
 
 #----------------------------------------------------------------------------------------
 #-- create_app: setting up applications in a function                                  --
-#----------------------------------------------------------------------------------------
-
-#def create_app(config_class= ProdConfig):
-def create_app(config_class= DevConfig):
+#--------------------------------------------------------------------   --------------------
+#def create_app(config_class=ProdConfig):
+def create_app(config_class=DevConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -119,10 +120,12 @@ def create_app(config_class= DevConfig):
 #
 #--- keep last 10 error logs
 #
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
+        """
+        if not os.path.exists(app.config['LOG_DIR']):
+            os.mkdir(app.config['LOG_DIR'])
+        """
 
-        file_handler = RotatingFileHandler('logs/ocat.log',
+        file_handler = RotatingFileHandler(os.path.join(app.config['LOG_DIR'],'ocat.log'),
                                            maxBytes=10240, backupCount=10)
 
         file_handler.setFormatter(logging.Formatter(

@@ -1,4 +1,5 @@
 import sys, os
+from dotenv import load_dotenv
 #For finding the Application scripts in directory where the ocat.py script is located
 sys.path.insert(0,f"{os.path.dirname(os.path.realpath(__file__))}")
 sys.path.insert(1,f"{os.path.dirname(os.path.realpath(__file__))}/app")
@@ -6,4 +7,14 @@ sys.path.insert(1,f"{os.path.dirname(os.path.realpath(__file__))}/app")
 from cus_app            import create_app, db       #--- in app/__init__.py
 from cus_app.models     import User
 
-application = create_app()
+from config             import Config, ProdConfig, DevConfig
+
+
+load_dotenv("/data/mta4/CUS/Data/.env")
+
+#Run with Production Configuration only in the live web directory, otherwise default to DevConfig
+
+if os.environ.get('LIVE_DIR') == os.path.abspath(os.path.dirname(__file__)):
+    application = create_app(ProdConfig)
+else:
+    application = create_app()
