@@ -19,7 +19,6 @@ else:
 class Config(object):
 
     DEBUG      = True
-    #HTTP_ADDRESS = 'https://r2d2-v.cfa.harvard.edu/wsgi/aaron/cus/'
     HTTP_ADDRESS = os.environ.get('HTTP_ADDRESS')
 #
 #--- application directory
@@ -76,16 +75,12 @@ class Config(object):
 class ProdConfig(Config):
     DEBUG    = False
     DEVELOPMENT = False
-    OCAT_DIR = '/data/mta4/CUS/www/Usint/ocat/'
-    INFO_DIR = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/'
 #
 #--- data directory  (MOVED TO app/static/dir_list)
 #
-#    OCAT_DIR  = '/data/mta4/CUS/www/Usint/ocat/'
-#    INFO_DIR  = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/'
-#    OBS_SS    = '/data/mta4/obs_ss/'
-#    PASS_DIR  = '/data/mta4/CUS/www/Usint/Pass_dir/'
-#    CUS_DIR   = '/data/mta4/CUS/www/Usint/'
+    OCAT_DIR = '/data/mta4/CUS/www/Usint/ocat/'
+    INFO_DIR = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/'
+
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
@@ -100,11 +95,4 @@ class DevConfig(Config):
     
     if os.path.isfile(os.path.join(basedir, 'app.db')):
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-#
-#--- data directory  (MOVED TO app/static/dir_list)
-#
-#    OCAT_DIR  = '/data/mta4/CUS/www/Usint/Ocat/ocat/Test_data/'
-#    INFO_DIR  = '/data/mta4/CUS/www/Usint/Ocat/ocat/Test_data/Info_save/too_contact_info/'
-#    OBS_SS    = '/data/mta4/obs_ss/'
-#    PASS_DIR  = '/data/mta4/CUS/www/Usint/Pass_dir/'
-#    CUS_DIR   = '/data/mta4/CUS/www/Usint/'
+        
