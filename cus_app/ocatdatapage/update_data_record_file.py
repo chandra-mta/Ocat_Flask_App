@@ -25,6 +25,7 @@ import cus_app.ocatdatapage.create_selection_dict   as csd
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -34,6 +35,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 
 null_list = [None, 'NA', 'N', 'NULL', 'None', 'NONE',  'n', 'null', 'none', '', ' ']
 skip_list = ['monitor_series', 'obsids_list', 'remarks', 'comments', 'approved',\
@@ -368,7 +370,7 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
 #
     if  ct_dict['status'][-1]  in ['scheduled', 'unobserved']:
 
-        ofile  = ocat_dir  + 'updates/' + obsidrev
+        ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates/', obsidrev)
         with open(ofile, 'w') as fo:
             fo.write(line)
 
@@ -474,7 +476,7 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
 #
 #--- lock the file before adding the data line
 #
-    ofile  = ocat_dir  + 'updates_table.list'
+    ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
 #
 #--- if the file is locked sleep up to 10 sec
 #
@@ -502,7 +504,7 @@ def update_approved_list(ct_dict, user, asis):
             asis    --- asis status
     output: <data_dir>/approved
     """
-    ofile  = ocat_dir + 'approved'
+    ofile  = os.path.join(current_app.config['OCAT_DIR'], 'approved')
 #
 #--- asis case
 #
@@ -757,7 +759,7 @@ def set_obsidrev(ct_dict):
     output: obsidrev    --- <obsid>.<rev#> with the latest revision #
     """
     obsid = ct_dict['obsid'][-1]
-    data = [each for each in os.listdir(f"{ocat_dir}/updates/") if each.startswith(str(obsid)+".")]
+    data = [each for each in os.listdir(f"{current_app.config['OCAT_DIR']}/updates/") if each.startswith(str(obsid)+".")]
     if len(data) > 0:
         atemp = re.split('\.', data[-1])
         rev   = int(atemp[1]) + 1
@@ -844,7 +846,7 @@ def check_or_list(ct_dict):
     output: either <blank> or <obsid>
     """
     obsid   = str(ct_dict['obsid'][-1])
-    or_list = obs_ss + 'scheduled_obs_list'
+    or_list = os.path.join(current_app.config['OBS_SS'], 'scheduled_obs_list')
     data    = ocf.read_data_file(or_list)
     for ent in data:
         atemp = re.split('\s+', ent)

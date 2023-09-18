@@ -14,6 +14,7 @@ import re
 import time
 import copy
 import Chandra.Time
+from flask import current_app
 
 import cus_app.supple.ocat_common_functions     as ocf
 import cus_app.supple.read_ocat_data            as rod
@@ -21,6 +22,7 @@ import cus_app.supple.read_ocat_data            as rod
 #--- reading directory list
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -30,6 +32,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 #
 #---- choices of pulldown fields. 
 #
@@ -1511,7 +1514,7 @@ def create_selection_dict(obsid):
 #--- check whether obsid is in approved list
 #
     obsid = int(p_dict['obsid'][-1])
-    ifile = ocat_dir  + 'approved'
+    ifile = os.path.join(current_app.config['OCAT_DIR'], 'approved')
     data  = ocf.read_data_file(ifile)
 
     chk   = 0
@@ -1674,7 +1677,7 @@ def find_planned_roll(obsid):
     roll_m1 = 'na'
     roll_m2 = 'na'
 
-    ifile = obs_ss + '/mp_long_term'
+    ifile = os.path.join(current_app.config['OBS_SS'], 'mp_long_term')
     out   = ocf.read_data_file(ifile)
     for ent in out:
         atemp = re.split(':', ent)
@@ -1738,7 +1741,7 @@ def create_warning_line(obsid):
 #
 #--- check whether this observation is on OR list
 #
-    ifile = obs_ss + 'scheduled_obs_list'
+    ifile = os.path.join(current_app.config['OBS_SS'], 'scheduled_obs_list')
     mp_list = ocf.read_data_file(ifile)
     mp_chk  = 0
     for ent in mp_list:

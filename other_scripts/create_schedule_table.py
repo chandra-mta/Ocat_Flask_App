@@ -45,7 +45,7 @@ import ocat_common_functions         as ocf
 #
 cus       = 'cus@cfa.harvard.edu'
 admin     = 'bwargelin@cfa.harvard.edu'
-tech      = 'tisobe@cfa.harvard.edu'
+tech      = 'william.aaron@cfa.harvard.edu'
 #
 #--- constant related dates
 #

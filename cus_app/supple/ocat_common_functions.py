@@ -24,7 +24,7 @@ import getpass
 import pathlib
 from hmac import compare_digest as compare_hash
 
-sys.path.append('/proj/sot/ska3/flight/lib/python3.8/site-packages')
+#sys.path.append('/proj/sot/ska3/flight/lib/python3.8/site-packages')
 import Chandra.Time
 
 from flask  import current_app
@@ -32,6 +32,7 @@ from flask  import current_app
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -41,6 +42,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 
 #--------------------------------------------------------------------------
 #-- read_data_file: read a data file and create a data list              --
@@ -371,7 +373,7 @@ def read_user():
     input:  none
     output: udict   ---- a dict of user <---> hashed password
     """
-    pfile = '/data/mta4/CUS/www/Usint/Pass_dir/.htpasswd'
+    pfile = os.path.join(current_app.config['PASS_DIR'],'.htpasswd')
     data  = read_data_file(pfile)
     udict = {}
     for ent in data:
@@ -412,7 +414,7 @@ def find_other_revisions(obsid, rev=0):
                             if 0, find all revisions
     output: other_rev   --- a list of html link to the other rev
     """
-    data = [each for each in os.listdir(f"{ocat_dir}/updates/") if each.startswith(str(obsid)+".")]
+    data = [each for each in os.listdir(f"{current_app.config['OCAT_DIR]']}/updates/") if each.startswith(str(obsid)+".")]
     rev       = int(rev)
     other_rev = []
     for ent in data:
@@ -439,7 +441,7 @@ def read_poc_list(cuser=''):
                         will be float up to the top of the list
     output: a list of [<poc id>, <Full Name>, <email address>]
     """
-    ifile = info_dir + 'active_usint_personal'
+    ifile = os.path.join(current_app.config['INFO_DIR'], 'active_usint_personal')
     data  = read_data_file(ifile)
 
     poc_list = []

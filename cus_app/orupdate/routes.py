@@ -33,6 +33,7 @@ import cus_app.emailing                             as email
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -42,6 +43,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 
 s_dir    = os.path.join(basedir, '../static/')
 #
@@ -49,15 +51,6 @@ s_dir    = os.path.join(basedir, '../static/')
 #
 now    = int(Chandra.Time.DateTime().secs)
 today  = ocf.convert_chandra_time_to_display2(now, tformat='%m/%d/%y')
-#
-#--- the main database file
-#
-ufile  = ocat_dir + 'updates_table.list'
-#
-#--- html base
-#
-html_base = 'http://127.0.0.1:5000/'            #--- UPDATE FOR LIVE!!!
-html_base = 'http://r2d2-v.cfa.harvard.edu:8080/ocat/'#--- UPDATE FOR LIVE!!!
 
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
@@ -138,6 +131,10 @@ def read_status_data():
             mtime   --- the last file modified time stamp in Chandra Time
             poc_dict    --- a dict of <obsidrev> <---> <poc>
     """
+    #
+    #--- Main database file
+    #
+    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
     data  = ocf.read_data_file(ufile)
     data.reverse()
 #
@@ -277,7 +274,7 @@ def check_file_creation_date(obsidrev):
     input:  obsidrev    --- <obsid>.<rev #>
     output: ltime       --- a creation time in <mm>/<dd>/<yy>
     """
-    ifile = ocat_dir + 'updates/' + str(obsidrev)
+    ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates/', str(obsidrev))
     stime = ocf.find_file_creation_time(ifile)
     out   = Chandra.Time.DateTime(stime).date
     atemp = re.split('\.', out)
@@ -333,7 +330,7 @@ def update_notes(odata, c_dict, h_dict, r_dict):
 #
 #--- read large coordinate shift data
 #
-    ifile       = ocat_dir + 'cdo_warning_list'
+    ifile       = os.path.join(current_app.config['OCAT_DIR'], 'cdo_warning_list')
     coord_shift = ocf.read_data_file(ifile)
     coord_shift.reverse()
 #
@@ -395,7 +392,7 @@ def check_comment(obsidrev):
     input:  obsidrev    --- <obsid>.<rev #>
     outpu:  1 if there is a large coordinate shift, otherwise, 0
     """
-    ifile = ocat_dir + '/updates/' + str(obsidrev)
+    ifile = os.path.join(current_app.config['OCAT_DIR'], '/updates/', str(obsidrev))
     #If data directory corrupted/missing revision file, bigger problems exist
     #yet this comment check can act as a safety check.
     try:
@@ -699,6 +696,10 @@ def update_data(obsidrev, pos, close=0):
     user     = current_user.username    
     sign     = user + ' ' + today
     obsidrev = str(obsidrev)
+    #
+    #--- Main database file
+    #
+    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
 #
 #--- check whether the file is locked. if not lock the file for this round
 #
@@ -822,7 +823,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
     atemp   = re.split('\.', obsidrev)
     obsid   = atemp[0]
 
-    cmd     = "select type,instrument from target where obsid=" + obsid
+    cmd     = "select type, instrument from target where obsid=" + obsid
     out     = gvfs.get_value_from_sybase(cmd, 'axafocat')
     otype   = out[0][0]
     inst    = out[0][1]
@@ -840,7 +841,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
         if colname == 'acis':
             if si == 'NA':
                 text = "Editing of General/ACIS entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  update SI Mode entries, then go to: " + html_base + 'orupdate'
+                text = text + "Please  update SI Mode entries, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
                 text = text + "and sign off SI Mode Status.\n"
 
                 subject = otype.upper() + ' SI Status Signed Off Request: OBSID: ' + obsid
@@ -852,7 +853,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
                     recipient = 'hrcdude@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  verify it, then go to: " + html_base + 'orupdate'
+                text = text + "Please  verify it, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
                 text = text + "and sign off 'Verified By' column.\n"
 
                 subject = otype.upper() + '  Verification Signed Off Request: OBSID: ' + obsid
@@ -874,7 +875,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
         elif colname == 'si':
             if gen == 'NA':
                 text = "Editing of SI entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  update General/ACIS entries, then go to: " + html_base + 'orupdate'
+                text = text + "Please  update General/ACIS entries, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
                 text = text + "and sign off SI Mode Status.\n"
 
                 subject = otype.upper() + ' General/ACIS Status Signed Off Request: OBSID: ' + obsid
@@ -882,7 +883,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
                 recipient = 'arcops@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  verify it, then go to: " + html_base + 'orupdate'
+                text = text + "Please  verify it, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
                 text = text + "and sign off 'Verified By' column.\n"
 
                 subject = otype.upper() + '  Verification Signed Off Request: OBSID: ' + obsid

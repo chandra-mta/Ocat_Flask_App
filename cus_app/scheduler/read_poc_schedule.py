@@ -23,6 +23,7 @@ from flask          import current_app
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -32,6 +33,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 
 #------------------------------------------------------------------------------
 #-- create_schedule_data_table: read current schedule and create a schedule data table
@@ -58,8 +60,6 @@ def create_schedule_data_table(ifile= ''):
                                      6  ---- same as 3, but without a delete button
                     <id of the data>
     """
-    if current_app.config['DEVELOPMENT']:
-        info_dir = '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/'
 #
 #--- set schedule display range; start from a month ago till one year from that day
 #    
@@ -70,7 +70,7 @@ def create_schedule_data_table(ifile= ''):
 #--- read current schedule data
 #
     if ifile == '':
-        ifile   = info_dir + 'schedule'
+        ifile   = os.path.join(current_app.config['INFO_DIR'],'schedule')
 
     data    = ocf.read_data_file(ifile)
 

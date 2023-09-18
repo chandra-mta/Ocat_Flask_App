@@ -32,6 +32,7 @@ import cus_app.ocatdatapage.update_data_record_file as udrf
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -41,6 +42,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 #
 #--- current chandra time
 #
@@ -200,7 +202,7 @@ def check_obsid_status(obsid_list):
 #
 #--- read obsids in approved list
 #
-    ifile    = ocat_dir + 'approved'
+    ifile    = os.path.join(current_app.config['OCAT_DIR'], 'approved')
     out      = ocf.read_data_file(ifile)
     approved = []
     for ent in out:
@@ -210,7 +212,7 @@ def check_obsid_status(obsid_list):
 #
 #--- read obsids in updates_table.list; create <obsid> <---> <poc> dict
 #
-    ifile    = ocat_dir + 'updates_table.list'
+    ifile    = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
     out      = ocf.read_data_file(ifile)
     updates  = {}
     for ent in out:

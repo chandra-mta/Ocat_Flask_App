@@ -23,6 +23,7 @@ import cus_app.ocatdatapage.update_data_record_file as udrf
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -32,6 +33,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 
 null_list = [None, 'NA', 'N', 'NULL', 'None', 'NONE',  'n', 'null', 'none', '', ' ']
 

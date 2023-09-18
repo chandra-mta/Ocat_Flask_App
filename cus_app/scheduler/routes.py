@@ -31,6 +31,7 @@ import cus_app.scheduler.read_poc_schedule      as rps  #--- create a data table
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -40,6 +41,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 #
 #--- set a list of years (from the last year to five year from the last year)
 #
@@ -89,8 +91,6 @@ def index():
                              6  ---- same as 3, but without a delete button
             <id of the data>
     """
-    if current_app.config['DEVELOPMENT']:
-        info_dir = '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/'
 #
 #--- set poc list: [<poc id>,<full name>,<email>]
 #---     poc dict: <poc id> <--> [<poc id>,<full name>,<email>]
@@ -102,9 +102,9 @@ def index():
 #--- read schedule database and create a data table
 #--- mtime is the the data file last modification time
 #
-    ifile    = info_dir + 'schedule'
+    ifile    = os.path.join(current_app.config['INFO_DIR'], 'schedule')
     schedule = rps.create_schedule_data_table(ifile)
-    cfile    = info_dir + 'schedule'
+    cfile    = os.path.join(current_app.config['INFO_DIR'], 'schedule')
     mtime    = ocf.find_file_modification_time(cfile)
     lchk     = 1
 #
@@ -500,12 +500,10 @@ def update_schedule_database(schedule, poc_dict, uchk):
                                 a list of row ids of the wrong time intervals
                                 else return 1 
     """
-    if current_app.config['DEVELOPMENT']:
-        info_dir = '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/'
 #
 #--- output file name
 #
-    ofile = info_dir + 'schedule'
+    ofile = os.path.join(current_app.config['INFO_DIR'], 'schedule')
 #
 #--- read the current schedule data from the database
 #

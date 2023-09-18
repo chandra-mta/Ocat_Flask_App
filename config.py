@@ -7,8 +7,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 #
 #--- loading the "environment" from .env
 #
-#load_dotenv(os.path.join(basedir, '.env'))
-load_dotenv("/data/mta4/CUS/Data/.env")
+if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
+    load_dotenv("/data/mta4/CUS/Data/.localhostenv")
+else:
+    load_dotenv("/data/mta4/CUS/Data/.env")
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
@@ -17,6 +19,8 @@ load_dotenv("/data/mta4/CUS/Data/.env")
 class Config(object):
 
     DEBUG      = True
+    #HTTP_ADDRESS = 'https://r2d2-v.cfa.harvard.edu/wsgi/aaron/cus/'
+    HTTP_ADDRESS = os.environ.get('HTTP_ADDRESS')
 #
 #--- application directory
 #
@@ -54,6 +58,17 @@ class Config(object):
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=360)
     SESSION_REFRESH_EACH_REQUEST = True
 
+#
+#--- directory listing - dev default
+#
+    
+    OCAT_DIR = '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/'
+    OBS_SS = '/data/mta4/obs_ss/'
+    CUS_DIR = '/data/mta4/CUS/www/Usint/'
+    PASS_DIR = '/data/mta4/CUS/www/Usint/Pass_dir/'
+    INFO_DIR = '/proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/'
+
+
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
@@ -61,6 +76,8 @@ class Config(object):
 class ProdConfig(Config):
     DEBUG    = False
     DEVELOPMENT = False
+    OCAT_DIR = '/data/mta4/CUS/www/Usint/ocat/'
+    INFO_DIR = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/'
 #
 #--- data directory  (MOVED TO app/static/dir_list)
 #

@@ -24,6 +24,7 @@ import cus_app.ocatdatapage.create_selection_dict   as csd
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -33,8 +34,7 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
-
-http_address = '127.0.0.1:5000/'                #--- UPDATE UPDATE UPDATE!!!!
+"""
 sender       = 'cus@cfa.harvard.edu'
 bcc          = 'cus@cfa.harvard.edu'
 #
@@ -111,11 +111,11 @@ def hrc_si_notification(obsids_list, rev_dict):
         obsid   = obsids_list[0]
         subject = 'HRC SI Mode Check Requested for obsid' + obsid + ' and related obsids'
         text    = 'HRC SI Mode Check is requested for following obsids:\n\n'
-        text    = text + obsid + ':  ' +  http_address + 'chkupdata/' 
+        text    = text + obsid + ':  ' +  current_app.config['HTTP_ADDRESS'] + 'chkupdata/' 
         text    = text + obsid + '.'   + rev_dict[obsid] +  '\n\n'
 
         text    = text + 'If it is correct, please sign off at\n\n'
-        text    = text + obsid + ':  ' +  http_address + 'orupdate/' 
+        text    = text + obsid + ':  ' +  current_app.config['HTTP_ADDRESS'] + 'orupdate/' 
 
         for end in obsids_list[1:]:
             text = text + ent + '\n'
@@ -124,7 +124,7 @@ def hrc_si_notification(obsids_list, rev_dict):
         obsid   = obsids_list[0]
         subject = 'HRC SI Mode Check Requested for obsid' + str(obsid)
         text    = 'HRC SI Mode Check is requested for Osid: ' + str(obsid) + ':\n\n'
-        text    = text + http_address + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
+        text    = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
 
     text = text + mail_end
 
@@ -156,7 +156,7 @@ def arcops_notificaiton(o_list, rev_dict, changed_params):
     text   = text + 'submitted parameter change requests to multiple obsids: \n\n'
     for ent in o_list:
         obsid = int(float(ent))
-        text  = text + ent + ': ' + http_address + 'chkupdata/' 
+        text  = text + ent + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' 
         text  = text + ent + '.' + rev_dict[obsid] + '\n'
 #
 #--- change a text format to make it more readable in the email body
@@ -201,7 +201,7 @@ def check_mp_notes(mp_note, rev_dict):
 
         for obsid in mp_note[0]:
             obsidrev = str(obsid) + '.' +  rev_dict[obsid]
-            oline    = str(obsid)  + ': ' + http_address + 'chkupdata/' + obsidrev + '\n'
+            oline    = str(obsid)  + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + obsidrev + '\n'
             mtext    = mtext + oline
             ptext    = ptext + oline
 
@@ -209,7 +209,7 @@ def check_mp_notes(mp_note, rev_dict):
 #
 #--- keep a record of obsid.rev with a large coordindate shft so that orupdate can use it later
 #
-        rfile = ocat_dir + 'cdo_warning_list'
+        rfile = os.path.join(current_app.config['OCAT_DIR'], 'cdo_warning_list')
 
         with open(rfile, 'a') as fo:
             fo.write(rline)
@@ -234,7 +234,7 @@ def check_mp_notes(mp_note, rev_dict):
                 ptext    = ptext + 'which are scheduled in less than 10 days.\n\n'
 
                 for obsid in m_note[1]:
-                    oline = str(obsid)  + ': ' + http_address + 'chkupdata/' + str(obsid)
+                    oline = str(obsid)  + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid)
                     oline = oline + '.' + rev_dict[obsid] + '\n'
                     mtext = mtext + oline
                     ptext = ptext + oline
@@ -251,7 +251,7 @@ def check_mp_notes(mp_note, rev_dict):
         ptext    = ptext + 'which are in the active OR list.\n\n'
 
         for obsid in mp_note[2]:
-            oline = str(obsid) + ': ' + http_address + 'chkupdata/' + str(obsid)
+            oline = str(obsid) + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid)
             oline = oline      + '.'  + rev_dict[obsid] + '\n'
             mtext = mtext + oline
             ptext = ptext + oline
@@ -274,7 +274,7 @@ def check_mp_notes(mp_note, rev_dict):
 #
     if ptext != '':
         recipient = current_user.email 
-        ptext     = ptext + '\n\n Please constact mp@cfa.harvard.edu, if you have not done so.\n\n'
+        ptext     = ptext + '\n\n Please constant mp@cfa.harvard.edu, if you have not done so.\n\n'
 
         if current_app.config['DEVELOPMENT']:
             email.send_email(psubject, sender, recipient, ptext)
@@ -300,7 +300,7 @@ def send_other_notification(asis, obsid, obsids_list):
         subject = obsid + ' and related obsids are submitted as ' + asis
         chk = 1
     else:
-        subject = obsid + ' is subimitted as ' + asis
+        subject = obsid + ' is submitted as ' + asis
 
     if asis == 'asis':
         if chk == 0:
@@ -356,7 +356,7 @@ def send_too_notification(ct_dict, asis, rev_dict):
         text  = text + '\tTOO Type:   ' + ct_dict['too_type'][-1]    + '\n'
         text  = text + '\tTOO Tigger: ' + ct_dict['too_trig'][-1]    + '\n'
         text  = text + '\tREMARKS:    ' + ct_dict['too_remarks'][-1] + '\n\n\n'
-        text  = text + http_address + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
+        text  = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
         text  = text + mail_end
  
         subject = otype.upper() + ' observation ' + str(obsid) + ' parameter updates'
@@ -378,7 +378,7 @@ def find_rev_no(o_list):
     input:  o_list      --- a list of obsids
     output: rev_dict    --- a dict of <obsid> <--> <updated revision #>
     """
-    ifile = ocat_dir  + 'updates_table.list'
+    ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
     data  = ocf.read_data_file(ifile)
 
     rev_dict = {}

@@ -37,6 +37,7 @@ import cus_app.ocatdatapage.send_notifications      as snt
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -46,10 +47,11 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 #
 #--- read ocat parameter list
 #
-basedir = os.path.abspath(os.path.dirname(__file__))
+#basedir = os.path.abspath(os.path.dirname(__file__))
 p_file  = os.path.join(basedir, '../static/param_list')
 with open(p_file, 'r') as f:
     all_param_list = [line.strip() for line in f.readlines()]
@@ -943,7 +945,7 @@ def check_obsid_in_or_list(obsids_list):
     input:  obsids_list --- a list of obsids
     output: or_dict     --- a dict of <obsid> <--> 1/0, 1 for yes 0 for no
     """
-    i_file  = obs_ss + 'scheduled_obs_list'
+    i_file  = os.path.join(current_app.config['OBS_SS'], 'scheduled_obs_list')
     data    = ocf.read_data_file(i_file)
 
     or_list = []

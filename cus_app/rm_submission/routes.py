@@ -30,6 +30,7 @@ import cus_app.supple.ocat_common_functions         as ocf
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
+"""
 p_file  = os.path.join(basedir, '../static/dir_list')
 with  open(p_file, 'r') as f:
     data = [line.strip() for line in f.readlines()]
@@ -39,16 +40,12 @@ for ent in data:
     var  = atemp[1].strip()
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
+"""
 #
 #--- current chandra time and a day and a half ago
 #
 now   = int(Chandra.Time.DateTime().secs)
 ytime = now - 86400 * 1.5
-#
-#---- set file names with a full path
-#
-updates_file = ocat_dir + 'updates_table.list'
-approve_file = ocat_dir + 'approved'
 
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
@@ -81,6 +78,7 @@ def index():
 #
     data, s_dict = find_sign_off_entries()
     disp_list    = create_display_data(data)
+    udates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
     mtime        = ocf.find_file_modification_time(updates_file)
     warning      = False
 
@@ -121,6 +119,7 @@ def find_sign_off_entries():
                         are included
     """
     user  = current_user.username
+    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
 #
 #--- read data table and reverse the order so that we can check from newest
 #
@@ -223,6 +222,8 @@ def update_data_tables(form, data):
     output: updated <ocat_dir>/updates_table.list
                     <ocat_dir/approved
     """
+    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
+    approve_file = os.path.join(current_app.config['OCAT_DIR'],'approved')
 #
 #--- find out which entry is asked to be reversed sign-off status
 #---        pos:0 --- this submission before any signing off
@@ -257,7 +258,7 @@ def update_data_tables(form, data):
 #--- if pos == 0, remove the submitted data entirely
 #
                 if pos == 0:
-                    cmd = 'rm -rf ' + ocat_dir + '/updates/' + obsidrev
+                    cmd = 'rm -rf ' + current_app.config['OCAT_DIR'] + '/updates/' + obsidrev
                     os.system(cmd)
                     continue
 #
@@ -354,6 +355,7 @@ def write_approved_file(data, obsidrev):
             obsidreve   --- <obsid>.<rev#>
     output: line        --- string of data to print out
     """
+    approve_file = os.path.join(current_app.config['OCAT_DIR'],'approved')
     atemp = re.split('\.', obsidrev)
     obsid = atemp[0]
     line  = ''
