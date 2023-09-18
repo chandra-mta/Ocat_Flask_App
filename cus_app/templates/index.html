@@ -1,30 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends 'bootstrap/base.html' %}
+
+
+
+{% block html %}
 <head>
 <title>Chandra Uplink Support INTerface</title>
 <meta name="Subject" content="By Thread"></meta>
-
-<script>
-  var webaddress = 'https://r2d2-v.cfa.harvard.edu/wsgi/aaron/cus/'
-
-  function OpenOcatPage(){
-      var  obsid = document.getElementById('obsid').value;
-      var  html  = webaddress + 'ocatdatapage/' + obsid;
-      window.open(html,'Ocatdatapage'+obsid);
-  } 
-  function OpenOrupdate(){
-    window.open(webaddress+"orupdate",'Orupdate')
-  }
-  function OpenExpress(){
-    window.open(webaddress+"express",'Express')
-  }
-  function OpenRemove(){
-    window.open(webaddress+"rm_submission",'Remove')
-  }
-  function OpenScheduler(){
-    window.open(webaddress+"scheduler",'Schedule')
-  }
-</script>
 
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
@@ -315,4 +296,25 @@ via either the cxc or icxc servers. Links for icxc only are marked with
 
 </small>
 </body>
-</html>
+
+<script>
+  function OpenOcatPage(){
+      var  obsid = document.getElementById('obsid').value;
+      var  html  = "{{url_for('ocatdatapage.index')}}" + obsid;
+      window.open(html,'Ocatdatapage'+obsid);
+  } 
+  function OpenOrupdate(){
+    window.open("{{url_for('orupdate.index')}}",'Orupdate')
+  }
+  function OpenExpress(){
+    window.open("{{url_for('express.index')}}",'Express')
+  }
+  function OpenRemove(){
+    window.open("{{url_for('rm_submission.index')}}",'Remove')
+  }
+  function OpenScheduler(){
+    window.open("{{url_for('scheduler.index')}}",'Schedule')
+  }
+</script>
+{% endblock %}
+

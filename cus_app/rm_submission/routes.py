@@ -78,7 +78,7 @@ def index():
 #
     data, s_dict = find_sign_off_entries()
     disp_list    = create_display_data(data)
-    udates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
+    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
     mtime        = ocf.find_file_modification_time(updates_file)
     warning      = False
 

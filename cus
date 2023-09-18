@@ -17,7 +17,7 @@ else:
 
 if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
     #Running app on local host flask server, run with DevConfig
-    application = create_app()
+    application = create_app(DevConfig)
 elif os.environ.get('LIVE_DIR') == os.path.abspath(os.path.dirname(__file__)):
     #Run with ProdConfin if script is running in the live web directory, otherwise default to DevConfig
     application = create_app(ProdConfig)

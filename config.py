@@ -25,7 +25,7 @@ class Config(object):
 #--- application directory
 #
     BASE_DIR = basedir
-    LOG_DIR = os.path.join(basedir,'logs')
+    LOG_DIR = os.path.join(os.path.dirname(__file__),'logs')
 #
 #--- database and csrf need secret_key
 #

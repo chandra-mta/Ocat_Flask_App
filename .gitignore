@@ -1,5 +1,6 @@
 #Ignore Pycache Files
 __pycache__/
+logs/
 
 #Ignore Database Files
 *.db

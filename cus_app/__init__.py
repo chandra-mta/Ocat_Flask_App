@@ -123,7 +123,7 @@ def create_app(config_class=DevConfig):
         """
         if not os.path.exists(app.config['LOG_DIR']):
             os.mkdir(app.config['LOG_DIR'])
-        """
+        
 
         file_handler = RotatingFileHandler(os.path.join(app.config['LOG_DIR'],'ocat.log'),
                                            maxBytes=10240, backupCount=10)
@@ -137,5 +137,6 @@ def create_app(config_class=DevConfig):
 
         app.logger.setLevel(logging.INFO)
         app.logger.info('Ocat Data startup')
+        """
 
     return app
