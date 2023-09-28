@@ -1,20 +1,38 @@
 import sys, os
 from dotenv import load_dotenv
-#For finding the application scripts in directory where the cus script is located
-sys.path.insert(0,f"{os.path.dirname(os.path.realpath(__file__))}")
-sys.path.insert(1,f"{os.path.dirname(os.path.realpath(__file__))}/cus_app")
 
-from cus_app            import create_app, db       #--- in app/__init__.py
-from cus_app.models     import User
-
-from config             import Config, ProdConfig, DevConfig
-
-
+#
+#--- Environment Variable Settings
+#
 if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
     load_dotenv("/data/mta4/CUS/Data/.localhostenv")
 else:
     load_dotenv("/data/mta4/CUS/Data/.env")
 
+#
+#--- Path Settings
+#
+#For finding the application scripts in directory where this cus script is located
+sys.path.insert(0,f"{os.path.dirname(os.path.realpath(__file__))}")
+sys.path.insert(1,f"{os.path.dirname(os.path.realpath(__file__))}/cus_app")
+if os.getenv('EXTRA_PATHS') is not None:
+    EXTRA_PATHS = os.getenv('EXTRA_PATHS')
+else:
+    EXTRA_PATHS = '/soft/SYBASE16.0/OCS-16_0/python/python39_64r/lib'
+for path in EXTRA_PATHS.split(":"):
+    if path not in sys.path:
+        sys.path.append(path)
+
+#
+#--- Application Imports
+#
+from cus_app            import create_app, db       #--- in app/__init__.py
+from cus_app.models     import User
+
+from config             import Config, ProdConfig, DevConfig
+#
+#--- Application Running.
+#
 if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
     #Running app on local host flask server, run with DevConfig
     application = create_app(DevConfig)

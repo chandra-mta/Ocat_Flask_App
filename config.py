@@ -1,16 +1,10 @@
 import os
 from   datetime import timedelta
-from   dotenv   import load_dotenv
 import binascii
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-#
-#--- loading the "environment" from .env
-#
-if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
-    load_dotenv("/data/mta4/CUS/Data/.localhostenv")
-else:
-    load_dotenv("/data/mta4/CUS/Data/.env")
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
+#os.environ should be filled with environment variables in the calling flask app creation script which calls the config object.
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
@@ -23,7 +17,7 @@ class Config(object):
 #
 #--- application directory
 #
-    BASE_DIR = basedir
+    BASE_DIR = BASEDIR
     LOG_DIR = os.path.join(os.path.dirname(__file__),'logs')
 #
 #--- database and csrf need secret_key
@@ -76,7 +70,7 @@ class ProdConfig(Config):
     DEBUG    = False
     DEVELOPMENT = False
 #
-#--- data directory  (MOVED TO app/static/dir_list)
+#--- Live Directory Settings
 #
     OCAT_DIR = '/data/mta4/CUS/www/Usint/ocat/'
     INFO_DIR = '/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/'
@@ -93,6 +87,6 @@ class DevConfig(Config):
     
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
     
-    if os.path.isfile(os.path.join(basedir, 'app.db')):
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    if os.path.isfile(os.path.join(BASEDIR, 'app.db')):
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
         
