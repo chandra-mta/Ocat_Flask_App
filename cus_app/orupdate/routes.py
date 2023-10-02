@@ -392,7 +392,7 @@ def check_comment(obsidrev):
     input:  obsidrev    --- <obsid>.<rev #>
     outpu:  1 if there is a large coordinate shift, otherwise, 0
     """
-    ifile = os.path.join(current_app.config['OCAT_DIR'], '/updates/', str(obsidrev))
+    ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates', str(obsidrev))
     #If data directory corrupted/missing revision file, bigger problems exist
     #yet this comment check can act as a safety check.
     try:
