@@ -370,7 +370,7 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
 #
     if  ct_dict['status'][-1]  in ['scheduled', 'unobserved']:
 
-        ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates/', obsidrev)
+        ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
         with open(ofile, 'w') as fo:
             fo.write(line)
 

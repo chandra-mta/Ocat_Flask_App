@@ -165,7 +165,7 @@ def get_data(name):
 #
 #--- check whether the data file exists
 #
-    name      = os.path.join(current_app.config['OCAT_DIR'],'updates/',name)
+    name      = os.path.join(current_app.config['OCAT_DIR'],'updates',name)
 
     if not os.path.isfile(name):
         return False

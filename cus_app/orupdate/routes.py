@@ -274,7 +274,7 @@ def check_file_creation_date(obsidrev):
     input:  obsidrev    --- <obsid>.<rev #>
     output: ltime       --- a creation time in <mm>/<dd>/<yy>
     """
-    ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates/', str(obsidrev))
+    ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates', str(obsidrev))
     stime = ocf.find_file_creation_time(ifile)
     out   = Chandra.Time.DateTime(stime).date
     atemp = re.split('\.', out)
