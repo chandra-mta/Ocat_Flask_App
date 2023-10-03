@@ -44,7 +44,7 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
             bcc    = current_user.email
     
     if bcc:
-        cmd = f"echo '{text_body}' | mailx -s '{subject}' -b '{bcc}' {recipients}"
+        cmd = f"echo '{text_body}' | mailx -s '{subject}' -c '{bcc}' {recipients}"
     else:
         cmd = f"echo '{text_body}' | mailx -s '{subject}' {recipients}"
     os.system(cmd)
