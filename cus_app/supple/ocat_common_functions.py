@@ -414,7 +414,7 @@ def find_other_revisions(obsid, rev=0):
                             if 0, find all revisions
     output: other_rev   --- a list of html link to the other rev
     """
-    data = [each for each in os.listdir(f"{current_app.config['OCAT_DIR]']}/updates/") if each.startswith(str(obsid)+".")]
+    data = [each for each in os.listdir(f"{current_app.config['OCAT_DIR']}/updates/") if each.startswith(str(obsid)+".")]
     rev       = int(rev)
     other_rev = []
     for ent in data:

@@ -101,6 +101,7 @@ def create_app(config_class=DevConfig):
 #
         if app.config['MAIL_SERVER']:
             auth = None
+            #Credentials currently Unused
             if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
                 auth = (app.config['MAIL_USERNAME'],
                         app.config['MAIL_PASSWORD'])
@@ -113,14 +114,18 @@ def create_app(config_class=DevConfig):
             mailhost     = (app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
             fromaddr     = 'no-reply@' + app.config['MAIL_SERVER'],
             toaddrs      = app.config['ADMINS'], subject='Ocat Data Page Failure',
-            credentials  = auth, secure=secure)
+            secure = secure
+            )
 
             mail_handler.setLevel(logging.ERROR)
+            mail_handler.setFormatter(logging.Formatter(
+              '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+            ))
             app.logger.addHandler(mail_handler)
 #
 #--- keep last 10 error logs
 #
-        """
+        
         if not os.path.exists(app.config['LOG_DIR']):
             os.mkdir(app.config['LOG_DIR'])
         
@@ -137,6 +142,6 @@ def create_app(config_class=DevConfig):
 
         app.logger.setLevel(logging.INFO)
         app.logger.info('Ocat Data startup')
-        """
+        
 
     return app

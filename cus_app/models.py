@@ -38,13 +38,10 @@ def register_user():
     session.modified = True
     #assign username, pulls from LDAP authentication login popup which is defined only in the apache server env scope
     #unless the REMOTE_USER variable is defined preemptively
-    if os.environ.get("FLASK_DEBUG") == '1':
-        if os.environ.get("REMOTE_USER") != None:
-            username = os.environ.get("REMOTE_USER")
-        else:
-            username = request.environ.get("REMOTE_USER")
+    if os.environ.get("REMOTE_USER") != None:
+        username = os.environ.get("REMOTE_USER")
     else:
-        username = request.environ.get("REMOTE_USER")#Similar Terminology to Apache Web Server, but assigned in Test Environment Setup
+        username = request.environ.get("REMOTE_USER") #Defined by Apache Web Server Context
     
     user = User.query.filter_by(username=username).first()
     login_user(user)
