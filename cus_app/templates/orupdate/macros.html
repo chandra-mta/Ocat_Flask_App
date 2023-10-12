@@ -15,13 +15,12 @@
 ##--- data[8]: verified by
 ##
 
-{% macro data_row(data, current_user) %}
+{% macro data_row(data, current_user, chkupdata=url_for('chkupdata.index')) %}
     <tr>
         <!--Obsid.revision Info-->
         <th class='cent' style='background-color:{{ data[-1][3] }};'>
-            <a href="javascript:WindowOpener('../chkupdata/{{ data[0] }}', 'orupdate_chkup')">
-                {{ data[0] }}
-            </a><br>
+            <a onclick="javascript:window.open('{{ chkupdata }}/{{ data[0] }}', 'Chkupdata{{ data[0] }}')", style="cursor:pointer">{{ data[0] }}</a>
+            <br>
             {{ data[1] }}<br>
             {{ data[2] }}<br>
             {{ data[3] }}
