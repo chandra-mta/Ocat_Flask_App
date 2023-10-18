@@ -86,7 +86,9 @@ class DevConfig(Config):
     #SECRET_KEY  = 'secret_key_for_test'
     
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////data/mta4/CUS/Data/FakeUsers/app.db'
     
-    if os.path.isfile(os.path.join(BASEDIR, 'app.db')):
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
+    #if os.path.isfile(os.path.join(BASEDIR, 'app.db')):
+    #    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
         

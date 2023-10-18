@@ -64,8 +64,7 @@
 <!-- -->
 <!-- if all others are signed-off, show Signoff & Approve button -->
 <!-- -->
-            {% elif (data[4] != 'NA') and (data[5] != 'NA') and (data[6] != 'NA')
-                and (data[7] != 'NA') and (data[8] == 'NA') %}
+            {% elif (data[4] != 'NA') and (data[5] != 'NA') and (data[6] != 'NA') and (data[7] != 'NA') and (data[8] == 'NA') and ('admin' in current_user.groups_string or 'usint' in current_user.groups_string) %}
                 {% set name = 'approve_' + data[0] %}
                 <br>
                 <input type='submit' name='{{ name }}' value='Sign-off & Approve'>
@@ -129,7 +128,7 @@
         {% if 'admin' in current_user.groups_string or targ in current_user.groups_string %}
             <input type='submit' name={{ name }} value='Sign-off'>
         {% else %}
-            <p> Sign-off By {{targ.capitalize()}} Required</p>
+            <p> Sign-off By {{ targ.capitalize() }} Required</p>
         {% endif %}
     {% else %}
         {{ data }}
