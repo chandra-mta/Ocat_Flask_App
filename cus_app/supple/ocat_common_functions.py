@@ -44,6 +44,52 @@ for ent in data:
     exec("%s = '%s'" %(var, line))
 """
 
+#---------------------------------------------------------------------------------
+#-- clean_text: intake a section of text and format for Unix file conventions   --
+#---------------------------------------------------------------------------------
+def clean_text(intext):
+    """
+    intake a text and format for Unix file conventions
+    intput: string or a collection of strings
+    output: string or a collection of strings which is cleaned
+    """
+    def clean_string(instring):
+        """
+        intake a string and format for Unix file conventions
+        input:  string possibly containing carriage return characters.
+        output: string only containing newline characters \n when appropriate
+        """
+        if type(instring).__name__ != 'bytes':
+            try:
+                boutstring = bytes(instring,'utf-8')
+            except:
+                raise Exception(f"Error converting to bytes. instring type: {type(instring)}")
+        else:
+            boutstring = instring
+        
+        boutstring = boutstring.replace(b'\r\n',b'\n') #Replace DOS CRLF with Unix LF
+        boutstring = boutstring.replace(b'\r',b'\n') #Replaces Old Machintosh Cr with Unix LF. Run after DOS replacement
+        return boutstring.decode()
+
+    if type(intext).__name__ == 'list':
+        outlist = []
+        for ent in intext:
+            outlist.append(clean_string(ent))
+        return outlist
+    elif type(intext).__name__ == 'dict':
+        outdict = {}
+        for k,v in intext.items():
+            outdict[clean_string(k)] = clean_string(v)
+        return outdict
+    elif type(intext).__name__ == 'set':
+        outset = set()
+        for ent in intext:
+            outset.add(clean_string(ent))
+        return outset
+    else:
+        return clean_string(intext)
+
+
 #--------------------------------------------------------------------------
 #-- read_data_file: read a data file and create a data list              --
 #--------------------------------------------------------------------------

@@ -16,6 +16,7 @@ from flask          import current_app
 from flask_mail     import Message
 from flask_login    import current_user
 from cus_app            import mail
+from cus_app.supple.ocat_common_functions   import clean_text
 
 cus  = 'cus@cfa.harvard.edu'
 
@@ -42,11 +43,30 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
         recipients = current_user.email
         if bcc != '':
             bcc    = current_user.email
-    
+
+#
+#--- Cleaning step
+#
+    text_body = clean_text(text_body)
+    subject = clean_text(subject)
+    recipients = clean_text(recipients)
+    if type(recipients).__name__ == 'list':
+        recipients = ','.join(recipients)
+    bcc = clean_text(bcc)
+    if type(bcc).__name__ == 'list':
+        bcc = ','.join(bcc)
     if bcc:
+        message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
+        cmd = f"echo '{message}' | sendmail {recipients}"
+        '''
         cmd = f"echo '{text_body}' | mailx -s '{subject}' -c '{bcc}' {recipients}"
+        '''
     else:
+        message = f"To:{recipients}\nSubject:{subject}\n{text_body}"
+        cmd = f"echo '{message}' | sendmail {recipients}"
+        '''
         cmd = f"echo '{text_body}' | mailx -s '{subject}' {recipients}"
+        '''
     os.system(cmd)
     
 #-------------------------------------------------------------
