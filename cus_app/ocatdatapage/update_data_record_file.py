@@ -247,6 +247,7 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
 
     [gen_list, acis_list, time_list, roll_list, awin_list] = data[1]
     line = ''
+    cline = ''
 #
 #--- general information about this observation
 #
@@ -275,6 +276,9 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
         line = line + 'NEW COMMENTS  = \n'
         line = line + ct_dict['comments'][-1] + '\n\n'
 
+        cline = cline + 'NEW COMMENTS  = \n'
+        cline = cline + ct_dict['comments'][-1] + '\n\n'
+
 
     line = line + 'PAST REMARKS  = \n'
     line = line + ct_dict['remarks'][-2] + '\n\n'
@@ -282,11 +286,13 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
     if ind_dict['remarks'] == 0:
         line = line + 'NEW REMARKS   = \n'
         line = line + ct_dict['remarks'][-1] + '\n\n'
+
+        cline = cline + 'NEW REMARKS   = \n'
+        cline = cline + ct_dict['remarks'][-1] + '\n\n'
 #
 #--- list parameters that the values were updated
 #
     line  = line + '\nGENERAL CHANGES: \n'
-    cline = ''
     for param in gen_list:
         if param in skip_list:
             continue
