@@ -54,7 +54,7 @@ with open(p_file, 'r') as f:
 #
 #--- define a few data list
 #
-null_list  = [None, 'NA', 'N', 'NULL', 'None',  'n', 'null', 'none', '', '<Blank>']
+null_list  = [None, 'NA', 'NULL', 'None', 'null', 'none', '', '<Blank>']
 
 time_list  = ['window_constraint', 'tstart', 'tstop']
 
@@ -605,9 +605,11 @@ def set_color_indicator(org, req, db_val):
 #
 #--- handling 'default' case
 #
+        """
         cind = check_default_case(org, req, db_val)
         if cind >= 0:
             return cind 
+        """
 #
 #--- if org value and req value are same
 #
@@ -720,7 +722,7 @@ def add_extra_values_to_dict(d_dict, ct_dict):
         for k in range(0, 10):
             if isinstance(out[1], list):
                 if out[1][k] in null_list:
-                    break;
+                    break
             else:
                 break
     if k == 0:
@@ -905,8 +907,6 @@ def check_formt_change(tval):
 
     mc = re.search('T', str(tval))
     if mc is None:
-        if tval  in null_list:
-            return tval
         try:
             atemp = re.split(':', tval)
             alen  = len(atemp)
