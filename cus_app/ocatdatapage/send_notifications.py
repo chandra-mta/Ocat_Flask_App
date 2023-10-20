@@ -233,7 +233,7 @@ def check_mp_notes(mp_note, rev_dict):
                 ptext    = ptext + 'You requested changes of parameter values in the following obsid(s) '
                 ptext    = ptext + 'which are scheduled in less than 10 days.\n\n'
 
-                for obsid in m_note[1]:
+                for obsid in mp_note[1]:
                     oline = str(obsid)  + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid)
                     oline = oline + '.' + rev_dict[obsid] + '\n'
                     mtext = mtext + oline
