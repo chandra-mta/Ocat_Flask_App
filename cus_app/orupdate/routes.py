@@ -828,7 +828,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
     otype   = out[0][0]
     inst    = out[0][1]
 #
-#--- if the type is TOO or DDT, send out a notificaiton
+#--- if the type is TOO or DDT, send out a notification
 #
     if otype.lower() in ['too', 'ddt']:
 #

@@ -82,7 +82,7 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
             send_param_change_notification(ct_dict, obsidrev, e_text, asis)
 
         elif asis in ['remove', 'clone']:
-            send_clone_remove_notificaiton(ct_dict, obsidrev, asis)
+            send_clone_remove_notification(ct_dict, obsidrev, asis)
 #
 #--- update signoff status data in <ocat_dir>/updates_table.list
 #
@@ -608,12 +608,12 @@ def send_param_change_notification(ct_dict, obsidrev, text, asis):
         email.send_email(subject, sender, recipient, text, bcc=bcc)
 
 #-----------------------------------------------------------------------------------------------
-#-- send_clone_remove_notificaiton: send remove or clone request notificaiton                ---
+#-- send_clone_remove_notification: send remove or clone request notification                ---
 #-----------------------------------------------------------------------------------------------
 
-def send_clone_remove_notificaiton(ct_dict, obsidrev, asis):
+def send_clone_remove_notification(ct_dict, obsidrev, asis):
     """
-    send remove or clone request notificaiton
+    send remove or clone request notification
     input:  ct_dict     --- dict of <parameter> <---> <informaiton>
             obsidirev   --- <obsid>.<rev #>
             asis        --- status of the submission

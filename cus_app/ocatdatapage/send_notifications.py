@@ -44,17 +44,17 @@ mail_end = '\n\nIf you have any questions about this email, please contact '
 mail_end = mail_end + 'bwargelin@cfa.harvard.edu.\n'
 
 #-----------------------------------------------------------------------------------------------
-#-- send_notifications: send notificaiton email to POC, MP, ARCORP, and HRC                   --
+#-- send_notifications: send notification email to POC, MP, ARCORP, and HRC                   --
 #-----------------------------------------------------------------------------------------------
 
 def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
     """
-    send notificaiton email to POC, MP, ARCORP, and HRC
+    send notification email to POC, MP, ARCORP, and HRC
     input:  asis                --- asis status
             ct_dict             --- a dict of <paramter> <---> <information>
             obsids_list         --- a list of obdids
             changed_parameters  --- a text of a list of changed parameter values
-            mp_note             --- a notificaitons to MP
+            mp_note             --- a notifications to MP
     output: email sent out
     """
 #
@@ -75,7 +75,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #--- arcops notification: multiple obsids are submitted
 #
         if len(obsids_list) > 0:
-            arcops_notificaiton(o_list, rev_dict, changed_parameters)
+            arcops_notification(o_list, rev_dict, changed_parameters)
 #
 #--- check TOO notification
 #
@@ -85,7 +85,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #
         check_mp_notes(mp_note, rev_dict)
 #
-#--- asis, remove, and clone notificaiton is simpler...
+#--- asis, remove, and clone notification is simpler...
 #
     elif asis in ['asis', 'remove', 'clone']:
         obsid = str(ct_dict['obsid'][-1])
@@ -134,10 +134,10 @@ def hrc_si_notification(obsids_list, rev_dict):
         email.send_email(subject, sender, recipient, text, bcc=bcc)
 
 #-----------------------------------------------------------------------------------------------
-#-- arcops_notificaiton: sending arcops about multiple obsid submission                       --
+#-- arcops_notification: sending arcops about multiple obsid submission                       --
 #-----------------------------------------------------------------------------------------------
 
-def arcops_notificaiton(o_list, rev_dict, changed_params):
+def arcops_notification(o_list, rev_dict, changed_params):
     """
     sending arcops about multiple obsid submission
     input:  o_list          --- a list of obsids

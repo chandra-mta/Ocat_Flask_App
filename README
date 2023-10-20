@@ -133,7 +133,7 @@ routes.py                   --- a main script
 __init__.py                 --- a script to setup the function 
 check_value_range.pyA       --- check whether the values are in the expected range
 create_selection_dict.py    --- create a dict of p_id <--> [<p_id information>] 
-send_notifications.py       --- sending out notificaiton
+send_notifications.py       --- sending out notification
 submit_other_obsids.py      --- update obsids on a list as the original obsid was update
 update_data_record_file.py  --- create a data recorde file for a given obsid
 
@@ -150,7 +150,7 @@ data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
 
 templates:  index.html              --- the main page/prameter value update page
             display_parameters.html --- updated parameter value check page
-            finalize.html           --- the page to display the job complete notificaiton
+            finalize.html           --- the page to display the job complete notification
             provide_obsid.html      --- the page to display <obsid>, if it was not found
             macros.html             --- macro holder
 
@@ -226,7 +226,7 @@ other scripts
 ==============
 this directory keeps non-flask python scripts
 
-create_schedule_table.py    --- a create a static html and send out notificaitons
+create_schedule_table.py    --- a create a static html and send out notifications
 write_this_week_too_poc.py  --- a write out the current POC at /home/mta/TOO-POC
 
 =================
@@ -241,7 +241,7 @@ find_scheduled_obs.py       --- find scheduled observations
 
 in  /data/mta4/CUS/www/Usint/
 -----------------------------
-create_schedule_table.py        --- create POC duety table html/send POC duty notificaiton
+create_schedule_table.py        --- create POC duety table html/send POC duty notification
 signoff_request.py              --- send out sign-off request
 check_hrc_si_mode_sign_off.py   --- check hrc si mode sign off status
 
