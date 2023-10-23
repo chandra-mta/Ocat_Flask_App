@@ -36,7 +36,7 @@ class Config(object):
     CSRF_ENABLED    = True
     #CSRF_SESSON_KEY ='some_secret-key'
 #
-#--- mail 
+#--- mail (SMTPHandler future implementation)
 #
     MAIL_SERVER     = os.environ.get('MAIL_SERVER')
     MAIL_PORT       = int(os.environ.get('MAIL_PORT') or 25)
@@ -44,6 +44,7 @@ class Config(object):
     MAIL_USE_SSL    = True
     MAIL_USERNAME   = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD   = os.environ.get('MAIL_PASSWORD')
+    TEST_MAIL       = False
     ADMINS          = ['william.aaron@cfa.harvard.edu']
 #
 #--- session activity
@@ -83,6 +84,8 @@ class ProdConfig(Config):
 class DevConfig(Config):
     ENV         = 'development'
     DEVELOPMENT = True
+    if os.environ.get('TEST_MAIL') is not None:
+        TEST_MAIL = os.environ.get('TEST_MAIL')
     #SECRET_KEY  = 'secret_key_for_test'
     
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)

@@ -95,7 +95,7 @@ def create_app(config_class=DevConfig):
 #
 #--- if this is not a testing, setup a few other things
 #
-    if not app.debug and not app.testing:
+    if (not app.debug and not app.testing) or app.config['TEST_MAIL']:
 #
 #--- setting up the mail server connection
 #
