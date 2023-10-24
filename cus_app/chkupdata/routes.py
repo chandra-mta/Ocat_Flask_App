@@ -392,6 +392,22 @@ def get_data(name):
 #--- add missing parameters
 #
     d_dict = add_extra_values_to_dict(d_dict, ct_dict)
+
+#
+#--- Correct d_dict if changed parameters are not listed in the "full listing" of obscat parameters in revision file.
+#
+    #TODO Create handling for the awc_dict parameters.
+    for key in gc_dict.keys():
+        if key in d_dict.keys():
+            d_dict[key][0] = gc_dict[key][0]
+            d_dict[key][1] = gc_dict[key][1]
+
+    for key in ac_dict.keys():
+        if key in d_dict.keys():
+            d_dict[key][0] = ac_dict[key][0]
+            d_dict[key][1] = ac_dict[key][1]
+
+
 #
 #-- update remarks and comment dict entry
 #
