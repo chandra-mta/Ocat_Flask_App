@@ -99,6 +99,7 @@ def create_app(config_class=DevConfig):
 #
 #--- setting up the mail server connection
 #
+        '''
         if app.config['MAIL_SERVER']:
             auth = None
             #Credentials currently Unused
@@ -122,6 +123,7 @@ def create_app(config_class=DevConfig):
               '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
             ))
             app.logger.addHandler(mail_handler)
+        '''
 #
 #--- keep last 10 error logs
 #
@@ -132,7 +134,7 @@ def create_app(config_class=DevConfig):
 
         file_handler = RotatingFileHandler(os.path.join(app.config['LOG_DIR'],'ocat.log'),
                                            maxBytes=10240, backupCount=10)
-
+        file_handler.name = "Error-Info"
         file_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s '
             '[in %(pathname)s:%(lineno)d]'))

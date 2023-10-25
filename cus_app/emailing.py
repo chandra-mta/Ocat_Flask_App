@@ -18,6 +18,10 @@ from flask_login    import current_user
 from cus_app            import mail
 from cus_app.supple.ocat_common_functions   import clean_text
 
+from email.mime.text    import MIMEText
+from subprocess         import Popen, PIPE
+from datetime           import datetime
+
 cus  = 'cus@cfa.harvard.edu'
 
 #--------------------------------------------------------------
@@ -68,7 +72,33 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
         cmd = f"echo '{text_body}' | mailx -s '{subject}' {recipients}"
         '''
     os.system(cmd)
-    
+
+#--------------------------------------------------------------
+#-- send_error_email: sending out error email to admin       --
+#--------------------------------------------------------------    
+
+def send_error_email():
+    handler_list = current_app.logger.handlers
+    for item in handler_list:
+        if item.name == "Error-Info":
+            error_handler = item
+            break
+    file_path = error_handler.baseFilename
+    #Once the log path is found, must search the file to send email contents
+    with open(file_path,'r') as f:
+        content = f.read()
+    userinfo = []
+    for k,v in current_user.__dict__.items():
+        if k not in ['_sa_instance_state']:
+            userinfo.append(f"({k} : {v})")
+    msg = MIMEText(f"User: {' - '.join(userinfo)} \n\n ocat.log:\n{content}")
+    msg["From"] = "UsintErrorHandler"
+    msg["To"] = ",".join(current_app.config['ADMINS'])
+    msg["Subject"] = f"Usint Error-[{datetime.now().strftime('%c')}]"
+    p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+    p.communicate(msg.as_bytes())
+
+
 #-------------------------------------------------------------
 #-- CURRENTLY NOT USED!!! -------------------------------------
 #--------------------------------------------------------------
