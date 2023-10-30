@@ -606,7 +606,7 @@ def sleep_while_locked(ifile, tmax=10):
     """
     sleep until the file is unlocked
     input:  ifile   --- a file with a full path
-            tmax    --- max time to sellp: defalut 10 secs
+            tmax    --- max time to sellp: default 10 secs
                         if the max time is passed, False is returned
     output: True/False  
     """
@@ -616,7 +616,7 @@ def sleep_while_locked(ifile, tmax=10):
     chk  = False
     for k in range(0, dlen):
         if is_file_locked(ifile):
-            sleep(step)
+            time.sleep(step)
         else:
             chk = True
             break
