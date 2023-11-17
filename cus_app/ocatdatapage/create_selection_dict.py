@@ -1484,17 +1484,26 @@ def create_selection_dict(obsid):
     part = 'https://cxc.harvard.edu/targets/'  + str(ct_dict['seq_nbr']) + '/'
     part = part + str(ct_dict['seq_nbr'])      + '.' + str(ct_dict['obsid'])   + '.'
 
-    test = ''.join([each for each in os.listdir(f"/data/targets/{str(ct_dict['seq_nbr'])}") if each.endswith('.gif')])
-    mc   = re.search('soe', test)
+    rass = "NoImage"
+    rosat = "NoImage"
+    dss = "NoImage"
+    if os.path.isdir(f"/data/targets/{str(ct_dict['seq_nbr'])}"):
+        test = ''.join([each for each in os.listdir(f"/data/targets/{str(ct_dict['seq_nbr'])}") if each.endswith('.gif')])
+        
+        if 'soe.rass.gif' in test:
+            rass  = part + 'soe.rass.gif'
+        elif 'rass.gif' in test:
+            rass  = part + 'rass.gif'
 
-    if mc is not None:
-        rass  = part + 'soe.rass.gif'
-        rosat = part + 'soe.pspc.gif'
-        dss   = part + 'soe.dss.gif' 
-    else:
-        rass  = part + 'rass.gif'
-        rosat = part + 'pspc.gif'
-        dss   = part + 'dss.gif' 
+        if 'soe.pspc.gif' in test:
+            rosat  = part + 'soe.pspc.gif'
+        elif 'pspc.gif' in test:
+            rosat  = part + 'pspc.gif'
+
+        if 'soe.dss.gif' in test:
+            dss   = part + 'soe.dss.gif'
+        elif 'dss.gif' in test:
+            dss   = part + 'dss.gif'
 
     p_dict['rass']  = ['RASS',  '', 'n', rass,  rass]
     p_dict['rosat'] = ['ROSAT', '', 'n', rosat, rosat]

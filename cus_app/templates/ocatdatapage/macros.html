@@ -94,11 +94,15 @@
 ##
 
 {% macro map_image_opener(sat, color, ct_dict) %}    
-    {% set link = ct_dict[sat][-1] %}
     {% set usat = sat.upper() %}
-    <a href="javascript:ImageOpener('{{ link }}')">
-    <span style='color:{{ color }};'>{{ usat }}</span>
-    </a>
+    {% if ct_dict[sat][-1] ==  'NoImage'%}
+        <span style='color:{{ color }};'>No {{ usat }} Link</span>
+    {% else %}
+        {% set link = ct_dict[sat][-1] %}
+        <a href="javascript:ImageOpener('{{ link }}')">
+        <span style='color:{{ color }};'>{{ usat }}</span>
+        </a>
+    {% endif %}
 {% endmacro %}
 
 ##
