@@ -45,7 +45,7 @@ import ocat_common_functions         as ocf
 #
 cus       = 'cus@cfa.harvard.edu'
 admin     = 'bwargelin@cfa.harvard.edu'
-tech      = 'tisobe@cfa.harvard.edu'
+tech      = 'william.aaron@cfa.harvard.edu'
 #
 #--- constant related dates
 #
@@ -130,7 +130,7 @@ def create_schedule_table():
     with open(ofile, 'w') as fo:
         fo.write(line)
 #
-#--- send notificaitons
+#--- send notifications
 #
     schedule_notification(k_list, d_dict, poc_dict, stime)
 #
@@ -250,7 +250,7 @@ def schedule_notification(k_list, d_dict, poc_dict, stime):
 #
     first_notification(k_list, d_dict, poc_dict, stime)
 #
-#--- send out the second notificaiton to POC: on the day of the duty starts
+#--- send out the second notification to POC: on the day of the duty starts
 #
     second_notification(k_list, d_dict, poc_dict, stime)
     
