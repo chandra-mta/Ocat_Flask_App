@@ -23,6 +23,7 @@ import crypt
 import getpass
 import pathlib
 from hmac import compare_digest as compare_hash
+from astropy.coordinates import Angle
 
 #sys.path.append('/proj/sot/ska3/flight/lib/python3.8/site-packages')
 import Chandra.Time
@@ -668,91 +669,49 @@ def find_file_modification_time(ifile):
 #-- convert_ra_dec_format: convert ra/dec fromat between <dd>:<mm>:<ss> or <dd.ddddd> format  --
 #-----------------------------------------------------------------------------------------------
 
-def convert_ra_dec_format(dra, ddec):
+def convert_ra_dec_format(dra, ddec, format='switch'):
     """
     convert ra/dec format
     input:  dra     --- either <hh>:<mm>:<ss> or <dd.ddddd> format
             ddec    --- either <dd>:<mm>:<ss> or <ddd.ddddd> format
+            format --- specify output format as either 'switch', 'dd', or 'hmsdms'
 
     output: tra     --- either <hh>:<mm>:<ss> or <dd.ddddd> format
             tdec    --- either <dd>:<mm>:<ss> or <ddd.ddddd> format
     """
-#
-#--- conveting a deciaml format to hh:mm:ss / dd:mm:ss format
-#    
-    if is_neumeric(dra):
-        ra   = float(dra)
-        hh   = int(ra / 15.0)
-        df   = 60.0 * (ra/15.0 - hh)
-        mm   = int(df)
-        ss   = 60.0 * (df - mm)
-        si   =int(ss)
-        frac = ss - si
-        frac = '%1.4f' % frac
-        temp = re.split('\.', frac)
-        frac = temp[1]
-
-        tra  = '%02d:%02d:%02d.%s' % (hh, mm, si, frac)
-
-
-        dec  = float(ddec)
-        if dec < 0:
-            sign = '-'
-        else:
-            sign = '+'
-        dec  = abs(dec)
-
-        dd   = int(dec)
-        df   = 60.0 * (dec - dd)
-        mm   = int(df)
-        ss   = 60.0 * (df  - mm)
-        #if ss > 60.0:
-        #    ss -= 60.0
-        #    mm += 1
-        #if mm > 60:
-        #    mm -= 60
-        #    dd += 1
-        si   =int(ss)
-        frac = ss - si
-        frac = '%1.4f' % frac
-        temp = re.split('\.', frac)
-        frac = temp[1]
-
-        tdec = '%s%02d:%02d:%02d.%s' %(sign, dd, mm, si, frac)
-
-    else:
-#
-#--- converting hh:mm:ss /dd:mm:ss format to a decimal format
-#
-#--- check mis-typing 
-#
-        dra  = dra.replace(';', ':')
-        ddec = ddec.replace(';', ':')
-#
-#--- check the coordinates are separated by ":" or " " (blank space)
-#
-        mc = re.search(':', dra)
-        if mc is not None:
-            dra  = re.split(':', dra)
-            ddec = re.split(':', ddec)
-
-        else:
-            dra  = re.split('\s+', dra)
-            ddec = re.split('\s+', ddec)
-
-        tra = 15.0 * (float(dra[0]) + float(dra[1]) / 60.0 + float(dra[2]) / 3600.0)
-        tra = '%3.8f' % tra
-
-        if float(ddec[0]) < 0:
-            sign = -1
-        else:
-            sign =  1
-
-        tdec = sign * (abs(float(ddec[0])) + float(ddec[1]) / 60.0 + float(ddec[2]) / 3600.0)
-        tdec = '%3.8f' % tdec
-
-
-    return tra, tdec
+    #
+    #--- Define output format
+    #
+    dra = str(dra)
+    ddec = str(ddec)
+    dra  = dra.replace(';', ':')
+    ddec = ddec.replace(';', ':')
+    try:
+        tmp = float(dra)
+        tmp = float(ddec)
+        iformat = 'dd'
+    except:
+        iformat = 'hmsdms'
+    
+    if format != 'switch':
+        if format == iformat:
+            return dra, ddec
+    #
+    #--- Switch formats
+    #
+    if iformat == 'dd':
+        angle_ra = Angle(f"{dra} degrees")
+        tra = angle_ra.to_string(sep=":",pad=True,precision=4,unit='hourangle')
+        angle_dec = Angle(f"{ddec} degrees")
+        tdec = angle_dec.to_string(sep=":",pad=True,precision=4,alwayssign=True,unit='degree')
+    
+    elif iformat == 'hmsdms':
+        angle_ra = Angle(f"{dra} hours")
+        tra = angle_ra.to_string(decimal=True,precision=6,unit='degree')
+        angle_dec = Angle(f"{ddec} degrees")
+        tdec = angle_dec.to_string(decimal=True,precision=6,unit='degree')
+    
+    return tra,tdec
 
 
 
