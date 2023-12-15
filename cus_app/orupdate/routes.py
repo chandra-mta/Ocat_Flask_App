@@ -164,7 +164,7 @@ def read_status_data():
         if mc is not None:
             out = check_status(ent)
             odata.append(out)
-            poc_dict[out[0]] = out[-1]
+            poc_dict[out[0]] = out[3]
 #
 #--- prep to check multiple opening of the same obsid
 #
@@ -196,7 +196,7 @@ def read_status_data():
             if chk == 1:
                 out = check_status(ent)
                 cdata.append(out)
-                poc_dict[out[0]] = out[-1]
+                poc_dict[out[0]] = out[3]
 #
 #--- find out highest  rev #  of each obsid
 #
@@ -841,8 +841,8 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
         if colname == 'acis':
             if si == 'NA':
                 text = "Editing of General/ACIS entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  update SI Mode entries, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
-                text = text + "and sign off SI Mode Status.\n"
+                text = text + "Please  update SI Mode entries, then go to: " + current_app.config['HTTP_ADDRESS'] + 'orupdate'
+                text = text + " and sign off SI Mode Status.\n"
 
                 subject = otype.upper() + ' SI Status Signed Off Request: OBSID: ' + obsid
 
@@ -853,8 +853,8 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
                     recipient = 'hrcdude@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  verify it, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
-                text = text + "and sign off 'Verified By' column.\n"
+                text = text + "Please  verify it, then go to: " + current_app.config['HTTP_ADDRESS'] + 'orupdate'
+                text = text + " and sign off 'Verified By' column.\n"
 
                 subject = otype.upper() + '  Verification Signed Off Request: OBSID: ' + obsid
 #
@@ -875,16 +875,16 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
         elif colname == 'si':
             if gen == 'NA':
                 text = "Editing of SI entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  update General/ACIS entries, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
-                text = text + "and sign off SI Mode Status.\n"
+                text = text + "Please  update General/ACIS entries, then go to: " + current_app.config['HTTP_ADDRESS'] + 'orupdate'
+                text = text + " and sign off SI Mode Status.\n"
 
                 subject = otype.upper() + ' General/ACIS Status Signed Off Request: OBSID: ' + obsid
 
                 recipient = 'arcops@cfa.harvard.edu'
             else:
                 text = "Editing of all entries of " + obsidrev + " were finished and signed off. "
-                text = text + "Please  verify it, then go to: " + current_app.config['HTML_ADDRESS'] + 'orupdate'
-                text = text + "and sign off 'Verified By' column.\n"
+                text = text + "Please  verify it, then go to: " + current_app.config['HTTP_ADDRESS'] + 'orupdate'
+                text = text + " and sign off 'Verified By' column.\n"
 
                 subject = otype.upper() + '  Verification Signed Off Request: OBSID: ' + obsid
 
