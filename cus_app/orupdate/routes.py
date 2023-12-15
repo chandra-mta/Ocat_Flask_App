@@ -164,7 +164,7 @@ def read_status_data():
         if mc is not None:
             out = check_status(ent)
             odata.append(out)
-            poc_dict[out[0]] = out[-1]
+            poc_dict[out[0]] = out[3]
 #
 #--- prep to check multiple opening of the same obsid
 #
@@ -196,7 +196,7 @@ def read_status_data():
             if chk == 1:
                 out = check_status(ent)
                 cdata.append(out)
-                poc_dict[out[0]] = out[-1]
+                poc_dict[out[0]] = out[3]
 #
 #--- find out highest  rev #  of each obsid
 #
