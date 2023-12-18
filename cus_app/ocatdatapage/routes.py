@@ -98,7 +98,7 @@ def before_request():
 @bp.route('/<obsid>',       methods=['GET', 'POST'])
 @bp.route('/index/<obsid>', methods=['GET', 'POST'])
 def index(obsid=''):
-
+    current_app.logger.info(f"Opening Obsid: {obsid}")
     form     = OcatParamForm()
 #
 #--- check an obsid given is in a proper form

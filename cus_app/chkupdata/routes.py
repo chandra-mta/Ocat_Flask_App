@@ -86,6 +86,7 @@ def before_request():
 @bp.route('/<name>',       methods=['GET', 'POST'])
 @bp.route('/index/<name>', methods=['GET', 'POST'])
 def index(name=''):
+    current_app.logger.info(f"Opening Obsid.Rev: {name}")
 #
 #--- initialize
 #
