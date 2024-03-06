@@ -1,15 +1,14 @@
-#!/proj/sot/ska3/flight/bin/python -E
+#!/proj/sot/ska3/flight/bin/python
 
-import sys
 import os
 import sqlite3
+import argparse
 
-ifile = "/data/mta4/CUS/www/.groups"
+IFILE = "/data/mta4/CUS/www/.groups"
+OUT_DIR = "/data/mta4/CUS/Data/Users"
 
 search = os.popen(f'getent aliases').read().split('\n')
 
-cmd = 'cp -f app.db app.db~'
-os.system(cmd)
 
 def find_email(member):
     for result in search:
@@ -19,7 +18,7 @@ def find_email(member):
     raise RuntimeError('find_email did not find member email in getent aliases\n')
     return None
 
-with open(ifile, 'r') as f:
+with open(IFILE, 'r') as f:
     data = [line.strip() for line in f.readlines()]
 
 k = 0
@@ -44,8 +43,6 @@ for ent in data:
                 member_dict[member] = {'id': k, 'name': member, 'mail': find_email(member), 'groups': [groupname]}
                 #print(f"Info: {member_dict[member]}")
 
-#print("Full members dictionary")
-#print(member_dict)
 #Creating SQL table
 
 con = sqlite3.connect('tmp.db')
@@ -69,3 +66,35 @@ cmd = "rm app.db; mv tmp.db app.db"
 os.system(cmd)
 
 
+def update_user_database():
+    """
+    Read the .groups file determining ldap authentication for the Ocat Flask app and 
+    fill out the relevant user information for it.
+    """
+
+    #Save previous state
+    os.system(f"cp -f {OUT_DIR}/app.db {OUT_DIR}/app.db~")
+    con.commit()
+
+if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-p", "--path", required = False, help = "Determine path to a .groups file determining ldap authentication groups.")
+    parser.add_argument("-d", "--directory", required = False, help = "Determine path to a database directory for sotirng the applications app.db")
+    args = parser.parse_args()
+#
+#--- Determine if running in test mode and change pathing if so
+#
+    if args.mode == "test":
+        if args.path:
+            IFILE = args.path
+        else:
+            IFILE = f"{os.getcwd()}/.groups"
+        if args.directory:
+            OUT_DIR = args.directory
+        else:
+            OUT_DIR = f"{os.getcwd()}"
+
+        update_user_database()
+    else:
+        update_user_database()
