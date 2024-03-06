@@ -7,42 +7,6 @@ import argparse
 IFILE = "/data/mta4/CUS/www/.groups"
 OUT_DIR = "/data/mta4/CUS/Data/Users"
 
-search = os.popen(f'getent aliases').read().split('\n')
-
-
-def find_email(member):
-    for result in search:
-        atemp = [a.strip() for a in result.split(':')]
-        if atemp[0] == member:
-            return atemp[1] #email string
-    raise RuntimeError('find_email did not find member email in getent aliases\n')
-    return None
-
-with open(IFILE, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-k = 0
-member_dict = dict()
-member_dict['testUSINT'] = {'id': k, 'name': 'testUSINT', 'mail': 'william.aaron@cfa.harvard.edu', 'groups':['test']}#includes test user
-
-for ent in data:
-    atemp = [a.strip() for a in ent.split(':')]
-    #print(f"File line data: {atemp}")
-    if (len(atemp) == 2) and (atemp[0][0] !='#') and (atemp[1] != ''): #cleanup for comments, ill-formated lines, or empty groups in .groups file
-        groupname = atemp[0]
-        grouplist = atemp[1].split()
-        #print(f"Group: {groupname}")
-        for member in grouplist:
-            #print(f"Member: {member}")
-            if member in member_dict: #already seen this member.
-                member_dict[member]['groups'].append(groupname)
-                #print("Already found member")
-                #print(f"Info: {member_dict[member]}")
-            else:
-                k+=1
-                member_dict[member] = {'id': k, 'name': member, 'mail': find_email(member), 'groups': [groupname]}
-                #print(f"Info: {member_dict[member]}")
-
 #Creating SQL table
 
 con = sqlite3.connect('tmp.db')
@@ -62,9 +26,6 @@ for member, info in member_dict.items():
     cur.execute(user_sql,(info['id'], info['name'], info['mail'], groups_string))
 con.commit()
 
-cmd = "rm app.db; mv tmp.db app.db"
-os.system(cmd)
-
 def update_user_database():
     """
     Read the .groups file determining ldap authentication for the Ocat Flask app and 
@@ -73,6 +34,7 @@ def update_user_database():
     output: none, but fill our app.db
     """
     users_dict = read_groups(IFILE)
+    users_dict = find_email(users_dict)
 
 
     #Save previous state
@@ -105,6 +67,25 @@ def read_groups(ifile = IFILE):
                 users_dict[member]['group_string'] += f":{group}"
     
     return users_dict
+
+def find_email(users_dict):
+    """
+    Input a email found trhough the getent command into a users information dictionary
+    input: users_dict --- users dictionary keyed by username and values with id and group_string
+    output: users_dict --- users dictionary keyed by username and values with id and group_string and email
+    """
+#
+#--- Read the NameSwitch Library Alias Database
+#
+    search = [x.split(':') for x in os.popen(f'getent aliases').read().split('\n')]
+    #Note that the email string will still contain whitespace which must be striped
+    for ent in search:
+        if ent[0] in users_dict.keys():
+            users_dict[ent[0]]['email'] = ent[1].strip()
+    users_dict['testUSINT'] = {'id': 0, 'email': 'william.aaron@cfa.harvard.edu', 'group_string': 'test'}
+    return users_dict
+
+
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
