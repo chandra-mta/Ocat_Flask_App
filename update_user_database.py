@@ -65,22 +65,52 @@ con.commit()
 cmd = "rm app.db; mv tmp.db app.db"
 os.system(cmd)
 
-
 def update_user_database():
     """
     Read the .groups file determining ldap authentication for the Ocat Flask app and 
-    fill out the relevant user information for it.
+    fill out the relevant user information for app.db
+    input: none, but read groups from IFILE
+    output: none, but fill our app.db
     """
+    users_dict = read_groups(IFILE)
+
 
     #Save previous state
     os.system(f"cp -f {OUT_DIR}/app.db {OUT_DIR}/app.db~")
     con.commit()
 
+def read_groups(ifile = IFILE):
+    """
+    Read an ldap .groups formatted file and return member dictionary
+    input: ifile --- .groups file path
+    output: users_dict --- dictionary of member information based on file.
+    """
+    with open(ifile, 'r') as f:
+        data = [line.strip() for line in f.readlines() if line.strip() != '']
+    
+    k = 1 #ID number 0 saved for a test user added later
+    users_dict = dict()
+    
+    for ent in data:
+        atemp = [a.strip() for a in ent.split(':')]
+        group = atemp[0]
+        member_subset = atemp[1].split()
+        for member in member_subset:
+            if member not in users_dict.keys():
+                #Unlisted member
+                users_dict[member] = {'id': k, 'group_string': group}
+                k += 1
+            else:
+                #Listed member
+                users_dict[member]['group_string'] += f":{group}"
+    
+    return users_dict
+
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
-    parser.add_argument("-p", "--path", required = False, help = "Determine path to a .groups file determining ldap authentication groups.")
-    parser.add_argument("-d", "--directory", required = False, help = "Determine path to a database directory for sotirng the applications app.db")
+    parser.add_argument("-p", "--path", required = False, help = "Determine path to a .groups file determining LDAP authentication groups.")
+    parser.add_argument("-d", "--directory", required = False, help = "Determine path to a database directory for storing the application's app.db")
     args = parser.parse_args()
 #
 #--- Determine if running in test mode and change pathing if so
