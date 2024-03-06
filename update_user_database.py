@@ -38,13 +38,13 @@ def update_user_database():
                 id INT PRIMARY KEY NOT NULL,
                 username string(64) NOT NULL,
                 email string(64) NOT NULL,
-                group_string string(64) NOT NULL);"""
+                groups_string string(64) NOT NULL);"""
     
     cur.execute(table)
     #Test user in ID 0
     cur.execute(f"INSERT INTO User VALUES ('0', 'testUSINT', '{ADMIN}', 'test');")
     for user, info in users_dict.items():
-        cur.execute(f"INSERT INTO User VALUES ('{info['id']}', '{user}', '{info['email']}', '{info['group_string']}');")
+        cur.execute(f"INSERT INTO User VALUES ('{info['id']}', '{user}', '{info['email']}', '{info['groups_string']}');")
     con.commit()
 
 def read_groups(ifile = IFILE):
@@ -66,19 +66,19 @@ def read_groups(ifile = IFILE):
         for member in member_subset:
             if member not in users_dict.keys():
                 #Unlisted member
-                users_dict[member] = {'id': k, 'group_string': group}
+                users_dict[member] = {'id': k, 'groups_string': group}
                 k += 1
             else:
                 #Listed member
-                users_dict[member]['group_string'] += f":{group}"
+                users_dict[member]['groups_string'] += f":{group}"
     
     return users_dict
 
 def find_email(users_dict):
     """
     Input a email found trhough the getent command into a users information dictionary
-    input: users_dict --- users dictionary keyed by username and values with id and group_string
-    output: users_dict --- users dictionary keyed by username and values with id and group_string and email
+    input: users_dict --- users dictionary keyed by username and values with id and groups_string
+    output: users_dict --- users dictionary keyed by username and values with id and groups_string and email
     """
 #
 #--- Read the NameSwitch Library Alias Database
