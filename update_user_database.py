@@ -6,7 +6,7 @@ import argparse
 
 IFILE = "/data/mta4/CUS/www/.groups"
 OUT_DIR = "/data/mta4/CUS/Data/Users"
-
+ADMIN = 'william.aaron@cfa.harvard.edu'
 
 def update_user_database():
     """
@@ -41,9 +41,10 @@ def update_user_database():
                 group_string string(64) NOT NULL);"""
     
     cur.execute(table)
+    #Test user in ID 0
+    cur.execute(f"INSERT INTO User VALUES ('0', 'testUSINT', '{ADMIN}', 'test');")
     for user, info in users_dict.items():
-        cur.execute(f"INSERT INTO User VALUES ({info['id']}, {user}, {info['email']}, {info['group_string']})")
-
+        cur.execute(f"INSERT INTO User VALUES ('{info['id']}', '{user}', '{info['email']}', '{info['group_string']}');")
     con.commit()
 
 def read_groups(ifile = IFILE):
@@ -87,7 +88,6 @@ def find_email(users_dict):
     for ent in search:
         if ent[0] in users_dict.keys():
             users_dict[ent[0]]['email'] = ent[1].strip()
-    users_dict['testUSINT'] = {'id': 0, 'email': 'william.aaron@cfa.harvard.edu', 'group_string': 'test'}
     return users_dict
 
 
