@@ -7,24 +7,6 @@ import argparse
 IFILE = "/data/mta4/CUS/www/.groups"
 OUT_DIR = "/data/mta4/CUS/Data/Users"
 
-#Creating SQL table
-
-con = sqlite3.connect('tmp.db')
-cur = con.cursor()
-
-usr_table = """
-CREATE TABLE User(
-id interger PRIMARY Key,
-username    string(64) NOT NULL,
-email       string(64) NOT NULL,
-groups_string   string(64) NOT NULL)"""
-
-cur.execute(usr_table)
-for member, info in member_dict.items():
-    user_sql= "INSERT INTO User (id, username, email, groups_string) VALUES(?,?,?,?)"
-    groups_string = ':'.join(info['groups'])
-    cur.execute(user_sql,(info['id'], info['name'], info['mail'], groups_string))
-con.commit()
 
 def update_user_database():
     """
@@ -33,12 +15,35 @@ def update_user_database():
     input: none, but read groups from IFILE
     output: none, but fill our app.db
     """
+#
+#--- Generate dictionary of user information
+#
     users_dict = read_groups(IFILE)
     users_dict = find_email(users_dict)
-
-
+#    
+#--- Creating SQL table
+#
     #Save previous state
     os.system(f"cp -f {OUT_DIR}/app.db {OUT_DIR}/app.db~")
+
+    #As designed by the Ocat Flask App, the user database must be named app.db
+    con = sqlite3.connect(f"{OUT_DIR}/app.db")
+    cur = con.cursor()
+
+    #Drop possibly outdated info
+    cur = cur.execute('DROP TABLE IF EXISTS User')
+
+
+    table = """CREATE TABLE user (
+                id INT PRIMARY KEY NOT NULL,
+                username string(64) NOT NULL,
+                email string(64) NOT NULL,
+                group_string string(64) NOT NULL);"""
+    
+    cur.execute(table)
+    for user, info in users_dict.items():
+        cur.execute(f"INSERT INTO User VALUES ({info['id']}, {user}, {info['email']}, {info['group_string']})")
+
     con.commit()
 
 def read_groups(ifile = IFILE):
