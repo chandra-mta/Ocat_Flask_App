@@ -1,6 +1,6 @@
 import os
-from   datetime import timedelta
-
+from datetime import timedelta
+import binascii
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 #os.environ should be filled with environment variables in the calling flask app creation script which calls the config object.
@@ -21,7 +21,8 @@ class Config(object):
 #
 #--- database and csrf need secret_key
 #
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    #SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = binascii.b2a_hex(os.urandom(15)).decode()
 #
 #--- database
 #
