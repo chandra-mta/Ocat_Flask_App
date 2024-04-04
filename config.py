@@ -85,7 +85,7 @@ class DevConfig(Config):
     DEVELOPMENT = True
     if os.environ.get('TEST_MAIL') is not None:
         TEST_MAIL = os.environ.get('TEST_MAIL')
-    
+    SECRET_KEY = 'secret_key_for_test'
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:////data/mta4/CUS/Data/FakeUsers/app.db'
