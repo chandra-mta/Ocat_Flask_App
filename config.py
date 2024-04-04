@@ -1,6 +1,5 @@
 import os
 from   datetime import timedelta
-import binascii
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -22,8 +21,7 @@ class Config(object):
 #
 #--- database and csrf need secret_key
 #
-    #SECRET_KEY = os.environ.get('SECRET_KEY')
-    SECRET_KEY = binascii.b2a_hex(os.urandom(15)).decode()
+    SECRET_KEY = os.environ.get('SECRET_KEY')
 #
 #--- database
 #
@@ -86,7 +84,6 @@ class DevConfig(Config):
     DEVELOPMENT = True
     if os.environ.get('TEST_MAIL') is not None:
         TEST_MAIL = os.environ.get('TEST_MAIL')
-    #SECRET_KEY  = 'secret_key_for_test'
     
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
 
