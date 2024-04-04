@@ -18,8 +18,10 @@ from   datetime         import datetime
 import numpy
 
 from flask              import render_template, flash, redirect, url_for
-from flask              import session, request, current_app, escape
+from flask              import session, request, current_app
 from flask_login        import current_user
+
+from markupsafe import escape
 
 from cus_app                import db
 from cus_app.models         import User, register_user 

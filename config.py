@@ -1,7 +1,6 @@
 import os
-from   datetime import timedelta
+from datetime import timedelta
 import binascii
-
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 #os.environ should be filled with environment variables in the calling flask app creation script which calls the config object.
@@ -86,8 +85,7 @@ class DevConfig(Config):
     DEVELOPMENT = True
     if os.environ.get('TEST_MAIL') is not None:
         TEST_MAIL = os.environ.get('TEST_MAIL')
-    #SECRET_KEY  = 'secret_key_for_test'
-    
+    SECRET_KEY = 'secret_key_for_test'
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:////data/mta4/CUS/Data/FakeUsers/app.db'
