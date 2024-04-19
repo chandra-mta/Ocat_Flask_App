@@ -247,7 +247,6 @@ def update_ct_dict(ct_dict, f_data):
         obsids_list                         = f_data['obsids_list']
     else:
         obsids_list = []
-
     return ct_dict, obsids_list
 
 #--------------------------------------------------------------------------
@@ -400,7 +399,7 @@ def process_data_for_finalize(ct_dict, f_data):
 #
 #--- send notifications
 #
-    if len(sobsids_list) > 0:
+    if len(d_list) > 0:
         snt.send_notifications(asis, ct_dict, d_list, changed_param, note)
 
     return asis, ct_dict, notes, ostatus, d_list, not_processed, no_change
@@ -928,13 +927,9 @@ def create_display_obsid_list(form, obsid):
 
                     tlist = tlist + slist
 
-        tlist  = sorted(tlist)
-        for ent in tlist:
-            if ent == obsid:
-                continue
-            else:
-                obsids_list.append(ent)
-
+        tlist = set(tlist)
+        tlist.discard(str(obsid))
+        obsids_list = sorted(list(tlist))
     return obsids_list
 
 #--------------------------------------------------------------------------
@@ -961,6 +956,5 @@ def check_obsid_in_or_list(obsids_list):
         if obsid in or_list:
             chk = 1
         or_dict[obsid]  = chk
-
     return or_dict
 
