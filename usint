@@ -8,7 +8,7 @@ if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
     load_dotenv("/data/mta4/CUS/Data/Env/.localhostenv")
     #os.environ["SECRET_KEY"] = 'secret_key_for_test'
 else:
-    load_dotenv("/data/mta4/CUS/Data/Env/.env")
+    load_dotenv("/data/mta4/CUS/Data/Env/.cxcweb-env")
     #load_dotenv("/data/mta4/CUS/Data/Env/.secret_key")
 
 #

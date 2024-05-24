@@ -11,8 +11,7 @@
 import os
 import logging
 from logging.handlers   import SMTPHandler, RotatingFileHandler
-#logdir = os.path.join(os.getcwd(),'logs')
-#logdir = '/proj/web-r2d2-v/wsgi-scripts/aaron/logs'
+
 
 from flask              import Flask, request, current_app, render_template
 from flask_sqlalchemy   import SQLAlchemy
