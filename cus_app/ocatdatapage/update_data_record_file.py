@@ -77,7 +77,7 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
 #--- only when the observation is still 'scheduled', 'unobserved'
 #--- update database files and create notifications
 #
-    if  ct_dict['status'][-1]  in ['scheduled', 'unobserved']:
+    if  ct_dict['status'][-1]  in ['scheduled', 'unobserved', 'untriggered']:
         if asis in ['norm', 'asis']:
             send_param_change_notification(ct_dict, obsidrev, e_text, asis)
 
@@ -374,7 +374,7 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
 #
 #--- write out to <ocat_dir>/updates/<obsid>.<rev>
 #
-    if  ct_dict['status'][-1]  in ['scheduled', 'unobserved']:
+    if  ct_dict['status'][-1]  in ['scheduled', 'unobserved', 'untriggered']:
 
         ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
         with open(ofile, 'w') as fo:

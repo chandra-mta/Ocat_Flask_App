@@ -386,7 +386,7 @@ def process_data_for_finalize(ct_dict, f_data):
     not_processed = []
     if len(obsids_disp) > 0:
         for k in range(0, len(obsids_disp)):
-            if ostatus[k] in ['scheduled', 'unobserved']:
+            if ostatus[k] in ['scheduled', 'unobserved', 'untriggered']:
                 sobsids_list.append(str(obsids_disp[k]))
             else:
                 not_processed.append(str(obsids_disp[k]))

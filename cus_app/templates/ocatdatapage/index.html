@@ -30,7 +30,7 @@
     {% if warning != '' %}
         <h3 style='color:#db1709;'>{{ warning }}</h3>
     {% else %}
-        {% if ct_dict['status'][-1] in ['unobserved', 'scheduled'] and ct_dict['approved'][-1] == 1 %}
+        {% if ct_dict['status'][-1] in ['unobserved', 'scheduled', 'untriggered'] and ct_dict['approved'][-1] == 1 %}
             <h3 style='color:#db1709;'>This Observation Is Already On the Approved List</h3>
         {% endif %}
     {% endif %}
@@ -762,7 +762,7 @@
 <!-- Options -->
 <!-- -->
     <h2>Options</h2>
-    {% if ct_dict['status'][-1] in ['unobserved', 'scheduled'] %}
+    {% if ct_dict['status'][-1] in ['unobserved', 'scheduled', 'untriggered'] %}
         <table>
             <tr>
             <th>Normal Change</th>
@@ -812,13 +812,13 @@
         <input type='submit' name='submit' value='Submit'>
         <!--<input type='submit' name='check'  value='Refresh'>-->
 <!-- -->
-<!-- Warning: observation is already obiserved, archived etc  -->
+<!-- Warning: observation is already observed, archived etc  -->
 <!-- -->
     {% else %}
 
         <p style='padding-bottom:20px;'>
             <strong style='font-size:130%;'>
-            {% if ct_dict['status'][-1] in ['observed', 'archived'] %}
+            {% if ct_dict['status'][-1] in ['observed', 'archived', 'triggered'] %}
                 This observation was already
             {% else %}
                 This observation was 

@@ -101,7 +101,7 @@ def submit_other_obsids(obsids_list, oct_dict, oind_dict,  asis, user):
 #
         ostatus  = ct_dict['status'][-1]
         status.append(ostatus)
-        if not (ostatus in ['unobserved', 'scheduled']):
+        if not (ostatus in ['unobserved', 'scheduled', 'untriggered']):
             continue
 #
 #--- if this is a normal update, update parameter values in the new obsid based on the original obsid

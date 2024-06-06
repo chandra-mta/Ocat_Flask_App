@@ -230,7 +230,7 @@ def check_obsid_status(obsid_list):
 #
 #--- if observation status is not unobserved or scheduled, mark it
 #
-        if not (status in ['unobserved', 'scheduled']):
+        if not (status in ['unobserved', 'scheduled', 'untriggered']):
             info.append(status)
 #
 #--- if the obsid is already in approved list, mark by 1
