@@ -9,7 +9,7 @@
 
 {% block app_content %}
 
-{% if status in ['scheduled', 'unobserved'] %}
+{% if status in ['scheduled', 'unobserved', 'untriggered'] %}
     <p>
     <strong>
         Obsid: {{ obsid }} has been submitted as {{ asis }}. Thank you.

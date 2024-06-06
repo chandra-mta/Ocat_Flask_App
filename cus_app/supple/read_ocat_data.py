@@ -243,7 +243,7 @@ def select_unobserved(o_list):
         cmd    = 'select status from target where obsid=' + str(obsid)
         out    = gvs.get_value_from_sybase(cmd)
         status = out[0][0]
-        if status in ['unobserved', 'scheduled']:
+        if status in ['unobserved', 'scheduled', 'untriggered']:
             u_list.append(obsid)
 
     return u_list

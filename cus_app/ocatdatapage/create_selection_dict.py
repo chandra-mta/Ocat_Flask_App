@@ -1723,9 +1723,9 @@ def create_warning_line(obsid):
 #
 #--- observation status; if not unobserved or schedule, a warning is flashed
 #
-    if ct_dict['status'] in ['unobserved', 'scheduled']:
+    if ct_dict['status'] in ['unobserved', 'scheduled', 'untriggered']:
         pass
-    elif ct_dict['status'] in ['observed', 'archived']:
+    elif ct_dict['status'] in ['observed', 'archived', 'triggered']:
         line = 'This observation was already '+ ct_dict['status'].upper() + '.'
     else:
         line = 'This observation was '+ ct_dict['status'].upper() + '.'
@@ -1798,7 +1798,7 @@ def create_warning_line(obsid):
                 line = line  + ' You may want to check whether this is '
                 line = line  + 'still a possible observaiton date with MP.'
             else:
-                if ct_dict['status'][-1] in ['unobserved', 'scheduled']:
+                if ct_dict['status'][-1] in ['unobserved', 'scheduled', 'untriggered']:
                     line = line  + 'This observation is scheduled on ' 
                     line = line  + time_format_convert_lts(obs_date) + '.'
 #
