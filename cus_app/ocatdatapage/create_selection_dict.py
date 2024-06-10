@@ -95,7 +95,7 @@ def create_selection_dict(obsid):
     """
 #
 #--- get the values from the database
-#
+#   
     ct_dict = rod.read_ocat_data(obsid)
     p_dict  = {}
 #
@@ -346,7 +346,7 @@ def create_selection_dict(obsid):
     group        = 'gen'
     vals         = ct_dict[p_id]
     try:
-        vals     = f"{round(float(ra),6):3.6f}"
+        vals     = f"{round(float(vals),6):3.6f}"
     except:
         if vals not in null_list:
             #Invalid string
@@ -362,7 +362,7 @@ def create_selection_dict(obsid):
     group        = 'gen'
     vals         = ct_dict[p_id]
     try:
-        vals     = f"{round(float(ra),6):3.6f}"
+        vals     = f"{round(float(vals),6):3.6f}"
     except:
         if vals not in null_list:
             #Invalid string
