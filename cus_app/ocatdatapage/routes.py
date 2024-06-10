@@ -438,7 +438,6 @@ def update_rank_values_from_f_data(form, ct_dict):
     chk     = rank_null_cnt(ct_dict, 'chip')
     if chk == 0:
         ct_dict['spwindow_flag'][-1] = 'N'
-        ct_dict['acis_open'][-1]     = 'close'
     ct_dict['aciswin_no'][-1]        = chk
 
     return ct_dict
