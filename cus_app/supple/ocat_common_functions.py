@@ -44,6 +44,7 @@ for ent in data:
     line = atemp[0].strip()
     exec("%s = '%s'" %(var, line))
 """
+null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 
 #---------------------------------------------------------------------------------
 #-- clean_text: intake a section of text and format for Unix file conventions   --
@@ -679,6 +680,8 @@ def convert_ra_dec_format(dra, ddec, format='switch'):
     output: tra     --- either <hh>:<mm>:<ss> or <dd.ddddd> format
             tdec    --- either <dd>:<mm>:<ss> or <ddd.ddddd> format
     """
+    if dra in null_list and ddec in null_list:
+        return dra, ddec
     #
     #--- Define output format
     #

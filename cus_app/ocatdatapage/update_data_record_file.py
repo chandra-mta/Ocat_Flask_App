@@ -790,11 +790,18 @@ def check_coordinate_shift(ct_dict):
     input:  ct_dict --- a dict of <param> <--> <information>
     output: either <blank> or <obsid>
     """
-    ora  = float(ct_dict['ra'][-1])
-    nra  = float(ct_dict['ra'][-2])
-
-    odec = float(ct_dict['dec'][-1])
-    ndec = float(ct_dict['dec'][-2])
+    ora = ct_dict['ra'][-1]
+    nra = ct_dict['ra'][-2]
+    odec = ct_dict['dec'][-1]
+    ndec = ct_dict['dec'][-2]
+    if {ora, nra, odec, ndec}.intersection(set(null_list)):
+        #Contains a null_value (TOO), therefore no large shift by definition
+        return []
+    else:
+        ora = float(ora)
+        nra = float(nra)
+        odec = float(odec)
+        ndec = float(ndec)
 
     diff = math.sqrt((ora - nra)**2 + (odec - ndec)**2)
 
