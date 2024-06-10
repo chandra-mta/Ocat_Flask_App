@@ -115,7 +115,7 @@ def check_value_range(ct_dict):
 #--- check mutually-exclusive parameters values
 #
     for a_list in exclude_list:
-        note = check_exclusitity(a_list, ct_dict)
+        note = check_exclusivity(a_list, ct_dict)
         if note != '':
             warning_list.append(note)
      
@@ -173,10 +173,10 @@ def check_param_value(a_list, ct_dict, k=''):
     return c_list
 
 #-----------------------------------------------------------------------------------------------
-#-- check_exclusitity: check two exclusive parameters have the values at the same time        --
+#-- check_exclusivity: check two exclusive parameters have the values at the same time        --
 #-----------------------------------------------------------------------------------------------
 
-def check_exclusitity(a_list, ct_dict):
+def check_exclusivity(a_list, ct_dict):
     """
     check two exclusive parameters have the values at the same time.
     input:  ct_dict         --- a dict of <param> <---> <information>
@@ -216,26 +216,44 @@ def ra_dec_range_check(ct_dict, warning_list):
     dra       = ct_dict['dra'][-1]
     ddec      = ct_dict['ddec'][-1]
     ra, dec   = ocf.convert_ra_dec_format(dra, ddec)
-    ora       = float(ora)
-    odec      = float(odec)
-    ra        = float(ra)
-    dec       = float(dec)
+    #If ra, dec is in the null_list (TOO), then return no warning
+    #Convert to floats for calculation purposes
+    coords = [ora, odec, ra, dec]
+    for i in range(len(coords)):
+        if coords[i] not in null_list:
+            coords[i] = float(coords[i])
+    ora = coords[0]
+    odec = coords[1]
+    ra = coords[2]
+    dec = coords[3]
 #
 #--- checking ra and dec values are in expected ranges
 #
     note    = ''
-    if ra < 0 or ra > 360:
-        note = 'The value of RA is out of range. Please check the value.\n'
+    if ra not in null_list and (ra < 0 or ra > 360):
+        note += 'The value of RA is out of range. Please check the value.\n'
 
-    if dec < -90 or dec > 90:
-        note = 'The value of Dec is out of range. Please check the value.\n'
+    if dec not in null_list and (dec < -90 or dec > 90):
+        note += 'The value of Dec is out of range. Please check the value.\n'
+#
+#--- check if ra, dec has been nullified
+#
+    if note == '':
+        if ra in null_list and ora not in null_list:
+            note += 'The value of RA has been nullified. Please check the value.\n'
+        if dec in null_list and odec not in null_list:
+            note += 'The value of DEC has been nullified. Please check the value.\n'
+
 #
 #--- check whether there is a large coordindate shift
 #
     if note == '':
-        diff      = math.sqrt((ora -ra)**2 + (odec - dec)**2)
-        if diff > 0.1333:
-            note = 'The coordindated was shifted more than 8 arcmin. You need a CDO permssion.\n'
+        if (ora in null_list) and (ra not in null_list) and (odec in null_list) and (dec not in null_list):
+            note += 'Coordinates have been defined. You need a CDO permission.\n'
+        else:
+            diff      = math.sqrt((ora -ra)**2 + (odec - dec)**2)
+            if diff > 0.1333:
+                note += 'The coordinates were shifted more than 8 arcmin. You need a CDO permssion.\n'
 
     if note != '':
         warning_list.append(note)
@@ -258,7 +276,7 @@ def frame_time_check(ct_dict, warning_list):
     """
     inst = ct_dict['instrument'][-1]
     if inst in ['ACIS-I', 'ACIS-S']: 
-        note = check_exclusitity(['frame_time', 'most_efficient'], ct_dict)
+        note = check_exclusivity(['frame_time', 'most_efficient'], ct_dict)
         warning_list.append(note)
 
     return warning_list

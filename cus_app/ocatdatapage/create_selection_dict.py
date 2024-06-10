@@ -95,7 +95,7 @@ def create_selection_dict(obsid):
     """
 #
 #--- get the values from the database
-#
+#   
     ct_dict = rod.read_ocat_data(obsid)
     p_dict  = {}
 #
@@ -346,9 +346,12 @@ def create_selection_dict(obsid):
     group        = 'gen'
     vals         = ct_dict[p_id]
     try:
-        vals     = '%3.6f' % float(round(vals,6))
+        vals     = f"{round(float(vals),6):3.6f}"
     except:
-        vals     = '0.0'
+        if vals not in null_list:
+            #Invalid string
+            raise Exception(f"Fetched RA value invalid: {vals}")
+
     ra           = vals
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
 
@@ -359,9 +362,11 @@ def create_selection_dict(obsid):
     group        = 'gen'
     vals         = ct_dict[p_id]
     try:
-        vals     = '%3.6f' % float(round(vals, 6))
+        vals     = f"{round(float(vals),6):3.6f}"
     except:
-        vals     = '0.0'
+        if vals not in null_list:
+            #Invalid string
+            raise Exception(f"Fetched DEC value invalid: {vals}")
     dec          = vals
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
 #
