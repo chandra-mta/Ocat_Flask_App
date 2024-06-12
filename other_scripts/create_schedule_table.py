@@ -33,12 +33,9 @@ CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 #
 #--- Define Directory Pathing
 #
-OBS_SS = "/data/mta4/obs_ss"
 USINT_DIR = CONFIG['USINT_DIR']
 LIVE_DIR = CONFIG['LIVE_DIR']
-PASS_DIR = f"{USINT_DIR}/Pass_dir"
-DATA_DIR = f"{USINT_DIR}/ocat/Info_save"
-#OCAT_DIR = "data/mta4/CUS/www/Usint/Ocat/ocat"
+TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
 SUPPLE_DIR = f"{LIVE_DIR}/cus_app/supple"
 HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 
@@ -70,7 +67,7 @@ seven_day = 86400 * 7
 def create_schedule_table():
     """
     update schedule html page
-    input:  none but read from <data_dir>/too_contact_info/schedule
+    input:  none but read from <too_contact_dir>/schedule
     output: <ocat_dir>/too_contact_schedule.html
     """
 #
@@ -126,9 +123,11 @@ def create_schedule_table():
 #
 #--- read templates
 #
-    head  = read_template(f"{HOUSE_KEEPING}/Schedule/schedule_main_template")
+    with open(f"{HOUSE_KEEPING}/Schedule/schedule_main_template") as f:
+        head = f.read()
 
-    tail  = read_template(f"{HOUSE_KEEPING}/Schedule/schedule_tail")
+    with open(f"{HOUSE_KEEPING}/Schedule/schedule_tail") as f:
+        tail = f.read()
 
     udate = time.strftime('%m/%d/%Y', time.gmtime())
     tail  = tail.replace('#UPDATE#', udate)
@@ -154,12 +153,12 @@ def create_schedule_table():
 def read_schedule():
     """
     read the schedule data table
-    input:  none, but read from <data_dir>/too_contact_info/schedule
+    input:  none, but read from <too_contact_dir>/schedule
     output: a dictionary of [poc, name, period, start, stop]. key: start
             key/start/stop is in <yyyy><mm><dd>
     """
 
-    with open(f"{DATA_DIR}/too_contact_info/schedule") as f:
+    with open(f"{TOO_CONTACT_DIR}/schedule") as f:
         data = [line.strip() for line in f.readlines()]
 
     d_dict = {}
@@ -216,10 +215,10 @@ def change_to_letter_month(month):
 def read_poc_info():
     """
     read poc information
-    input:  none, but read from <data_dir>/too_contact_info/this_week_person_in_charge
+    input:  none, but read from <too_contact_dir>/this_week_person_in_charge
     output: a dictionary with [ophone, cphone, hphone, email]. key: full name
     """
-    with open(f"{DATA_DIR}/too_contact_info/active_usint_personnel") as f:
+    with open(f"{TOO_CONTACT_DIR}/active_usint_personnel") as f:
         data = [line.strip() for line in f.readlines()]
 
     poc_dict = {}
@@ -270,7 +269,7 @@ def schedule_notification(k_list, d_dict, poc_dict, stime):
 
 def check_schedule_fill(k_list, stime):
     """
-    check whether the poc schedule is running out in about 3 months and ifi so send out email
+    check whether the poc schedule is running out in about 3 months and if so send out email
     input:  k_list  --- a list of poc schedule starting time in <yyyy><mm><dd>
             stime   --- today's time in seconds in 1998.1.1
             it also read: <house_keeping>/Schedule/add_scehdule_log (the last logged time)
@@ -357,7 +356,7 @@ def first_notification(k_list, d_dict, poc_dict, stime):
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
             poc_dict    --- a dictionary of poc informaiton, key: name
             stime       --- today's time in seconds in 1998.1.1
-                  <house_keeping>/Schedule/first_notsfication (template)
+                  <house_keeping>/Schedule/first_notification (template)
     output: email sent
     """
 #
@@ -459,8 +458,8 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
             poc_dict    --- a dictionary of poc informaiton, key: name
             stime       --- today's time in seconds in 1998.1.1
-                <data_dir>/too_contact_info/this_week_person_in_charge
-    output: updated: <data_dir>/too_contact_info/this_week_person_in_charge
+                <too_contact_dir>/this_week_person_in_charge
+    output: updated: <too_contact_dir>/this_week_person_in_charge
     """
 #
 #--- find the current period
@@ -477,7 +476,7 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
 #
 #--- read the file
 #
-    pfile = f"{DATA_DIR}/too_contact_info/this_week_person_in_charge"
+    pfile = f"{TOO_CONTACT_DIR}/this_week_person_in_charge"
     with open(pfile) as f:
         data = [line.strip() for line in f.readlines()]
 #
@@ -513,16 +512,6 @@ def dtime_to_ctime(dtime):
     
     return stime
 
-#---------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------
-
-def read_template(ifile):
-
-    with open(ifile, 'r') as f:
-        line = f.read()
-
-    return line
 
 #---------------------------------------------------------------------------------------
 
