@@ -36,17 +36,7 @@ CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 USINT_DIR = CONFIG['USINT_DIR']
 LIVE_DIR = CONFIG['LIVE_DIR']
 TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
-SUPPLE_DIR = f"{LIVE_DIR}/cus_app/supple"
 HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
-
-#
-#--- append a path to a privte folder to python directory
-#
-sys.path.append(SUPPLE_DIR)
-#
-#--- cus common functions
-#
-import ocat_common_functions         as ocf
 
 #
 #--- a few emails addresses
@@ -176,8 +166,8 @@ def read_schedule():
             poc   = atemp[7]
         except:
             poc = 'TBD'
-        key   = syear + ocf.add_leading_zero(smon) + ocf.add_leading_zero(sday)
-        etime = eyear + ocf.add_leading_zero(emon) + ocf.add_leading_zero(eday)
+        key = f"{syear}{smon:>02}{sday:>02}"
+        etime = f"{syear}{emon:>02}{eday:>02}"
         lsmon = change_to_letter_month(smon)
         start = lsmon + ' ' + sday
         lemon = change_to_letter_month(emon)
