@@ -10,31 +10,42 @@
 #                                                                                               #
 #################################################################################################
 
-import math
 import re
 import sys
 import os
-import string
 import time
 import Chandra.Time
-import numpy
-#
-#--- reading directory list
-#
-path = '/data/mta4/CUS/www/Usint/Ocat/ocat/other_scripts/house_keeping/dir_list'
-with  open(path, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
+from dotenv import dotenv_values
 
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = %s" %(var, line))
+#
+#--- Load the running application version's configuration
+#--- Note that loading a different .env file (such as .localhostenv
+#--- or .env) allows for test version of the web applicaiton to function
+#--- more easily.
+#
+CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
+#
+#--- For Bookkeeping, these are the default variables
+#
+#LIVE_DIR = "/proj/web-cxc/wsgi-scripts/cus"
+#USINT_DIR = "/data/mta4/CUS/www/Usint"
+
+#
+#--- Define Directory Pathing
+#
+OBS_SS = "/data/mta4/obs_ss"
+USINT_DIR = CONFIG['USINT_DIR']
+LIVE_DIR = CONFIG['LIVE_DIR']
+PASS_DIR = f"{USINT_DIR}/Pass_dir"
+DATA_DIR = f"{USINT_DIR}/ocat/Info_save"
+#OCAT_DIR = "data/mta4/CUS/www/Usint/Ocat/ocat"
+SUPPLE_DIR = f"{LIVE_DIR}/cus_app/supple"
+HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
+
 #
 #--- append a path to a privte folder to python directory
 #
-odir = ocat_dir + 'app/supple/'
-sys.path.append(odir)
+sys.path.append(SUPPLE_DIR)
 #
 #--- cus common functions
 #
@@ -115,18 +126,16 @@ def create_schedule_table():
 #
 #--- read templates
 #
-    ifile = house_keeping + 'Schedule/schedule_main_template'
-    head  = read_template(ifile)
+    head  = read_template(f"{HOUSE_KEEPING}/Schedule/schedule_main_template")
 
-    ifile = house_keeping + 'Schedule/schedule_tail'
-    tail  = read_template(ifile)
+    tail  = read_template(f"{HOUSE_KEEPING}/Schedule/schedule_tail")
 
     udate = time.strftime('%m/%d/%Y', time.gmtime())
     tail  = tail.replace('#UPDATE#', udate)
 
     line  = head + line + tail
 
-    ofile = ocat_dir + 'too_contact_schedule.html'
+    ofile = f"{USINT_DIR}/too_contact_schedule.html"
     with open(ofile, 'w') as fo:
         fo.write(line)
 #
@@ -150,8 +159,8 @@ def read_schedule():
             key/start/stop is in <yyyy><mm><dd>
     """
 
-    ifile = data_dir + 'too_contact_info/schedule'
-    data  = ocf.read_data_file(ifile)
+    with open(f"{DATA_DIR}/too_contact_info/schedule") as f:
+        data = [line.strip() for line in f.readlines()]
 
     d_dict = {}
     k_list = []
@@ -210,8 +219,9 @@ def read_poc_info():
     input:  none, but read from <data_dir>/too_contact_info/this_week_person_in_charge
     output: a dictionary with [ophone, cphone, hphone, email]. key: full name
     """
-    ifile    = data_dir + 'too_contact_info/active_usint_personal'
-    data     = ocf.read_data_file(ifile)
+    with open(f"{DATA_DIR}/too_contact_info/active_usint_personnel") as f:
+        data = [line.strip() for line in f.readlines()]
+
     poc_dict = {}
     for ent in data:
         atemp  = re.split(':', ent)
@@ -279,7 +289,7 @@ def check_schedule_fill(k_list, stime):
 #
 #--- check when the last time this notification was sent
 #
-        nfile = house_keeping + 'Schedule/add_schedule_log'
+        nfile = f"{HOUSE_KEEPING}/Schedule/add_schedule_log"
         if os.path.isfile(nfile):
             with open(nfile, 'r') as f:
                 l_time = float(f.read())
@@ -290,7 +300,7 @@ def check_schedule_fill(k_list, stime):
 #
         cdiff = stime - l_time
         if cdiff > seven_day:
-            ifile = house_keeping +'Schedule/add_schedule'
+            ifile = f"{HOUSE_KEEPING}/Schedule/add_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
             send_mail(subj, ifile, admin)
@@ -331,7 +341,7 @@ def check_next_week_filled(k_list, d_dict, stime):
     if poc == 'TBD':
         wday = int(float(time.strftime('%w', time.gmtime())))
         if wday == 5:
-            ifile = house_keeping + 'Schedule/missing_schedule'
+            ifile = f"{HOUSE_KEEPING}/Schedule/missing_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
             send_mail(subj, ifile, admin)
@@ -366,7 +376,7 @@ def first_notification(k_list, d_dict, poc_dict, stime):
 #--- if the schedule changes in two days, send a notification
 #
             if (ncheck <= p2) and (nstart >= p2):
-                ifile = house_keeping + 'Schedule/first_notificatioin'
+                ifile = f"{HOUSE_KEEPING}/Schedule/first_notification"
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
                 subj  = 'TOO Point of Contact Duty Notification'
@@ -405,7 +415,7 @@ def second_notification(k_list, d_dict, poc_dict, stime):
 #--- if the schedule just changes today, send a notification
 #
             if stime >= p2:
-                ifile = house_keeping + 'Schedule/second_notification'
+                ifile = f"{HOUSE_KEEPING}/Schedule/second_notification"
 
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
@@ -467,8 +477,9 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
 #
 #--- read the file
 #
-    pfile = too_dir + 'this_week_person_in_charge'
-    data  = ocf.read_data_file(pfile)
+    pfile = f"{DATA_DIR}/too_contact_info/this_week_person_in_charge"
+    with open(pfile) as f:
+        data = [line.strip() for line in f.readlines()]
 #
 #--- mark the poc who are not on duty with '#'
 #
