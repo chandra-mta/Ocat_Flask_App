@@ -9,9 +9,6 @@
 #               last update: Jun 07, 2021                                                       #
 #                                                                                               #
 #################################################################################################
-
-import re
-import sys
 import os
 import time
 import Chandra.Time
@@ -154,7 +151,7 @@ def read_schedule():
     d_dict = {}
     k_list = []
     for ent in data:
-        atemp = re.split('\t+',  ent)
+        atemp = ent.split()
         name  = atemp[0]
         smon  = atemp[1]
         sday  = atemp[2]
@@ -213,7 +210,7 @@ def read_poc_info():
 
     poc_dict = {}
     for ent in data:
-        atemp  = re.split(':', ent)
+        atemp  = ent.split(":")
         key    = atemp[1]
         ophone = atemp[2]
         cphone = atemp[3]
@@ -475,7 +472,7 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
     line  = ''
     for ent in data:
         ent   = ent.replace('#', '')
-        atemp = re.split('\,', ent)
+        atemp = ent.split(',')
         poc   = atemp[0]
         if poc == name:
             line = line + ent + '\n'
