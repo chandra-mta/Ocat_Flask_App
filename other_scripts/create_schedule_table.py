@@ -13,6 +13,7 @@ import os
 import time
 import Chandra.Time
 from dotenv import dotenv_values
+import argparse
 
 #
 #--- Load the running application version's configuration
@@ -38,14 +39,14 @@ HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 #
 #--- a few emails addresses
 #
-cus       = 'cus@cfa.harvard.edu'
-admin     = 'bwargelin@cfa.harvard.edu'
-tech      = 'william.aaron@cfa.harvard.edu'
+CUS       = 'cus@cfa.harvard.edu'
+ADMIN     = 'bwargelin@cfa.harvard.edu'
+TECH      = 'william.aaron@cfa.harvard.edu'
 #
 #--- constant related dates
 #
-three_mon = 86400 * 30 * 3
-seven_day = 86400 * 7
+THREE_MON = 86400 * 30 * 3
+SEVEN_DAY = 86400 * 7
 
 #---------------------------------------------------------------------------------------
 #--- create_schedule_table: update schedule html page                                 --
@@ -55,7 +56,7 @@ def create_schedule_table():
     """
     update schedule html page
     input:  none but read from <too_contact_dir>/schedule
-    output: <ocat_dir>/too_contact_schedule.html
+    output: <usint_dir>/too_contact_schedule.html
     """
 #
 #--- find today's date
@@ -271,7 +272,7 @@ def check_schedule_fill(k_list, stime):
 #--- check whether the last entry date is less than three months away
 #
     tdiff   = l_entry - stime
-    if tdiff < three_mon:
+    if tdiff < THREE_MON:
 #
 #--- check when the last time this notification was sent
 #
@@ -285,11 +286,11 @@ def check_schedule_fill(k_list, stime):
 #--- if the last notification is older than 7 days, send it again
 #
         cdiff = stime - l_time
-        if cdiff > seven_day:
+        if cdiff > SEVEN_DAY:
             ifile = f"{HOUSE_KEEPING}/Schedule/add_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, admin)
+            send_mail(subj, ifile, ADMIN)
 #
 #--- update log time
 #
@@ -330,7 +331,7 @@ def check_next_week_filled(k_list, d_dict, stime):
             ifile = f"{HOUSE_KEEPING}/Schedule/missing_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, admin)
+            send_mail(subj, ifile, ADMIN)
 
 #---------------------------------------------------------------------------------------
 #-- first_notification: send first notification to POC                                --
@@ -369,7 +370,7 @@ def first_notification(k_list, d_dict, poc_dict, stime):
                 send_mail(subj, ifile, email)
 
                 subj  = 'TOO Point of Contact Duty Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, admin)
+                send_mail(subj, ifile, ADMIN)
             break
             
 #---------------------------------------------------------------------------------------
@@ -410,7 +411,7 @@ def second_notification(k_list, d_dict, poc_dict, stime):
                 send_mail(subj, ifile, email)
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, admin)
+                send_mail(subj, ifile, ADMIN)
 
 #---------------------------------------------------------------------------------------
 #-- send_mail: sending email                                                          --
@@ -427,10 +428,10 @@ def send_mail(subject, ifile, address, cc= ''):
     """
     if cc == '':
         cmd = 'cat ' + ifile + '|mailx -s "Subject: ' + subject + ' " '
-        cmd = cmd    + ' -b ' + tech  + ' -c ' + cus + ' '   + address 
+        cmd = cmd    + ' -b ' + tech  + ' -c ' + CUS + ' '   + address 
     else:
         cmd = 'cat ' + ifile + '|mailx -s "Subject: ' + subject + ' " ' 
-        cmd = cmd +  ' -b ' + tech +  ' -c ' + cc + ' ' + address + ' ' + cus
+        cmd = cmd +  ' -b ' + tech +  ' -c ' + cc + ' ' + address + ' ' + CUS
 
     os.system(cmd)
 
@@ -503,8 +504,15 @@ def dtime_to_ctime(dtime):
 #---------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    
-    create_schedule_table()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    args = parser.parse_args()
+
+    if args.mode == 'test':
+        pass
+
+    elif args.mode == 'flight':
+        create_schedule_table()
 
 
 
