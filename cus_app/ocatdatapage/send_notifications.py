@@ -117,7 +117,7 @@ def hrc_si_notification(obsids_list, rev_dict):
         text    = text + 'If it is correct, please sign off at\n\n'
         text    = text + obsid + ':  ' +  current_app.config['HTTP_ADDRESS'] + 'orupdate/' 
 
-        for end in obsids_list[1:]:
+        for ent in obsids_list[1:]:
             text = text + ent + '\n'
 
     else:
