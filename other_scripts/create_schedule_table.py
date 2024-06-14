@@ -300,7 +300,7 @@ def check_schedule_fill(k_list, stime):
             fo.write(str(stime))
 
 #---------------------------------------------------------------------------------------
-#-- check_next_week_filled: check the schedule is signed up on the slot two week from currnet
+#-- check_next_week_filled: check the schedule is signed up on the slot two week from current
 #---------------------------------------------------------------------------------------
 
 def check_next_week_filled(k_list, d_dict, stime):
@@ -315,6 +315,7 @@ def check_next_week_filled(k_list, d_dict, stime):
 #
 #--- find the schedule date two weeks (or two down) from the current one
 #
+    pos = None
     for k in range(0, len(k_list)):
         c_time = dtime_to_ctime(k_list[k])
         if c_time >= stime:
@@ -323,7 +324,10 @@ def check_next_week_filled(k_list, d_dict, stime):
 #
 #--- find whether the slot is actually signed up
 #
-    poc = d_dict[k_list[pos]][1]
+    if pos == None or pos >= len(k_list):
+        poc = 'TBD' #Could not find entry two slots after the current time
+    else:
+        poc = d_dict[k_list[pos]][1]
 #
 #--- if it is not signed up, send out email on this Friday to notify admin
 #
@@ -364,7 +368,7 @@ def first_notification(k_list, d_dict, poc_dict, stime):
 #
 #--- if the schedule changes in two days, send a notification
 #
-            if (ncheck <= p2) and (nstart >= p2):
+            if (ncheck <= p2) and ( p2 <= nstart):
                 ifile = f"{HOUSE_KEEPING}/Schedule/first_notification"
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
@@ -394,12 +398,12 @@ def second_notification(k_list, d_dict, poc_dict, stime):
 #
     d_before =  stime - 86400.0
 #
-#--- check which period yesterday blongs
+#--- check which period yesterday belongs to
 #
     for k in range(0, len(k_list)-1):
         p1 = dtime_to_ctime(k_list[k])
         p2 = dtime_to_ctime(k_list[k+1])
-        if (d_before>= p1) and (d_before <= p2):
+        if (p1 <= d_before) and (d_before <= p2):
 #
 #--- if the schedule just changes today, send a notification
 #
