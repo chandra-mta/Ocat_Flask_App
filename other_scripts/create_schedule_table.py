@@ -41,12 +41,12 @@ HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 #
 CUS       = 'cus@cfa.harvard.edu'
 ADMIN     = 'bwargelin@cfa.harvard.edu'
-TECH      = 'william.aaron@cfa.harvard.edu'
 #
 #--- constant related dates
 #
 THREE_MON = 86400 * 30 * 3
 SEVEN_DAY = 86400 * 7
+
 
 #---------------------------------------------------------------------------------------
 #--- create_schedule_table: update schedule html page                                 --
@@ -290,7 +290,7 @@ def check_schedule_fill(k_list, stime):
             ifile = f"{HOUSE_KEEPING}/Schedule/add_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, ADMIN)
+            send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
 #
 #--- update log time
 #
@@ -303,7 +303,7 @@ def check_schedule_fill(k_list, stime):
 
 def check_next_week_filled(k_list, d_dict, stime):
     """
-    check the schedule is signed up on the slot two week from currnet
+    check the schedule is signed up on the slot two week from current
     input:  k_list  --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict  --- a dictionary of schedule information, key: <yyyy><mm>dd>
             stime   --- today's time in seconds in 1998.1.1
@@ -331,7 +331,7 @@ def check_next_week_filled(k_list, d_dict, stime):
             ifile = f"{HOUSE_KEEPING}/Schedule/missing_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, ADMIN)
+            send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
 
 #---------------------------------------------------------------------------------------
 #-- first_notification: send first notification to POC                                --
@@ -342,7 +342,7 @@ def first_notification(k_list, d_dict, poc_dict, stime):
     send first notification to POC
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
+            poc_dict    --- a dictionary of poc information, key: name
             stime       --- today's time in seconds in 1998.1.1
                   <house_keeping>/Schedule/first_notification (template)
     output: email sent
@@ -367,10 +367,10 @@ def first_notification(k_list, d_dict, poc_dict, stime):
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
                 subj  = 'TOO Point of Contact Duty Notification'
-                send_mail(subj, ifile, email)
+                send_mail(subj, ifile, {'TO': [email], 'CC': [CUS]})
 
                 subj  = 'TOO Point of Contact Duty Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, ADMIN)
+                send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
             break
             
 #---------------------------------------------------------------------------------------
@@ -408,30 +408,39 @@ def second_notification(k_list, d_dict, poc_dict, stime):
                 email = poc_dict[name][-1]
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification'
-                send_mail(subj, ifile, email)
+                send_mail(subj, ifile, {'TO': [email], 'CC': [CUS]})
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, ADMIN)
+                send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
 
 #---------------------------------------------------------------------------------------
 #-- send_mail: sending email                                                          --
 #---------------------------------------------------------------------------------------
 
-def send_mail(subject, ifile, address, cc= ''):
+def send_mail(subject, text, address_dict):
     """
     sending email
-    input:  subject --- subject line
-            ifile   --- template
-            address --- email address
-            cc      --- cc address if needed
+    input:  subject      --- subject line
+            test         --- text or template file of text
+            address_dict --- email address dictionary
     output: email sent
     """
-    if cc == '':
-        cmd = 'cat ' + ifile + '|mailx -s "Subject: ' + subject + ' " '
-        cmd = cmd    + ' -b ' + tech  + ' -c ' + CUS + ' '   + address 
+    message = ''
+    message += f"TO:{','.join(address_dict['TO'])}\n"
+    if 'CC' in address_dict.keys():
+        message += f"CC:{','.join(address_dict['CC'])}\n"
+    if 'BCC' in address_dict.keys():
+        message += f"BCC:{','.join(address_dict['BCC'])}\n"
+
+    message += f"Subject:{subject}\n"
+    
+    if os.path.isfile(text):
+        with open(text) as f:
+            message += f.read()
     else:
-        cmd = 'cat ' + ifile + '|mailx -s "Subject: ' + subject + ' " ' 
-        cmd = cmd +  ' -b ' + tech +  ' -c ' + cc + ' ' + address + ' ' + CUS
+        message += f"{text}"
+
+    cmd = f"echo '{message}' | sendmail {','.join(address_dict['TO'])}"
 
     os.system(cmd)
 
