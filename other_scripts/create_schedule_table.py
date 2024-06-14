@@ -15,6 +15,7 @@ import Chandra.Time
 from dotenv import dotenv_values
 import argparse
 import getpass
+import re
 
 #
 #--- Load the running application version's configuration
@@ -153,7 +154,7 @@ def read_schedule():
     d_dict = {}
     k_list = []
     for ent in data:
-        atemp = ent.split()
+        atemp = re.split('\t+', ent)
         name  = atemp[0]
         smon  = atemp[1]
         sday  = atemp[2]
@@ -516,6 +517,7 @@ def dtime_to_ctime(dtime):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-e", '--email', nargs = '*', required = False, help = "List of emails to recieve notifications")
     args = parser.parse_args()
 
     if args.mode == 'test':
@@ -523,8 +525,8 @@ if __name__ == "__main__":
 #--- Change pathing to test case. Considering the amoutn of intermediary files,
 #--- copying test version of these files manually is the most direct testing method
 #
-        CONFIG = {USINT_DIR: f"{os.getcwd()}/test/outTest",
-                  LIVE_DIR: f"{os.getcwd()}"}
+        CONFIG = {'USINT_DIR': f"{os.getcwd()}/test/outTest",
+                  'LIVE_DIR': f"{os.getcwd()}"}
         USINT_DIR = CONFIG['USINT_DIR']
         LIVE_DIR = CONFIG['LIVE_DIR']
         TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
