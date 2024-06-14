@@ -43,6 +43,8 @@ skip_list = ['monitor_series', 'obsids_list', 'remarks', 'comments', 'approved',
 
 now       = Chandra.Time.DateTime().secs
 
+ARCOPS = "arcops@cfa.harvard.edu"
+
 #-----------------------------------------------------------------------------------------------
 #-- update_data_record_file: create a data recorde file for a given obsid                    ---
 #-----------------------------------------------------------------------------------------------
@@ -73,13 +75,14 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
 #--- create data reacord file: <ocat_dir>/updates/<obsid>.<rev#>
 #
     e_text, ch_line   = create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev)
+    
 #
 #--- only when the observation is still 'scheduled', 'unobserved'
 #--- update database files and create notifications
 #
     if  ct_dict['status'][-1]  in ['scheduled', 'unobserved', 'untriggered']:
         if asis in ['norm', 'asis']:
-            send_param_change_notification(ct_dict, obsidrev, e_text, asis)
+            send_param_change_notification(ct_dict, obsidrev, e_text, asis, data)
 
         elif asis in ['remove', 'clone']:
             send_clone_remove_notification(ct_dict, obsidrev, asis)
@@ -588,7 +591,7 @@ def remove_data_line(data, sobsid):
 #-- send_param_change_notification: send parameter change notification to poc                 --
 #-----------------------------------------------------------------------------------------------
 
-def send_param_change_notification(ct_dict, obsidrev, text, asis):
+def send_param_change_notification(ct_dict, obsidrev, text, asis, data):
     """
     send parameter change notification to poc
     input:  ct_dict     --- dict of <parameter> <---> <informaiton>
@@ -599,19 +602,20 @@ def send_param_change_notification(ct_dict, obsidrev, text, asis):
     """
     sender    = 'cus@cfa.harvard.edu'
     recipient = current_user.email
-    bcc       = 'cus@cfa.harvard.edu'
-    obsid     = str(ct_dict['obsid'][-1])
+    #Use edit type to determine BCC recievers
+    bcc       = ''
+    if len(data[1][0]) > 0 or len(data[1][1]) > 0:
+        bcc = ARCOPS
 #
 #--- notification of Ocat Data Result to POC
 #
     subject = 'Parameter Change Log: ' + obsidrev 
     if asis == 'asis':
         subject = subject + ' (Approved)'
+        recipient = current_user.email
+        bcc = ''
 
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
+    email.send_email(subject, sender, recipient, text, bcc = bcc)
 
 #-----------------------------------------------------------------------------------------------
 #-- send_clone_remove_notification: send remove or clone request notification                ---
