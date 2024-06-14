@@ -22,7 +22,7 @@ from email.mime.text    import MIMEText
 from subprocess         import Popen, PIPE
 from datetime           import datetime
 
-cus  = 'cus@cfa.harvard.edu'
+CUS  = 'cus@cfa.harvard.edu'
 
 #--------------------------------------------------------------
 #-- send_email: sending out email                           ---
@@ -43,10 +43,9 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
 #
     if current_app.config['DEVELOPMENT']:
         subject    = 'TEST!!!: ' + subject 
-        cus        = None
+        CUS        = ''
         recipients = current_user.email
-        if bcc != '':
-            bcc    = current_user.email
+        bcc    = ''
 
 #
 #--- Cleaning step
@@ -56,21 +55,22 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
     recipients = clean_text(recipients)
     if type(recipients).__name__ == 'list':
         recipients = ','.join(recipients)
+
     bcc = clean_text(bcc)
     if type(bcc).__name__ == 'list':
         bcc = ','.join(bcc)
+    if CUS != '':
+        if bcc != '':
+            bcc = f"{bcc},{CUS}"
+        else:
+            bcc = CUS
+
     if bcc:
         message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
         cmd = f"echo '{message}' | sendmail {recipients}"
-        '''
-        cmd = f"echo '{text_body}' | mailx -s '{subject}' -c '{bcc}' {recipients}"
-        '''
     else:
         message = f"To:{recipients}\nSubject:{subject}\n{text_body}"
         cmd = f"echo '{message}' | sendmail {recipients}"
-        '''
-        cmd = f"echo '{text_body}' | mailx -s '{subject}' {recipients}"
-        '''
     os.system(cmd)
 
 #--------------------------------------------------------------
@@ -98,28 +98,6 @@ def send_error_email():
     p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
     p.communicate(msg.as_bytes())
 
-
-#-------------------------------------------------------------
-#-- CURRENTLY NOT USED!!! -------------------------------------
-#--------------------------------------------------------------
-
-def send_email_xxx(subject, sender, recipients, text_body, bcc=cus):
-#
-#--- if bcc is not None, add bcc (usually sending to cus)
-#
-    if bcc:
-        msg      = Message(subject, sender=sender, recipients=recipients, bcc=bcc)
-    else:
-        msg      = Message(subject, sender=sender, recipients=recipients)
-
-    msg.body = text_body
-    msg.html = ''
-#
-#--- run the email process in background
-#--- _get_current_object: extract the actual application instacne from insdie the proxy obj
-#
-    Thread(target=send_async_email,
-           args=(current_app._get_current_object(), msg)).start()
 
 #--------------------------------------------------------------
 #--------------------------------------------------------------
