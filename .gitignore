@@ -1,7 +1,7 @@
 #Ignore Pycache Files
 __pycache__/
 logs/
-
+outTest/
 #Ignore Database Files
 *.db
 *.db~
