@@ -6,51 +6,49 @@
 #                                                                                               #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
 #                                                                                               #
-#               last update: Jun 07, 2021                                                       #
+#               last update: Jun 14, 2024                                                       #
 #                                                                                               #
 #################################################################################################
-
-import math
-import re
-import sys
 import os
-import string
 import time
 import Chandra.Time
-import numpy
-#
-#--- reading directory list
-#
-path = '/data/mta4/CUS/www/Usint/Ocat/ocat/other_scripts/house_keeping/dir_list'
-with  open(path, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
+from dotenv import dotenv_values
+import argparse
+import getpass
+import re
 
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = %s" %(var, line))
 #
-#--- append a path to a privte folder to python directory
+#--- Load the running application version's configuration
+#--- Note that loading a different .env file (such as .localhostenv
+#--- or .env) allows for test version of the web applicaiton to function
+#--- more easily.
 #
-odir = ocat_dir + 'app/supple/'
-sys.path.append(odir)
+CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 #
-#--- cus common functions
+#--- For Bookkeeping, these are the default variables
 #
-import ocat_common_functions         as ocf
+#LIVE_DIR = "/proj/web-cxc/wsgi-scripts/cus"
+#USINT_DIR = "/data/mta4/CUS/www/Usint"
+
+#
+#--- Define Directory Pathing
+#
+USINT_DIR = CONFIG['USINT_DIR']
+LIVE_DIR = CONFIG['LIVE_DIR']
+TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
+HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 
 #
 #--- a few emails addresses
 #
-cus       = 'cus@cfa.harvard.edu'
-admin     = 'bwargelin@cfa.harvard.edu'
-tech      = 'william.aaron@cfa.harvard.edu'
+CUS       = ['cus@cfa.harvard.edu']
+ADMIN     = ['bwargelin@cfa.harvard.edu']
 #
 #--- constant related dates
 #
-three_mon = 86400 * 30 * 3
-seven_day = 86400 * 7
+THREE_MON = 86400 * 30 * 3
+SEVEN_DAY = 86400 * 7
+
 
 #---------------------------------------------------------------------------------------
 #--- create_schedule_table: update schedule html page                                 --
@@ -59,8 +57,8 @@ seven_day = 86400 * 7
 def create_schedule_table():
     """
     update schedule html page
-    input:  none but read from <data_dir>/too_contact_info/schedule
-    output: <ocat_dir>/too_contact_schedule.html
+    input:  none but read from <too_contact_dir>/schedule
+    output: <usint_dir>/too_contact_schedule.html
     """
 #
 #--- find today's date
@@ -115,18 +113,18 @@ def create_schedule_table():
 #
 #--- read templates
 #
-    ifile = house_keeping + 'Schedule/schedule_main_template'
-    head  = read_template(ifile)
+    with open(f"{HOUSE_KEEPING}/Schedule/schedule_main_template") as f:
+        head = f.read()
 
-    ifile = house_keeping + 'Schedule/schedule_tail'
-    tail  = read_template(ifile)
+    with open(f"{HOUSE_KEEPING}/Schedule/schedule_tail") as f:
+        tail = f.read()
 
     udate = time.strftime('%m/%d/%Y', time.gmtime())
     tail  = tail.replace('#UPDATE#', udate)
 
     line  = head + line + tail
 
-    ofile = ocat_dir + 'too_contact_schedule.html'
+    ofile = f"{USINT_DIR}/too_contact_schedule.html"
     with open(ofile, 'w') as fo:
         fo.write(line)
 #
@@ -145,18 +143,18 @@ def create_schedule_table():
 def read_schedule():
     """
     read the schedule data table
-    input:  none, but read from <data_dir>/too_contact_info/schedule
+    input:  none, but read from <too_contact_dir>/schedule
     output: a dictionary of [poc, name, period, start, stop]. key: start
             key/start/stop is in <yyyy><mm><dd>
     """
 
-    ifile = data_dir + 'too_contact_info/schedule'
-    data  = ocf.read_data_file(ifile)
+    with open(f"{TOO_CONTACT_DIR}/schedule") as f:
+        data = [line.strip() for line in f.readlines()]
 
     d_dict = {}
     k_list = []
     for ent in data:
-        atemp = re.split('\t+',  ent)
+        atemp = re.split('\t+', ent)
         name  = atemp[0]
         smon  = atemp[1]
         sday  = atemp[2]
@@ -168,8 +166,8 @@ def read_schedule():
             poc   = atemp[7]
         except:
             poc = 'TBD'
-        key   = syear + ocf.add_leading_zero(smon) + ocf.add_leading_zero(sday)
-        etime = eyear + ocf.add_leading_zero(emon) + ocf.add_leading_zero(eday)
+        key = f"{syear}{smon:>02}{sday:>02}"
+        etime = f"{syear}{emon:>02}{eday:>02}"
         lsmon = change_to_letter_month(smon)
         start = lsmon + ' ' + sday
         lemon = change_to_letter_month(emon)
@@ -207,14 +205,15 @@ def change_to_letter_month(month):
 def read_poc_info():
     """
     read poc information
-    input:  none, but read from <data_dir>/too_contact_info/this_week_person_in_charge
+    input:  none, but read from <too_contact_dir>/this_week_person_in_charge
     output: a dictionary with [ophone, cphone, hphone, email]. key: full name
     """
-    ifile    = data_dir + 'too_contact_info/active_usint_personal'
-    data     = ocf.read_data_file(ifile)
+    with open(f"{TOO_CONTACT_DIR}/active_usint_personnel") as f:
+        data = [line.strip() for line in f.readlines()]
+
     poc_dict = {}
     for ent in data:
-        atemp  = re.split(':', ent)
+        atemp  = ent.split(":")
         key    = atemp[1]
         ophone = atemp[2]
         cphone = atemp[3]
@@ -260,7 +259,7 @@ def schedule_notification(k_list, d_dict, poc_dict, stime):
 
 def check_schedule_fill(k_list, stime):
     """
-    check whether the poc schedule is running out in about 3 months and ifi so send out email
+    check whether the poc schedule is running out in about 3 months and if so send out email
     input:  k_list  --- a list of poc schedule starting time in <yyyy><mm><dd>
             stime   --- today's time in seconds in 1998.1.1
             it also read: <house_keeping>/Schedule/add_scehdule_log (the last logged time)
@@ -275,11 +274,11 @@ def check_schedule_fill(k_list, stime):
 #--- check whether the last entry date is less than three months away
 #
     tdiff   = l_entry - stime
-    if tdiff < three_mon:
+    if tdiff < THREE_MON:
 #
 #--- check when the last time this notification was sent
 #
-        nfile = house_keeping + 'Schedule/add_schedule_log'
+        nfile = f"{HOUSE_KEEPING}/Schedule/add_schedule_log"
         if os.path.isfile(nfile):
             with open(nfile, 'r') as f:
                 l_time = float(f.read())
@@ -289,11 +288,11 @@ def check_schedule_fill(k_list, stime):
 #--- if the last notification is older than 7 days, send it again
 #
         cdiff = stime - l_time
-        if cdiff > seven_day:
-            ifile = house_keeping +'Schedule/add_schedule'
+        if cdiff > SEVEN_DAY:
+            ifile = f"{HOUSE_KEEPING}/Schedule/add_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, admin)
+            send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
 #
 #--- update log time
 #
@@ -301,12 +300,12 @@ def check_schedule_fill(k_list, stime):
             fo.write(str(stime))
 
 #---------------------------------------------------------------------------------------
-#-- check_next_week_filled: check the schedule is signed up on the slot two week from currnet
+#-- check_next_week_filled: check the schedule is signed up on the slot two week from current
 #---------------------------------------------------------------------------------------
 
 def check_next_week_filled(k_list, d_dict, stime):
     """
-    check the schedule is signed up on the slot two week from currnet
+    check the schedule is signed up on the slot two week from current
     input:  k_list  --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict  --- a dictionary of schedule information, key: <yyyy><mm>dd>
             stime   --- today's time in seconds in 1998.1.1
@@ -316,6 +315,7 @@ def check_next_week_filled(k_list, d_dict, stime):
 #
 #--- find the schedule date two weeks (or two down) from the current one
 #
+    pos = None
     for k in range(0, len(k_list)):
         c_time = dtime_to_ctime(k_list[k])
         if c_time >= stime:
@@ -324,17 +324,20 @@ def check_next_week_filled(k_list, d_dict, stime):
 #
 #--- find whether the slot is actually signed up
 #
-    poc = d_dict[k_list[pos]][1]
+    if pos == None or pos >= len(k_list):
+        poc = 'TBD' #Could not find entry two slots after the current time
+    else:
+        poc = d_dict[k_list[pos]][1]
 #
 #--- if it is not signed up, send out email on this Friday to notify admin
 #
     if poc == 'TBD':
         wday = int(float(time.strftime('%w', time.gmtime())))
         if wday == 5:
-            ifile = house_keeping + 'Schedule/missing_schedule'
+            ifile = f"{HOUSE_KEEPING}/Schedule/missing_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, admin)
+            send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
 
 #---------------------------------------------------------------------------------------
 #-- first_notification: send first notification to POC                                --
@@ -345,9 +348,9 @@ def first_notification(k_list, d_dict, poc_dict, stime):
     send first notification to POC
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
+            poc_dict    --- a dictionary of poc information, key: name
             stime       --- today's time in seconds in 1998.1.1
-                  <house_keeping>/Schedule/first_notsfication (template)
+                  <house_keeping>/Schedule/first_notification (template)
     output: email sent
     """
 #
@@ -365,15 +368,15 @@ def first_notification(k_list, d_dict, poc_dict, stime):
 #
 #--- if the schedule changes in two days, send a notification
 #
-            if (ncheck <= p2) and (nstart >= p2):
-                ifile = house_keeping + 'Schedule/first_notificatioin'
+            if (ncheck <= p2) and ( p2 <= nstart):
+                ifile = f"{HOUSE_KEEPING}/Schedule/first_notification"
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
                 subj  = 'TOO Point of Contact Duty Notification'
-                send_mail(subj, ifile, email)
+                send_mail(subj, ifile, {'TO': [email], 'CC': CUS})
 
                 subj  = 'TOO Point of Contact Duty Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, admin)
+                send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
             break
             
 #---------------------------------------------------------------------------------------
@@ -395,46 +398,55 @@ def second_notification(k_list, d_dict, poc_dict, stime):
 #
     d_before =  stime - 86400.0
 #
-#--- check which period yesterday blongs
+#--- check which period yesterday belongs to
 #
     for k in range(0, len(k_list)-1):
         p1 = dtime_to_ctime(k_list[k])
         p2 = dtime_to_ctime(k_list[k+1])
-        if (d_before>= p1) and (d_before <= p2):
+        if (p1 <= d_before) and (d_before <= p2):
 #
 #--- if the schedule just changes today, send a notification
 #
             if stime >= p2:
-                ifile = house_keeping + 'Schedule/second_notification'
+                ifile = f"{HOUSE_KEEPING}/Schedule/second_notification"
 
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification'
-                send_mail(subj, ifile, email)
+                send_mail(subj, ifile, {'TO': [email], 'CC': CUS})
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, admin)
+                send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
 
 #---------------------------------------------------------------------------------------
 #-- send_mail: sending email                                                          --
 #---------------------------------------------------------------------------------------
 
-def send_mail(subject, ifile, address, cc= ''):
+def send_mail(subject, text, address_dict):
     """
     sending email
-    input:  subject --- subject line
-            ifile   --- template
-            address --- email address
-            cc      --- cc address if needed
+    input:  subject      --- subject line
+            test         --- text or template file of text
+            address_dict --- email address dictionary
     output: email sent
     """
-    if cc == '':
-        cmd = 'cat ' + ifile + '|mailx -s "Subject: ' + subject + ' " '
-        cmd = cmd    + ' -b ' + tech  + ' -c ' + cus + ' '   + address 
+    message = ''
+    message += f"TO:{','.join(address_dict['TO'])}\n"
+    if 'CC' in address_dict.keys():
+        message += f"CC:{','.join(address_dict['CC'])}\n"
+    if 'BCC' in address_dict.keys():
+        message += f"BCC:{','.join(address_dict['BCC'])}\n"
+
+    message += f"Subject:{subject}\n"
+    
+    if os.path.isfile(text):
+        with open(text) as f:
+            message += f.read()
     else:
-        cmd = 'cat ' + ifile + '|mailx -s "Subject: ' + subject + ' " ' 
-        cmd = cmd +  ' -b ' + tech +  ' -c ' + cc + ' ' + address + ' ' + cus
+        message += f"{text}"
+
+    cmd = f"echo '{message}' | sendmail {','.join(address_dict['TO'])}"
 
     os.system(cmd)
 
@@ -449,8 +461,8 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
             poc_dict    --- a dictionary of poc informaiton, key: name
             stime       --- today's time in seconds in 1998.1.1
-                <data_dir>/too_contact_info/this_week_person_in_charge
-    output: updated: <data_dir>/too_contact_info/this_week_person_in_charge
+                <too_contact_dir>/this_week_person_in_charge
+    output: updated: <too_contact_dir>/this_week_person_in_charge
     """
 #
 #--- find the current period
@@ -467,15 +479,16 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
 #
 #--- read the file
 #
-    pfile = too_dir + 'this_week_person_in_charge'
-    data  = ocf.read_data_file(pfile)
+    pfile = f"{TOO_CONTACT_DIR}/this_week_person_in_charge"
+    with open(pfile) as f:
+        data = [line.strip() for line in f.readlines()]
 #
 #--- mark the poc who are not on duty with '#'
 #
     line  = ''
     for ent in data:
         ent   = ent.replace('#', '')
-        atemp = re.split('\,', ent)
+        atemp = ent.split(',')
         poc   = atemp[0]
         if poc == name:
             line = line + ent + '\n'
@@ -502,22 +515,37 @@ def dtime_to_ctime(dtime):
     
     return stime
 
-#---------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------
-
-def read_template(ifile):
-
-    with open(ifile, 'r') as f:
-        line = f.read()
-
-    return line
 
 #---------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    
-    create_schedule_table()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-e", '--email', nargs = '*', required = False, help = "List of emails to recieve notifications")
+    args = parser.parse_args()
+
+    if args.mode == 'test':
+#
+#--- Change pathing to test case. Considering the amoutn of intermediary files,
+#--- copying test version of these files manually is the most direct testing method
+#
+        CONFIG = {'USINT_DIR': f"{os.getcwd()}/test/outTest",
+                  'LIVE_DIR': f"{os.getcwd()}"}
+        USINT_DIR = CONFIG['USINT_DIR']
+        LIVE_DIR = CONFIG['LIVE_DIR']
+        TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
+        HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
+
+        if args.email != None:
+            ADMIN = args.email
+            CUS = ADMIN
+        else:
+            ADMIN = [os.popen(f"getent aliases | grep {getpass.getuser()}").read().split(":")[1].strip()]
+            CUS = ADMIN
+        create_schedule_table()
+
+    elif args.mode == 'flight':
+        create_schedule_table()
 
 
 
