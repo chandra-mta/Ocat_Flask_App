@@ -14,6 +14,7 @@ import time
 import Chandra.Time
 from dotenv import dotenv_values
 import argparse
+import getpass
 
 #
 #--- Load the running application version's configuration
@@ -39,8 +40,8 @@ HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 #
 #--- a few emails addresses
 #
-CUS       = 'cus@cfa.harvard.edu'
-ADMIN     = 'bwargelin@cfa.harvard.edu'
+CUS       = ['cus@cfa.harvard.edu']
+ADMIN     = ['bwargelin@cfa.harvard.edu']
 #
 #--- constant related dates
 #
@@ -290,7 +291,7 @@ def check_schedule_fill(k_list, stime):
             ifile = f"{HOUSE_KEEPING}/Schedule/add_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
+            send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
 #
 #--- update log time
 #
@@ -331,7 +332,7 @@ def check_next_week_filled(k_list, d_dict, stime):
             ifile = f"{HOUSE_KEEPING}/Schedule/missing_schedule"
             subj  = 'POC Schedule Needs To Be Filled'
 
-            send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
+            send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
 
 #---------------------------------------------------------------------------------------
 #-- first_notification: send first notification to POC                                --
@@ -367,10 +368,10 @@ def first_notification(k_list, d_dict, poc_dict, stime):
                 name  = d_dict[k_list[k+1]][1]
                 email = poc_dict[name][-1]
                 subj  = 'TOO Point of Contact Duty Notification'
-                send_mail(subj, ifile, {'TO': [email], 'CC': [CUS]})
+                send_mail(subj, ifile, {'TO': [email], 'CC': CUS})
 
                 subj  = 'TOO Point of Contact Duty Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
+                send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
             break
             
 #---------------------------------------------------------------------------------------
@@ -408,10 +409,10 @@ def second_notification(k_list, d_dict, poc_dict, stime):
                 email = poc_dict[name][-1]
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification'
-                send_mail(subj, ifile, {'TO': [email], 'CC': [CUS]})
+                send_mail(subj, ifile, {'TO': [email], 'CC': CUS})
 
                 subj  = 'TOO Point of Contact Duty Notification: Second Notification (sent to: ' + email + ')'
-                send_mail(subj, ifile, {'TO': [ADMIN], 'CC': [CUS]})
+                send_mail(subj, ifile, {'TO': ADMIN, 'CC': CUS})
 
 #---------------------------------------------------------------------------------------
 #-- send_mail: sending email                                                          --
@@ -518,7 +519,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.mode == 'test':
-        pass
+#
+#--- Change pathing to test case. Considering the amoutn of intermediary files,
+#--- copying test version of these files manually is the most direct testing method
+#
+        CONFIG = {USINT_DIR: f"{os.getcwd()}/test/outTest",
+                  LIVE_DIR: f"{os.getcwd()}"}
+        USINT_DIR = CONFIG['USINT_DIR']
+        LIVE_DIR = CONFIG['LIVE_DIR']
+        TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
+        HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
+
+        if args.email != None:
+            ADMIN = args.email
+            CUS = ADMIN
+        else:
+            ADMIN = [os.popen(f"getent aliases | grep {getpass.getuser()}").read().split(":")[1].strip()]
+            CUS = ADMIN
+        create_schedule_table()
 
     elif args.mode == 'flight':
         create_schedule_table()
