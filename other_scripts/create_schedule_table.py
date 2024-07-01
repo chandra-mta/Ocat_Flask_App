@@ -9,6 +9,9 @@
 #               last update: Jun 14, 2024                                                       #
 #                                                                                               #
 #################################################################################################
+import sys
+sys.path.append("/data/mta4/Script/Python3.11/lib/python3.11/site-packages")
+
 import os
 import time
 import Chandra.Time
