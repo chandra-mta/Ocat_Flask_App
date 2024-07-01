@@ -9,11 +9,7 @@
 #############################################################################
 
 import os
-import time
-
-from threading      import Thread               #--- setting for asynchormous email
 from flask          import current_app
-from flask_mail     import Message
 from flask_login    import current_user
 from cus_app            import mail
 from cus_app.supple.ocat_common_functions   import clean_text
@@ -38,12 +34,13 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
             bcc         --- bcc email address. default ""
     output: email sent out
     """
+    cus = CUS
 #
 #--- if this is a test say so
 #
     if current_app.config['DEVELOPMENT']:
         subject    = 'TEST!!!: ' + subject 
-        CUS        = ''
+        cus        = ''
         recipients = current_user.email
         bcc    = ''
 
@@ -59,11 +56,11 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
     bcc = clean_text(bcc)
     if type(bcc).__name__ == 'list':
         bcc = ','.join(bcc)
-    if CUS != '':
+    if cus != '':
         if bcc != '':
-            bcc = f"{bcc},{CUS}"
+            bcc = f"{bcc},{cus}"
         else:
-            bcc = CUS
+            bcc = cus
 
     if bcc:
         message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
