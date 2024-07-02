@@ -543,7 +543,11 @@ if __name__ == "__main__":
             ADMIN = args.email
             CUS = ADMIN
         else:
-            ADMIN = [os.popen(f"getent aliases | grep {getpass.getuser()}").read().split(":")[1].strip()]
+            options = [x for x in os.popen(f"getent aliases | grep {getpass.getuser()}").read().split("\n") if x != '']
+            for entry in options:
+                if entry.startswith(f"{getpass.getuser()}:"):
+                        ADMIN = [entry.split(":")[1].strip()]
+                        break
             CUS = ADMIN
         create_schedule_table()
 
