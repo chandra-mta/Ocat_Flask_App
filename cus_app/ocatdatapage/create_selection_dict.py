@@ -41,7 +41,6 @@ choice_ny   = (('N','NO'), ('Y','YES'),)
 choice_nny  = (('NA', 'NA'), ('N', 'NO'), ('Y', 'YES'),)
 choice_cp   = (('Y','CONSTRAINT'),('P','PREFERENCE'),)
 choice_nncp = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
-choice_cstm = (('N','NO'), ('CUSTOM','YES'),)
 
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 #
@@ -1084,7 +1083,7 @@ def create_selection_dict(obsid):
 
     p_id         = 'subarray'
     label        = 'Use Subarray'
-    choices      = choice_cstm
+    choices      = (('NONE', 'NONE'), ('N', 'NO'), ('Y', 'YES'),)
     lind         = 'l'
     group        = 'acis'
     vals         = ct_dict[p_id]
