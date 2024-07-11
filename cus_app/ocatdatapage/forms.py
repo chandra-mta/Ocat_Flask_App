@@ -50,7 +50,6 @@ class OcatParamForm(FlaskForm):
     choice_nny  = (('NA', 'NA'), ('N', 'NO'), ('Y', 'YES'),)
     choice_cp   = (('Y','CONSTRAINT'),('P','PREFERENCE'),)
     choice_nncp = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
-    choice_cstm = (('N','NO'), ('CUSTOM','YES'),)
 
 
 #----  general parameters      -----------------------------------------------------------------
@@ -326,9 +325,9 @@ class OcatParamForm(FlaskForm):
     label        = 'ccds5_on'
     ccds5_on     = SelectField(label=label, choices = choice,)
 
-
+    choice = (('NONE', 'NONE'), ('N', 'NO'), ('Y', 'YES'),)
     label        = 'subarray'
-    subarray     = SelectField(label=label,  choices = choice_cstm,)
+    subarray     = SelectField(label=label,  choices = choice,)
 
     label        = 'subarray_start_row'
     subarray_start_row = pr_chr_field(label)
