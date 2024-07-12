@@ -26,11 +26,11 @@
             {{ data[3] }}
         </th>
         <!--General Edits-->
-        <td style='background-color:rgb(0,179,170,0.3);'>
+        <td>
             {{ cellset(data[4], data[0], 'gen', current_user)  }}
         </td>
         <!-- ACIS Edits-->
-        <td style='background-color:rgb(0,179,170,0.3);'>
+        <td>
             {{ cellset(data[5], data[0], 'acis', current_user) }}
         </td>
         <!-- ACIS SI mode edits-->
@@ -49,7 +49,7 @@
             {% if data[4] != 'NA' and data[5] != 'NA' and data[6] != 'NA' and data[7] != 'NA' %}
                 {{ cellset(data[8], data[0], 'verify', current_user)  }}
             {% else %}
-                Not Ready To Verify
+            <p style='color:red;'>Not Ready To Verify</p>
             {% endif %}
 <!-- -->
 <!-- if higher revision is open or already signed-off, show "Close" button -->
@@ -128,7 +128,7 @@
         {% if 'admin' in current_user.groups_string or targ in current_user.groups_string %}
             <input type='submit' name={{ name }} value='Sign-off'>
         {% else %}
-            <p> Sign-off By {{ targ.capitalize() }} Required</p>
+            <p style='color:red;'> Sign-off By {{ targ.capitalize() }} Required</p>
         {% endif %}
     {% else %}
         {{ data }}
