@@ -483,12 +483,12 @@ def find_other_revisions(obsid, rev=0):
 def read_poc_list(cuser=''):
     """ 
     read current poc from the list 
-    input:  <data_dir>/active_usint_personal
+    input:  <data_dir>/active_usint_personnel
             cuser   --- current user. if it is given the information
                         will be float up to the top of the list
     output: a list of [<poc id>, <Full Name>, <email address>]
     """
-    ifile = os.path.join(current_app.config['INFO_DIR'], 'active_usint_personal')
+    ifile = os.path.join(current_app.config['INFO_DIR'], 'active_usint_personnel')
     data  = read_data_file(ifile)
 
     poc_list = []
