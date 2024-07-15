@@ -1083,7 +1083,7 @@ def create_selection_dict(obsid):
 
     p_id         = 'subarray'
     label        = 'Use Subarray'
-    choices      = (('NONE', 'NONE'), ('N', 'NO'), ('Y', 'YES'),)
+    choices      = (('NONE', 'NONE'), ('N', 'NO'), ('CUSTOM', 'YES'),)
     lind         = 'l'
     group        = 'acis'
     vals         = ct_dict[p_id]

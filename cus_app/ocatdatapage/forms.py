@@ -325,7 +325,7 @@ class OcatParamForm(FlaskForm):
     label        = 'ccds5_on'
     ccds5_on     = SelectField(label=label, choices = choice,)
 
-    choice = (('NONE', 'NONE'), ('N', 'NO'), ('Y', 'YES'),)
+    choice = (('NONE', 'NONE'), ('N', 'NO'), ('CUSTOM', 'YES'),)
     label        = 'subarray'
     subarray     = SelectField(label=label,  choices = choice,)
 
