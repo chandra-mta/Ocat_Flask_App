@@ -659,7 +659,7 @@ def send_clone_remove_notification(ct_dict, obsidrev, asis):
 def create_compare_line(data, ct_dict, r_param=''):
     """
     create a line to display changed parameter value
-    input:  data    --- either parameter name or [paramter, rank]
+    input:  data    --- either parameter name or [parameter, rank]
             ct_dict --- a dict of <parameter> <---> <information>
     output: line    --- a display line
     """
@@ -675,12 +675,12 @@ def create_compare_line(data, ct_dict, r_param=''):
     return line
 
 #-----------------------------------------------------------------------------------------------
-#-- create_lines_for_none_rank_group:create a line to display paramter name and the original and new values
+#-- create_lines_for_none_rank_group:create a line to display parameter name and the original and new values
 #-----------------------------------------------------------------------------------------------
 
 def create_lines_for_none_rank_group(group, ct_dict):
     """
-    create a line to display paramter name and the original and new values
+    create a line to display parameter name and the original and new values
     input:  group   --- a list of parameters
             ct_dict --- a dict of <param> <---> <information>
     output: line    --- a display line

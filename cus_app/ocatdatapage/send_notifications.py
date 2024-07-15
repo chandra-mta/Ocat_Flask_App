@@ -51,7 +51,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
     """
     send notification email to POC, MP, ARCORP, and HRC
     input:  asis                --- asis status
-            ct_dict             --- a dict of <paramter> <---> <information>
+            ct_dict             --- a dict of <parameter> <---> <information>
             obsids_list         --- a list of obdids
             changed_parameters  --- a text of a list of changed parameter values
             mp_note             --- a notifications to MP
@@ -81,7 +81,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #
         send_too_notification(ct_dict, asis, rev_dict)
 #
-#--- mp special paramter change check
+#--- mp special parameter change check
 #
         check_mp_notes(mp_note, rev_dict)
 #

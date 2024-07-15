@@ -359,7 +359,7 @@ def instrument_check(ct_dict, warning_list):
         note = note + 'You need a CDO approval for this change. If you already have '
         note = note + 'the permission, please indicate so in the comment section.\n'
 #
-#--- if the instrument is change from acis to hrc or another way around, all paramter values
+#--- if the instrument is change from acis to hrc or another way around, all parameter values
 #--- of the original instrument are nullified; so notify that, too
 #
         if ct_dict['instrument'][-2] in ['ACIS-I', 'ACIS-S']:

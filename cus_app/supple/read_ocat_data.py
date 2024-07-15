@@ -343,7 +343,7 @@ def too_ddt_params(tooid):
     plen   = len(p_list)
     p_dict = {}
 #
-#--- too/ddt data have different paramter names in the dictionary from those of
+#--- too/ddt data have different parameter names in the dictionary from those of
 #--- in the database to avoid mix-up of the parameter names
 #
     if tooid in non_list:

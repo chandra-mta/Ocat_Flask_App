@@ -291,7 +291,7 @@ def process_submit_data(ct_dict, f_data):
         ind_dict = csd.create_match_dict(ct_dict)
 #
 #--- params in remove_list won't show in the param display page table
-#--- or handled differently (such as ranked paramters)
+#--- or handled differently (such as ranked parameters)
 #
         disp_param_list = []
         remove_list    = rank_list + nshw_list 
@@ -639,7 +639,7 @@ def add_rank(param, ct_dict, pname, i_val):
     increase a rank by one
     input:  param   --- a name of rank parameter
             ct_dict --- a dict of <param> <--> <information>
-            pname   --- a name of paramter which indicates whether the row is open
+            pname   --- a name of parameter which indicates whether the row is open
             i_val   --- a value which the row is open (e.g. 'Y' for window_constraint)
     outpu;  ct_dict --- an updated dict 
     """

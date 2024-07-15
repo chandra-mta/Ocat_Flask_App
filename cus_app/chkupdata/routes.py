@@ -1,6 +1,6 @@
 #########################################################################################
 #                                                                                       #
-#   chkupdata page: display all original/requsted/current paramter values for           #
+#   chkupdata page: display all original/requsted/current parameter values for           #
 #                   given <obsid>.<rev>                                                 #
 #                                                                                       #
 #       author: t.isobe (tisobe@cfa.harvard.edu)                                        #
