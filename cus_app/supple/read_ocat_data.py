@@ -146,7 +146,7 @@ def general_params(obsid):
     for k in range(0, plen):
         p_dict[p_list[k]] = out[0][k]
 #
-#--- read reamarks
+#--- read remarks
 #
     cmd   = 'select remarks from target where obsid=' + str(obsid)
     out   = gvs.get_value_from_sybase(cmd)
@@ -370,7 +370,7 @@ def too_ddt_params(tooid):
 
     p_dict['too_trig'] = line
 #
-#--- read reamarks
+#--- read remarks
 #
     cmd   = 'select remarks from too where tooid=' + str(tooid)
     out   = gvs.get_value_from_sybase(cmd)
