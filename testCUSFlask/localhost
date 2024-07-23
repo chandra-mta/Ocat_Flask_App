@@ -1,0 +1,32 @@
+#!/bin/tcsh
+#Commands to run Ocat Flask App (cus_app) on localhost in dev configuration
+
+#Setup mimics Env varibales in place in the /proj/web-cxc-dmz-test server config as of 9/27/23.
+#Testing on Local host should mimic initial conditions as much as possible pre-python interpreter call
+#As setup changes in python scripts are more readily available
+#setenv PYTHONPATH "/proj/sot/ska3/flight/lib:/proj/sot/ska3/flight/lib/python3.11/site-packages:/data/mta4/Script/Python3.11:/data/mta4/Script/Python3.11/lib/python3.11/site-packages"
+setenv PYTHONPATH "/proj/sot/ska3/flight/lib:/proj/sot/ska3/flight/lib/python3.11/site-packages:/data/mta4/Script/PyUsint:/data/mta4/Script/PyUsint/lib/python3.11/site-packages"
+setenv LD_LIBRARY_PATH "/soft/SYBASE16.0/OCS-16_0/lib"
+setenv SYBASE "/soft/SYBASE16.0"
+
+#For running in an Apache Web server, the python script should have no file extension name
+#For running in Flask local host, a .py extension is required.
+#setenv FLASK_APP cus
+setenv FLASK_APP usint
+#When running tests, turning FLASK_DEBUG to true will make the werkzeug error handler supercede any other
+#error handling you have in place, whihc measn two things.
+#Leaving this variable as True means that we don't mess around wiht loggin errors in a file (and error emails), instead it 
+#just pusshes errors into a popup
+
+#If you want to test the error handler in the script itself.. You need to turn this off
+setenv FLASK_DEBUG True
+#setenv FLASK_DEBUG False
+
+#This varibale typically defined by the Apache LDAP module after authentication.
+#This stage of test server doesn't run on Apache, so we define it directly
+setenv REMOTE_USER $USER
+
+#Note that this Flask call is paired towards the /data/mta4/Script/Python3.10 install with version 3.10.10
+#unknow if this iwll  cause issues with the web server Python Home being gueared towards the Python isntall 
+#located at /proj/servers/mod_wsgi/mod_wsgi4.9.4-Python3.10 install with verison 3.10.13
+/data/mta4/Script/Python3.11/bin/flask run --no-reload

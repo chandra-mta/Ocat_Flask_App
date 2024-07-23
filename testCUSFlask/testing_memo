@@ -1,0 +1,30 @@
+This directory contains helpful setup scripts for running the Usint Flask Application on local host for testing changes.
+
+
+localhost --- tcsh script which will set environment variables necessary for logging in,
+	      operating on the test Ocat revision database, and for sending python error messages
+	      directly to the web browser.
+
+localhostMAIL --- tcsh script same as localhost, however it will configured the app to send
+		  error messages via email from the UsintErrorHandler directly to the configured admin email
+
+
+Note that this script is included for convenience, but this directory does not natively contain the setup 
+necessary for a developer to test this application on their own git branch. To setup that ability,
+copy this directory to some other testing directory available to the devleoper, then symlink the necessary files
+into the testCUSFlask directory so that localhost/localhostMAIL will oeprate on the correct git branch. For example...
+
+[waaron@scrapper-11:55:testCUSFlask]$ pwd
+/data/mta4/waaron/testCUSFlask
+[waaron@scrapper-11:55:testCUSFlask]$ ls -lha
+total 20K
+drwxr-xr-x  3 waaron waaron   4.0K Jul 23 11:50 .
+drwxr-xr-x 11 waaron mtagroup 4.0K Apr 25 10:59 ..
+lrwxrwxrwx  1 waaron waaron     46 Sep 18  2023 config.py -> /data/mta4/waaron/git/Ocat_Flask_App/config.py
+lrwxrwxrwx  1 waaron waaron     45 Sep 18  2023 cus_app -> /data/mta4/waaron/git/Ocat_Flask_App/cus_app/
+-rwxr-xr-x  1 waaron waaron   2.0K May 24 12:59 localhost
+-rwxr-xr-x  1 waaron waaron   2.0K May 24 12:59 localhostMAIL
+lrwxrwxrwx  1 waaron waaron     41 Oct 19  2023 logs -> /data/mta4/waaron/git/Ocat_Flask_App/logs
+lrwxrwxrwx  1 waaron waaron     50 Sep 18  2023 other_scripts -> /data/mta4/waaron/git/Ocat_Flask_App/other_scripts
+drwxr-xr-x  2 waaron waaron   4.0K Jun  6 15:49 __pycache__
+lrwxrwxrwx  1 waaron waaron     42 May 24 12:58 usint.py -> /data/mta4/waaron/git/Ocat_Flask_App/usint
