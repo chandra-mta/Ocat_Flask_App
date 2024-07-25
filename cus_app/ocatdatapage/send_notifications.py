@@ -207,10 +207,10 @@ def check_mp_notes(mp_note, rev_dict):
             if obsid in mp_note[2]:
                 continue
             else:
-                msubject = 'POC requested parameter values changes on obsids scheduled in less than 10 days'
+                msubject = f'POC {current_user.username} requested parameter values changes on obsids scheduled in less than 10 days'
                 psubject = 'You submitted Obsids scheduled in less than 10 days'
 
-                mtext    = mtext + 'POC requested changes of parameter values in the following obsid(s) '
+                mtext    = mtext + f'POC {current_user.username} requested changes of parameter values in the following obsid(s) '
                 mtext    = mtext + 'which are scheduled in less than 10 days.\n\n'
 
                 ptext    = ptext + 'You requested changes of parameter values in the following obsid(s) '
@@ -225,10 +225,10 @@ def check_mp_notes(mp_note, rev_dict):
 #--- on active OR list
 #
     if len(mp_note[2]) > 0:
-        msubject = 'POC requested parameter values changes on obsids listed on the active OR List'
+        msubject = f'POC {current_user.username} requested parameter values changes on obsids listed on the active OR List'
         psubject = 'You requested parameter values changes on obsids listed on the active OR List'
 
-        mtext    = mtext + 'POC requested changes of parameter values in following obsid(s) ' 
+        mtext    = mtext + f'POC {current_user.username} requested changes of parameter values in following obsid(s) ' 
         mtext    = mtext + 'which are in the active OR list.\n\n'
         ptext    = ptext + 'You requested changes of parameter values in following obsid(s) ' 
         ptext    = ptext + 'which are in the active OR list.\n\n'
