@@ -7,34 +7,17 @@
 #               last update Oct 22, 2021                                                        #
 #                                                                                               #
 #################################################################################################
-
-import sys
 import os
 import re
-import math
-import time
-import threading
 from flask_login        import current_user
 from flask              import current_app
 
 import cus_app.supple.ocat_common_functions         as ocf
 import cus_app.emailing                             as email
-import cus_app.ocatdatapage.create_selection_dict   as csd
 #
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 sender       = 'cus@cfa.harvard.edu'
 bcc          = 'cus@cfa.harvard.edu'
 #
@@ -44,7 +27,7 @@ mail_end = '\n\nIf you have any questions about this email, please contact '
 mail_end = mail_end + 'bwargelin@cfa.harvard.edu.\n'
 
 #-----------------------------------------------------------------------------------------------
-#-- send_notifications: send notification email to POC, MP, ARCORP, and HRC                   --
+#-- send_notifications: send notification email to POC, MP, ARCOPS, and HRC                   --
 #-----------------------------------------------------------------------------------------------
 
 def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
@@ -52,7 +35,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
     send notification email to POC, MP, ARCORP, and HRC
     input:  asis                --- asis status
             ct_dict             --- a dict of <parameter> <---> <information>
-            obsids_list         --- a list of obdids
+            obsids_list         --- a list of additional obsids
             changed_parameters  --- a text of a list of changed parameter values
             mp_note             --- a notifications to MP
     output: email sent out
@@ -60,7 +43,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #
 #--- find revision # for each obsids in the group
 #
-    o_list   = [str(ct_dict['obsid'][-1]),] + obsids_list
+    o_list   = [str(ct_dict['obsid'][-1])] + obsids_list
     rev_dict = find_rev_no(o_list)
 #
 #--- a standard parameter change is requsted
@@ -70,11 +53,11 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #--- hrc si change notification
 #
         if ct_dict['hrc_si_mode'][-2] != ct_dict['hrc_si_mode'][-1]:
-            hrc_si_notification(obsids_list, rev_dict)
+            hrc_si_notification(o_list, rev_dict)
 #
 #--- arcops notification: multiple obsids are submitted
 #
-        if len(obsids_list) > 0:
+        if len(o_list) > 1:
             arcops_notification(o_list, rev_dict, changed_parameters)
 #
 #--- check TOO notification
@@ -161,7 +144,7 @@ def arcops_notification(o_list, rev_dict, changed_params):
 #
 #--- change a text format to make it more readable in the email body
 #
-    text  = text + '\nUpdated parameters are: \n'
+    text  = text + f'\nUpdated parameters for {o_list[0]} are: \n'
     text  = text + '\nParameter\t\t Original Value\t\tNew Value\n'
     text  = text + '-'* 90 + '\n'
     ctext = changed_params.replace(' to ', '\t\t :: \t\t')
@@ -192,8 +175,8 @@ def check_mp_notes(mp_note, rev_dict):
 #--- large coordindate shift
 #
     if len(mp_note[0]) > 0:
-        msubject = 'POC requested a large coordindate shift'
-        psubject = 'You submitted a large coordindate shift'
+        msubject = 'POC requested a large coordinate shift'
+        psubject = 'You submitted a large coordinate shift'
 
         mtext    = mtext + 'A large coordindate shift is requested in following obsid(s)\n\n'
         ptext    = ptext + 'You requested a large coordindate shift '
@@ -224,8 +207,8 @@ def check_mp_notes(mp_note, rev_dict):
             if obsid in mp_note[2]:
                 continue
             else:
-                msubject = 'POC requested parameter values changes on obsids scheduled in 10 days'
-                psubject = 'You submitted Obsids scheduled in 10 days'
+                msubject = 'POC requested parameter values changes on obsids scheduled in less than 10 days'
+                psubject = 'You submitted Obsids scheduled in less than 10 days'
 
                 mtext    = mtext + 'POC requested changes of parameter values in the following obsid(s) '
                 mtext    = mtext + 'which are scheduled in less than 10 days.\n\n'
@@ -242,12 +225,12 @@ def check_mp_notes(mp_note, rev_dict):
 #--- on active OR list
 #
     if len(mp_note[2]) > 0:
-        msubject = 'POC requested parameter values changes on obsids listed on the acrive OR List'
-        psubject = 'You requested parameter values changes on obsids listed on the acrive OR List'
+        msubject = 'POC requested parameter values changes on obsids listed on the active OR List'
+        psubject = 'You requested parameter values changes on obsids listed on the active OR List'
 
-        mtext    = mtext + 'POC requested changes of parameter values in follwoing obsid(s) ' 
+        mtext    = mtext + 'POC requested changes of parameter values in following obsid(s) ' 
         mtext    = mtext + 'which are in the active OR list.\n\n'
-        ptext    = ptext + 'You requested changes of parameter values in follwoing obsid(s) ' 
+        ptext    = ptext + 'You requested changes of parameter values in following obsid(s) ' 
         ptext    = ptext + 'which are in the active OR list.\n\n'
 
         for obsid in mp_note[2]:
@@ -274,7 +257,7 @@ def check_mp_notes(mp_note, rev_dict):
 #
     if ptext != '':
         recipient = current_user.email 
-        ptext     = ptext + '\n\n Please constant mp@cfa.harvard.edu, if you have not done so.\n\n'
+        ptext     = ptext + '\n\n Please contact mp@cfa.harvard.edu, if you have not done so.\n\n'
 
         if current_app.config['DEVELOPMENT']:
             email.send_email(psubject, sender, recipient, ptext)

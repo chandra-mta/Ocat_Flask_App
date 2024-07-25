@@ -8,28 +8,19 @@
 #                                                                               #
 #################################################################################
 import os
-import sys
 import re
-import string
-import time
 import Chandra.Time
-import copy
-from   datetime         import datetime
 import numpy
 
-from flask              import render_template, flash, redirect, url_for
+from flask              import render_template, flash
 from flask              import session, request, current_app
 from flask_login        import current_user
 
-from markupsafe import escape
-
-from cus_app                import db
-from cus_app.models         import User, register_user 
+from cus_app.models         import register_user 
 from cus_app.ocatdatapage   import bp
 from cus_app.ocatdatapage.forms import OcatParamForm
 
 import cus_app.supple.ocat_common_functions         as ocf
-import cus_app.supple.read_ocat_data                as rod
 import cus_app.ocatdatapage.create_selection_dict   as csd
 import cus_app.ocatdatapage.check_value_range       as cvr
 import cus_app.ocatdatapage.update_data_record_file as udrf
@@ -39,21 +30,9 @@ import cus_app.ocatdatapage.send_notifications      as snt
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #--- read ocat parameter list
 #
-#basedir = os.path.abspath(os.path.dirname(__file__))
 p_file  = os.path.join(basedir, '../static/param_list')
 with open(p_file, 'r') as f:
     all_param_list = [line.strip() for line in f.readlines()]
@@ -322,7 +301,7 @@ def process_submit_data(ct_dict, f_data):
 
 def process_data_for_finalize(ct_dict, f_data):
     """
-    prepare for the finail page and update the databases
+    prepare for the final page and update the databases
     input:  ct_dict         --- a dict of data
             f_data          --- a form data
     output: acis            --- asis status
@@ -360,7 +339,7 @@ def process_data_for_finalize(ct_dict, f_data):
         if asis == 'clone':
             ct_dict['comments'][-1] = save
 #
-#--- create a data recrod file in <data_dir>
+#--- create a data record file in <data_dir>
 #--- changed_param is a text to list updated parameter values
 #--- note is a list of lists to pass information about mp/arcorp/hrc notifications
 #
@@ -399,8 +378,7 @@ def process_data_for_finalize(ct_dict, f_data):
 #
 #--- send notifications
 #
-    if len(d_list) > 0:
-        snt.send_notifications(asis, ct_dict, d_list, changed_param, note)
+    snt.send_notifications(asis, ct_dict, d_list, changed_param, note)
 
     return asis, ct_dict, notes, ostatus, d_list, not_processed, no_change
 
