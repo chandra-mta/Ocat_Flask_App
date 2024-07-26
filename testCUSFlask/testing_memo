@@ -14,6 +14,8 @@ necessary for a developer to test this application on their own git branch. To s
 copy this directory to some other testing directory available to the developer, then symlink the necessary files
 into the testCUSFlask directory so that localhost/localhostMAIL will operate on the correct git branch. For example...
 
+Local Host Link: http://127.0.0.1:5000/
+
 [waaron@scrapper-11:55:testCUSFlask]$ pwd
 /data/mta4/waaron/testCUSFlask
 [waaron@scrapper-11:55:testCUSFlask]$ ls -lha
