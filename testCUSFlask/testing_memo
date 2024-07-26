@@ -11,7 +11,7 @@ localhostMAIL --- tcsh script same as localhost, however it will configured the 
 
 Note that this script is included for convenience, but this directory does not natively contain the setup 
 necessary for a developer to test this application on their own git branch. To setup that ability,
-copy this directory to some other testing directory available to the devleoper, then symlink the necessary files
+copy this directory to some other testing directory available to the developer, then symlink the necessary files
 into the testCUSFlask directory so that localhost/localhostMAIL will operate on the correct git branch. For example...
 
 [waaron@scrapper-11:55:testCUSFlask]$ pwd
