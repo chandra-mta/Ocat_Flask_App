@@ -20,6 +20,7 @@ def update_user_database():
 #
     users_dict = read_groups(IFILE)
     users_dict = find_email(users_dict)
+    users_dict = find_full_name(users_dict)
 #    
 #--- Creating SQL table
 #
@@ -38,13 +39,18 @@ def update_user_database():
                 id INT PRIMARY KEY NOT NULL,
                 username string(64) NOT NULL,
                 email string(64) NOT NULL,
-                groups_string string(64) NOT NULL);"""
+                groups_string string(64) NOT NULL,
+                full_name string(64) NOT NULL);"""
     
     cur.execute(table)
     #Test user in ID 0
-    cur.execute(f"INSERT INTO User VALUES ('0', 'testUSINT', '{ADMIN}', 'test');")
+    cur.execute(f"INSERT INTO User VALUES ('0', 'testUSINT', '{ADMIN}', 'test', 'Test User');")
     for user, info in users_dict.items():
-        cur.execute(f"INSERT INTO User VALUES ('{info['id']}', '{user}', '{info['email']}', '{info['groups_string']}');")
+        id = info['id']
+        email = info['email']
+        groups_string = info['groups_string']
+        full_name = info['full_name']
+        cur.execute(f'INSERT INTO User VALUES ("{id}", "{user}", "{email}", "{groups_string}", "{full_name}");')
     con.commit()
 
 def read_groups(ifile = IFILE):
@@ -76,7 +82,7 @@ def read_groups(ifile = IFILE):
 
 def find_email(users_dict):
     """
-    Input a email found trhough the getent command into a users information dictionary
+    Input a email found through the getent command into a users information dictionary
     input: users_dict --- users dictionary keyed by username and values with id and groups_string
     output: users_dict --- users dictionary keyed by username and values with id and groups_string and email
     """
@@ -90,7 +96,20 @@ def find_email(users_dict):
             users_dict[ent[0]]['email'] = ent[1].strip()
     return users_dict
 
-
+def find_full_name(users_dict):
+    """
+    Input a full name found through the getent command into a users information dictionary
+    input: users_dict --- users dictionary keyed by username and values with id and groups_string and email
+    output: users_dict --- users dictionary including full name
+    """
+#
+#--- Read the NameSwitch Library Alias Database
+#
+    search = [x.split(':') for x in os.popen(f'getent passwd').read().split('\n')]
+    for ent in search:
+        if ent[0] in users_dict.keys():
+            users_dict[ent[0]]['full_name'] = ent[4].split(',')[0].strip()
+    return users_dict
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
