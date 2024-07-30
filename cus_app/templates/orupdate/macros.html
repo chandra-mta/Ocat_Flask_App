@@ -52,15 +52,14 @@
             <p style='color:red;'>Not Ready To Verify</p>
             {% endif %}
 <!-- -->
-<!-- if higher revision is open or already signed-off, show "Close" button -->
+<!-- if higher revision is open or already signed-off, show "Discard" button -->
 <!-- -->
             {% if data[-1][1] != 0 or data[-1][0] == 2 %}
-                {% set cname = 'close_' + data[0] %}
-                <!--NOTE Turning off close button until we can understnad who shoudl have access.-->
-                <!--
+                {% set cname = 'discard_' + data[0] %}
+                
                 <br>
-                <input type='submit' name='{{ cname }}' value='Close'>
-                -->
+                <input type='submit' name='{{ cname }}' value='Discard'>
+                
 <!-- -->
 <!-- if all others are signed-off, show Signoff & Approve button -->
 <!-- -->
