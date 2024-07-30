@@ -48,22 +48,18 @@
 <!-- -->
             {% if data[4] != 'NA' and data[5] != 'NA' and data[6] != 'NA' and data[7] != 'NA' %}
                 {{ cellset(data[8], data[0], 'verify', current_user)  }}
-            {% else %}
-            <p style='color:red;'>Not Ready To Verify</p>
-            {% endif %}
 <!-- -->
-<!-- if higher revision is open or already signed-off, show "Discard" button -->
+<!-- if the entry is not ready for verification, but we want to discard remaining sign-offs, then render the the discard button-->
 <!-- -->
-            {% if data[-1][1] != 0 or data[-1][0] == 2 %}
+            {% elif ((data[4] == 'NA') or (data[5] == 'NA') or (data[6] == 'NA') or (data[7] == 'NA')) and (data[8] == 'NA') and ('admin' in current_user.groups_string or 'usint' in current_user.groups_string) %}
+                <p style='color:red;'>Not Ready To Verify</p>
                 {% set cname = 'discard_' + data[0] %}
-                
-                <br>
                 <input type='submit' name='{{ cname }}' value='Discard'>
-                
+            {% endif %}
 <!-- -->
 <!-- if all others are signed-off, show Signoff & Approve button -->
 <!-- -->
-            {% elif (data[4] != 'NA') and (data[5] != 'NA') and (data[6] != 'NA') and (data[7] != 'NA') and (data[8] == 'NA') and ('admin' in current_user.groups_string or 'usint' in current_user.groups_string) %}
+            {% if (data[4] != 'NA') and (data[5] != 'NA') and (data[6] != 'NA') and (data[7] != 'NA') and (data[8] == 'NA') and ('admin' in current_user.groups_string or 'usint' in current_user.groups_string) %}
                 {% set name = 'approve_' + data[0] %}
                 <br>
                 <input type='submit' name='{{ name }}' value='Sign-off & Approve'>
