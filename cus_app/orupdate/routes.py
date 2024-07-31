@@ -582,7 +582,7 @@ def check_signoff(form, poc_dict, odata):
         mc4 = re.search('hrc',     key)
         mc5 = re.search('verify',  key)
         mc6 = re.search('approve', key)
-        mc7 = re.search('close',   key)
+        mc7 = re.search('discard',   key)
         chk = False
 #
 #--- general is signed off
@@ -644,7 +644,7 @@ def check_signoff(form, poc_dict, odata):
         elif mc7 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 5, close=1)
+                chk = update_data(obsidrev, 5, discard=1)
 
     return chk
 
@@ -665,7 +665,7 @@ def get_obsidrev(key, form):
 #--- only when the data value exists, return <obsid>.<rev#>
 #
     ent = form[key]
-    if ent in ['Sign-off', 'Sign-off & Approve', 'Close']:
+    if ent in ['Sign-off', 'Sign-off & Approve', 'Discard']:
         atemp = re.split('_', key)
         obsidrev = atemp[-1]
     else: 
@@ -677,7 +677,7 @@ def get_obsidrev(key, form):
 #-- update_data: update <ocat_dir>/updates_table.list data file                   --
 #----------------------------------------------------------------------------------
 
-def update_data(obsidrev, pos, close=0):
+def update_data(obsidrev, pos, discard=0):
     """ 
     update <ocat_dir>/updates_table.list data file
     input:  obsidrev    --- <obsid>.<rev#>
@@ -690,7 +690,7 @@ def update_data(obsidrev, pos, close=0):
                             note: col 0 is <obsid>.<rev>
                                   col 6 is <seq #>
                                   col 7 is <poc id>
-            close       --- whehter close is asked or not 0/1 . 1: yes
+            discard       --- whether discard is asked or not 0/1 . 1: yes
     output: updated <ocat_dir>/updates_table.list
     """
     user     = current_user.username    
@@ -716,7 +716,7 @@ def update_data(obsidrev, pos, close=0):
                 cmd = 'cp  -f ' + ufile + ' ' + ufile + '~'
                 os.system(cmd)
 
-                line = create_data_line(data, obsidrev, pos, sign, close)
+                line = create_data_line(data, obsidrev, pos, sign, discard)
                 fo.write(line)
 
         return False
@@ -725,19 +725,19 @@ def update_data(obsidrev, pos, close=0):
 #-- create_data_line: create data line to print out                              --
 #----------------------------------------------------------------------------------
 
-def create_data_line(data, obsidrev, pos, sign, close):
+def create_data_line(data, obsidrev, pos, sign, discard):
     """
     create data line to print out
     input:  data        --- a list of data
             obsidreve   --- <obsid>.<rev #>
             pos         --- position of sign-off
             sign        --- <user name> <today's date>
-            close       --- 0/1. if 1, close all open sign-off
+            discard       --- 0/1. if 1, discard all open sign-off
     output: line        --- strings of output data
     """
     dlen     = len(data)
 #
-#--- reverse the data; assume that none-closed entries are at the close to the end 
+#--- reverse the data; assume that opened entries are close to the end 
 #
     data.reverse()
     for k in range(0, dlen):
@@ -748,7 +748,7 @@ def create_data_line(data, obsidrev, pos, sign, close):
 #
 #--- if closing is asked, fill opened column with 'N/A' (except verified column)
 #
-            if close > 0:
+            if discard > 0:
                 for m in range(1, 5):
                     if atemp[m] == 'NA':
                         atemp[m] = 'N/A'

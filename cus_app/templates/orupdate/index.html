@@ -18,6 +18,13 @@
     <p>
     If "Sign-off & Approve" button appears, by clicking it, you can sign it off, and also approve that obsid. You will receive a confirmation email of the submission. 
     </p>
+    <p>
+    The "Discard" button appears if there are any edit sign-off columns remaining, and is removed when all the edits on a revision have been made and it is ready for Usint verification.
+    <br/>The "Discard" button should be used to clear "out-of-date" entries from the Target Parameter Status Page by recording the unsigned columns as "N/A" in the database.
+    </p>
+    <p>
+    If caught early enough, any sign-off, verification, or discard action can be reversed by the user in the Remove Accidental Submission Page.
+    </p>
 <!-- -->
 <!-- form start here -->
 <!-- -->
@@ -99,7 +106,7 @@
         <tr><th colspan=7>&#160;</th></tr>
     {% endif %}
 <!-- -->
-<!-- Closed ObsIds -->
+<!-- Closed and Discarded ObsIds -->
 <!-- -->
     {% for ent in cdata %}
         {{ data_row(ent, current_user) }}
