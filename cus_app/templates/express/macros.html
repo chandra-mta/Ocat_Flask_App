@@ -18,10 +18,12 @@
 ##
 
 {% macro cellset(info) %}
-    {%if info[6] != 0 %}
-     <tr style='background-color:rgb(255, 0, 0, 0.2);'>
-    {% else %}
+    {% if info[6] == 0 %}
         <tr>
+    {% elif (info[6] == 1) or (info[6] == 2) or (info[6] in ['observed', 'archived', 'canceled', 'discarded']) %}
+        <tr style='background-color:rgb(255, 0, 0, 0.2);'>
+    {% else %}
+        <tr style='background-color:rgb(255, 185, 0, 0.6);'>
     {% endif %}
         <th class='cent'>
             <a href="javascript:WindowOpener('../ocatdatapage/{{ info[0] }}', 'express_obsid');">
