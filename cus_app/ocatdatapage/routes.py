@@ -372,9 +372,9 @@ def process_data_for_finalize(ct_dict, f_data):
 #
 #--- 
     if len(no_change) > 0:
-        d_list = numpy.setdiff1d(sobsids_list, no_change)
+        d_list = list(numpy.setdiff1d(sobsids_list, no_change))
     else:
-        d_list = sobsids_list
+        d_list = list(sobsids_list)
 #
 #--- send notifications
 #
