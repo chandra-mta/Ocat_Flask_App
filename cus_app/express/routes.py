@@ -116,7 +116,7 @@ def index():
                                 m_list = missed
                               )
 #
-#--- opeing starting obaid input page (page 1)
+#--- opening starting obsid input page (page 1)
 #
     else:
 #
@@ -242,6 +242,7 @@ def check_obsid_status(obsid_list):
 #
         elif (obsid in updates.keys()) and (updates[obsid] != user):
             info.append(updates[obsid])
+            o_list.append(obsid)
 #
 #--- otherwise marked by 0 
 #

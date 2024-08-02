@@ -72,7 +72,7 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
 #
     data     = get_conditions(ct_dict, ind_dict, asis)
 #
-#--- create data reacord file: <ocat_dir>/updates/<obsid>.<rev#>
+#--- create data record file: <ocat_dir>/updates/<obsid>.<rev#>
 #
     e_text, ch_line   = create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev)
     
@@ -521,8 +521,8 @@ def update_approved_list(ct_dict, user, asis):
         obsid = str(ct_dict['obsid'][-1])
         line  = obsid + '\t' + str(ct_dict['seq_nbr'][-1]) + '\t' 
         line  = line + user + '\t' + get_today_date() + '\n'
-        
-        data  = ocf.read_data_file(ofile)
+        with open(ofile) as f:
+            data = [line.strip() for line in f.readlines()]
         lchk  = 0
         for ent in data:
             atemp = re.split('\s+', ent)
