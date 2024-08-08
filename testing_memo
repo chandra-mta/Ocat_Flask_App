@@ -1,0 +1,24 @@
+The main git directory contains two setup scripts for running the Ocat Flask Application on local host
+Running the script on local host will test any application level changes. In effect, this means that anything chnage you make to a
+python script supporting Usint will be tested by running one of the following local host scripts.
+
+NOTE: This local host test operates by using a web server built into the Flask module. We have an installation of the Flask module
+in the PyUsint environment extension, which is reachable by any physical machine used by MTA on the HEAD network.
+Therefore, a user will not need to install anything in order to start a local host test. Merely cloning this git repo and running
+one of the two local host scripts will automatically start the application viewable on port 5000 of local host.
+
+Local Host Link: http://127.0.0.1:5000/
+
+
+localhost --- tcsh script which will set environment variables necessary for logging in,
+	      operating on the test Ocat revision database, and for sending python error messages
+	      directly to the web browser.
+
+localhostMAIL --- tcsh script same as localhost, however it will configured the app to send
+		  error messages via email from the UsintErrorHandler directly to the configured admin email.
+		  Otherwise, this script replicates the same environment setup as seen in the localhost script,
+		  as well as configuration to only edit the test Ocat revision database.
+
+CAVEAT: The native Python Flask testing command searches for a python file named with the ".py" file extension in order to
+initialize a test of the application on local host. However we do not want to name the "usint" file "usint.py" as that file name
+will be used in the live website's URL. The simple method to avoid this is to have a symlink called "usint.py" go to the "usint" file.
