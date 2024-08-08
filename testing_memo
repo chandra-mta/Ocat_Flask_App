@@ -14,7 +14,7 @@ localhost --- tcsh script which will set environment variables necessary for log
 	      operating on the test Ocat revision database, and for sending python error messages
 	      directly to the web browser.
 
-localhostMAIL --- tcsh script same as localhost, however it will configured the app to send
+localhostMAIL --- tcsh script same as localhost, however it will configure the app to send
 		  error messages via email from the UsintErrorHandler directly to the configured admin email.
 		  Otherwise, this script replicates the same environment setup as seen in the localhost script,
 		  as well as configuration to only edit the test Ocat revision database.
