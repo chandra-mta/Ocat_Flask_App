@@ -1,5 +1,5 @@
 The main git directory contains two setup scripts for running the Ocat Flask Application on local host
-Running the script on local host will test any application level changes. In effect, this means that anything chnage you make to a
+Running the script on local host will test any application level changes. In effect, this means that anything change you make to a
 python script supporting Usint will be tested by running one of the following local host scripts.
 
 NOTE: This local host test operates by using a web server built into the Flask module. We have an installation of the Flask module
