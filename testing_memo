@@ -6,6 +6,9 @@ NOTE: This local host test operates by using a web server built into the Flask m
 in the PyUsint environment extension, which is reachable by any physical machine used by MTA on the HEAD network.
 Therefore, a user will not need to install anything in order to start a local host test. Merely cloning this git repo and running
 one of the two local host scripts will automatically start the application viewable on port 5000 of local host.
+Also note that only one process can use a specific numbered port at a time. So for instance, if you were to have a different localhost test
+on an unrelated Apache server which is using port 5000, then your attempt to run the localhost scripts will be blocked. It will say that port 5000
+is already in used. Simply identiy which process is using port 5000 and kill that process to continue.
 
 Local Host Link: http://127.0.0.1:5000/
 
