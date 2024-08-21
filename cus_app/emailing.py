@@ -39,6 +39,11 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
 #--- if this is a test say so
 #
     if current_app.config['DEVELOPMENT']:
+        print(f"App in Development. Interrupting the following email to send to testing user instead.\n\
+              Subject: {subject}\n\
+              Recipients: {recipients}\n\
+              BCC: {bcc}\n\
+              CUS: {cus}\n")
         subject    = 'TEST!!!: ' + subject 
         cus        = ''
         recipients = current_user.email
