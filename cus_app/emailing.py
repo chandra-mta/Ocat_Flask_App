@@ -39,6 +39,11 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
 #--- if this is a test say so
 #
     if current_app.config['DEVELOPMENT']:
+        print(f"App in Development. Interrupting the following email to send to testing user instead.\n\
+              Subject: {subject}\n\
+              Recipients: {recipients}\n\
+              BCC: {bcc}\n\
+              CUS: {cus}\n")
         subject    = 'TEST!!!: ' + subject 
         cus        = ''
         recipients = current_user.email
@@ -64,10 +69,10 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
 
     if bcc:
         message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail {recipients}"
+        cmd = f"echo '{message}' | sendmail -t"
     else:
         message = f"To:{recipients}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail {recipients}"
+        cmd = f"echo '{message}' | sendmail -t"
     os.system(cmd)
 
 #--------------------------------------------------------------

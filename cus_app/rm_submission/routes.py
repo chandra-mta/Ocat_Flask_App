@@ -67,6 +67,7 @@ def before_request():
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
+    current_app.logger.info(f"Opening Remove Submission")
 #
 #--- data:      a list form of updates_table.list
 #--- s_dict:    a dict of <obsid.rev> <--> <data info> for a given user
@@ -218,7 +219,7 @@ def update_data_tables(form, data):
     """
     modifiy updates_table.list and possibley approved list
     input;  form    --- form data
-            data    --- a list format of udpates_table.list
+            data    --- a list format of updates_table.list
     output: updated <ocat_dir>/updates_table.list
                     <ocat_dir/approved
     """
@@ -431,9 +432,4 @@ def send_notification(obsid):
     text      = 'Remove Accidental Submission Page removed ' + str(obsid) 
     text      = text + ' from cus_approved list.\n'
 
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
-
-    
+    email.send_email(subject, sender, recipient, text)

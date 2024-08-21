@@ -72,6 +72,7 @@ def before_request():
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
+    current_app.logger.info(f"Opening Orupdate")
     user         = current_user.username
 #
 #--- odata --- a list of open data
@@ -131,11 +132,21 @@ def read_status_data():
             mtime   --- the last file modified time stamp in Chandra Time
             poc_dict    --- a dict of <obsidrev> <---> <poc>
     """
-    #
-    #--- Main database file
-    #
+#
+#--- Main database file
+#
     ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-    data  = ocf.read_data_file(ufile)
+#
+#--- if the file is locked sleep up to 10 sec
+#
+    chk    = ocf.sleep_while_locked(ufile)
+    if chk:
+        lock   = threading.Lock()
+        with lock:
+            with open(ufile) as f:
+                data = [line.strip() for line in f.readlines()]
+    else:
+        current_app.logger.info(f'Something went wrong and cannot open "{ufile}"')
     data.reverse()
 #
 #--- find out the last file modification time
@@ -231,7 +242,7 @@ def check_status(line):
                         <acis si sign off status>
                         <hrc si sign off status>
                         <verified by>
-                        [a list of note section indicator (see blow)]
+                        [a list of note section indicator (see below)]
     """
     atemp    = re.split('\t+', line)
     obsidrev = atemp[0]
@@ -314,8 +325,8 @@ def update_notes(odata, c_dict, h_dict, r_dict):
     """
     create a content of the note section
     input:  odata   --- a list of lists of data; the note section is the last part
-                    <bsidrev open>,<higher rev signed-off>,[<other comments>], 
-                    <color>, <new comment?>, <a large ccoordindate shift?>]
+                    <obsidrev open>,<higher rev signed-off>,[<other comments>], 
+                    <color>, <new comment?>, <a large coordindate shift?>]
             c_dict  --- a dict of <obsid> <---> <rev # still open>
             h_dict  --- a dict of <obsid.rev> <---> <rev # of highest signoff obsid.rev>
                                                      in string format
@@ -781,7 +792,7 @@ def approve_obsid(obsidrev):
     input:  obsidrev    --- <obsid>.<rev#>
     output: <ocat_dir>/approve
             <ocat_dir>/updates/<obsid>.<rev# + 1>
-            various email send out 
+            various emails sent out 
     """
     asis  = 'asis'
     user  = current_user.username
@@ -813,10 +824,9 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
             colname     --- name of the current column; either gen or si
             odata       --- a list of lists of data of each obsidrev
             poc         --- poc ID
-    output: email sendt out
+    output: email sent out
     """
     sender  = 'cus@cfa.harvard.edu'
-    bcc     = 'cus@cfa.harvard.edu'
 #
 #--- get the type of observation and the instrument of obsid
 #
@@ -864,11 +874,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
                 poc_list  = ocf.read_poc_list(poc)
                 recipient = poc_list[0][2]
             
-            if current_app.config['DEVELOPMENT']:
-                recipient = current_user.email
-                email.send_email(subject, sender, recipient, text)
-            else:
-                email.send_email(subject, sender, recipient, text, bcc=bcc)
+            email.send_email(subject, sender, recipient, text)
 #
 #--- acis/hrc si mode column signed off
 #
@@ -892,11 +898,7 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
                 recipient = poc_list[0][2]
             
 
-            if current_app.config['DEVELOPMENT']:
-                recipient = current_user.email
-                email.send_email(subject, sender, recipient, text)
-            else:
-                email.send_email(subject, sender, recipient, text, bcc=bcc)
+            email.send_email(subject, sender, recipient, text)
 
 #----------------------------------------------------------------------------------
 #-- read_status: find gen and si mode status of a given <obsidrev>               --
@@ -908,7 +910,7 @@ def read_status(obsidrev, odata):
     input:  obsidrev    --- <obsid>.<rev>
             odata       --- a list of lists of data of each obsidrev
     output: gen         --- general status
-            si          --- aics/hrc si mode status
+            si          --- acis/hrc si mode status
     """
     gen  = 'NA'
     si   = 'NA'

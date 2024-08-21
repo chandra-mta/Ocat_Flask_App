@@ -19,7 +19,6 @@ import cus_app.emailing                             as email
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
 sender       = 'cus@cfa.harvard.edu'
-bcc          = 'cus@cfa.harvard.edu'
 #
 #--- closing of email text
 #
@@ -83,12 +82,9 @@ def hrc_si_notification(obsids_list, rev_dict):
     notify hrc about hrc si mode change
     input:  obsids_list --- a list of obsids
             rev_dict    --- a dict of <obsid> <--> <revision #>
-    output: email sent ot hrc
+    output: email sent to hrc
     """
-    if current_app.config['DEVELOPMENT']:
-        recipient = current_user.email             
-    else:
-        recipient = 'hrcdude@cfa.harvard.edu'
+    recipient = 'hrcdude@cfa.harvard.edu'
 
     if len(obsids_list) > 1:
         obsid   = obsids_list[0]
@@ -110,11 +106,7 @@ def hrc_si_notification(obsids_list, rev_dict):
         text    = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
 
     text = text + mail_end
-
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
+    email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
 #-- arcops_notification: sending arcops about multiple obsid submission                       --
@@ -126,13 +118,9 @@ def arcops_notification(o_list, rev_dict, changed_params):
     input:  o_list          --- a list of obsids
             rev_dict        --- a dict of <obsid> <--> <rev #>
             changed_param   --- a text of a list of parameter values which were updated
-    output: email sent to arcorp
+    output: email sent to arcops
     """
-    if current_app.config['DEVELOPMENT']:
-        recipient = current_user.email
-    else:
-        recipient = 'arcops@cfa.harvard.edu'
-
+    recipient = 'arcops@cfa.harvard.edu'
     subject   = 'Multiple Obsids Are Submitted for Parameter Changes'
 
     text   = 'A USINT user (' + current_user.email + ') '
@@ -151,11 +139,7 @@ def arcops_notification(o_list, rev_dict, changed_params):
     ctext = ctext.replace(' changed from ', ':     ')
 
     text  = text + ctext + mail_end
-
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
+    email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
 #-- check_mp_notes: sending notification to MP                                                --
@@ -245,24 +229,15 @@ def check_mp_notes(mp_note, rev_dict):
 #--- sending email to MP
 #
     if mtext != '':
-        if current_app.config['DEVELOPMENT']:
-            recipient = current_user.email 
-            email.send_email(msubject, sender, recipient, mtext)
-
-        else:
-            recipient = 'mp@cfa.harvard.edu'
-            email.send_email(msubject, sender, recipient, mtext, bcc=bcc)
+        recipient = 'mp@cfa.harvard.edu'
+        email.send_email(msubject, sender, recipient, mtext)
 #
 #--- sending email to POC
 #
     if ptext != '':
         recipient = current_user.email 
         ptext     = ptext + '\n\n Please contact mp@cfa.harvard.edu, if you have not done so.\n\n'
-
-        if current_app.config['DEVELOPMENT']:
-            email.send_email(psubject, sender, recipient, ptext)
-        else:
-            email.send_email(psubject, sender, recipient, ptext, bcc=bcc)
+        email.send_email(psubject, sender, recipient, ptext)
 
 #-----------------------------------------------------------------------------------------------
 #-- send_other_notification: send a short notification for asis, remove, and clone case       --
@@ -307,11 +282,7 @@ def send_other_notification(asis, obsid, obsids_list):
         text = 'A split request for ' + obsid + ' is submitted.\n'
 
     text = text + mail_end
-
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
+    email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
 #-- send_too_notification: notify arcops about a fast too observation parameter update        --
@@ -343,13 +314,8 @@ def send_too_notification(ct_dict, asis, rev_dict):
         text  = text + mail_end
  
         subject = otype.upper() + ' observation ' + str(obsid) + ' parameter updates'
-
-        if current_app.config['DEVELOPMENT']:
-            recipient = current_user.email
-            email.send_email(subject, sender, recipient, text)
-        else:
-            recipient = 'arcops@cfa.harvard.edu'
-            email.send_email(subject, sender, recipient, text, bcc=bcc)
+        recipient = 'arcops@cfa.harvard.edu'
+        email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
 #-- find_rev_no: create a dict of obsid <--> updated revision #                              ---
