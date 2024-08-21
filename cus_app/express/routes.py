@@ -69,6 +69,7 @@ def before_request():
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
+    current_app.logger.info(f"Opening Express")
 #
 #--- showing the status of input obsids (page 2)
 #

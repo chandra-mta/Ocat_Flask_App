@@ -45,6 +45,7 @@ def register_user():
     
     user = User.query.filter_by(username=username).first()
     login_user(user)
+    current_app.logger.info(f"Login User: {username}")
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------

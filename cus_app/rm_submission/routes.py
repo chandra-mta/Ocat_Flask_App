@@ -67,6 +67,7 @@ def before_request():
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
+    current_app.logger.info(f"Opening Remove Submission")
 #
 #--- data:      a list form of updates_table.list
 #--- s_dict:    a dict of <obsid.rev> <--> <data info> for a given user

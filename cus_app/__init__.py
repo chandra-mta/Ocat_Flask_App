@@ -142,7 +142,4 @@ def create_app(config_class=DevConfig):
         app.logger.addHandler(file_handler)
 
         app.logger.setLevel(logging.INFO)
-        app.logger.info('Ocat Data startup')
-        
-
     return app

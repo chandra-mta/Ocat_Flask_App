@@ -72,6 +72,7 @@ def before_request():
 @bp.route('/',      methods=['GET', 'POST'])
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
+    current_app.logger.info(f"Opening Orupdate")
     user         = current_user.username
 #
 #--- odata --- a list of open data
