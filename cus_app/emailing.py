@@ -69,10 +69,10 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
 
     if bcc:
         message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail {recipients}"
+        cmd = f"echo '{message}' | sendmail -t"
     else:
         message = f"To:{recipients}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail {recipients}"
+        cmd = f"echo '{message}' | sendmail -t"
     os.system(cmd)
 
 #--------------------------------------------------------------
