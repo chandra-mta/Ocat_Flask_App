@@ -132,11 +132,21 @@ def read_status_data():
             mtime   --- the last file modified time stamp in Chandra Time
             poc_dict    --- a dict of <obsidrev> <---> <poc>
     """
-    #
-    #--- Main database file
-    #
+#
+#--- Main database file
+#
     ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-    data  = ocf.read_data_file(ufile)
+#
+#--- if the file is locked sleep up to 10 sec
+#
+    chk    = ocf.sleep_while_locked(ufile)
+    if chk:
+        lock   = threading.Lock()
+        with lock:
+            with open(ufile) as f:
+                data = [line.strip() for line in f.readlines()]
+    else:
+        current_app.logger.info(f'Something went wrong and cannot open "{ufile}"')
     data.reverse()
 #
 #--- find out the last file modification time
