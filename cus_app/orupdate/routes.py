@@ -14,6 +14,7 @@ import string
 import Chandra.Time
 import time
 from datetime           import datetime
+import pathlib
 import threading
 
 from flask              import render_template, flash, redirect, url_for, session
@@ -283,16 +284,13 @@ def check_file_creation_date(obsidrev):
     """
     find a file creation date
     input:  obsidrev    --- <obsid>.<rev #>
-    output: ltime       --- a creation time in <mm>/<dd>/<yy>
+    output: mtime       --- a creation time in <mm>/<dd>/<yy>
     """
     ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates', str(obsidrev))
-    stime = ocf.find_file_creation_time(ifile)
-    out   = Chandra.Time.DateTime(stime).date
-    atemp = re.split('\.', out)
-    ltime = atemp[0]
-    ltime = time.strftime('%m/%d/%y', time.strptime(ltime, '%Y:%j:%H:%M:%S'))
-    
-    return ltime
+    if os.path.isfile(ifile):
+        fname = pathlib.Path(ifile)
+        mtime = datetime.fromtimestamp(fname.stat().st_ctime)
+        return mtime.strftime("%m/%d/%y")
 
 #----------------------------------------------------------------------------------
 #-- check_sign_off_date: check whether this observation was signed off in a specified time period
