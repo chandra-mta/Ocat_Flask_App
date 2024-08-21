@@ -631,7 +631,6 @@ def send_clone_remove_notification(ct_dict, obsidrev, asis):
     """
     sender    = 'cus@cfa.harvard.edu'
     recipient = current_user.email
-    bcc       = 'cus@cfa.harvard.edu'
     obsid     = str(ct_dict['obsid'][-1])
 #
 #--- notification of Ocat Data Result to POC
@@ -646,11 +645,7 @@ def send_clone_remove_notification(ct_dict, obsidrev, asis):
     elif asis == 'remove':
         subject = subject + ' (Remove Request)'
         text    = obsid + ' was removed from cus_approved list on your request.\n'
-
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
+    email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
 #-- create_compare_line: create a line to display changed parameter value                     --

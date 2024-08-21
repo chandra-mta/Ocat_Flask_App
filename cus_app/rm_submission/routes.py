@@ -219,7 +219,7 @@ def update_data_tables(form, data):
     """
     modifiy updates_table.list and possibley approved list
     input;  form    --- form data
-            data    --- a list format of udpates_table.list
+            data    --- a list format of updates_table.list
     output: updated <ocat_dir>/updates_table.list
                     <ocat_dir/approved
     """
@@ -432,9 +432,4 @@ def send_notification(obsid):
     text      = 'Remove Accidental Submission Page removed ' + str(obsid) 
     text      = text + ' from cus_approved list.\n'
 
-    if current_app.config['DEVELOPMENT']:
-        email.send_email(subject, sender, recipient, text)
-    else:
-        email.send_email(subject, sender, recipient, text, bcc=bcc)
-
-    
+    email.send_email(subject, sender, recipient, text)
