@@ -449,9 +449,7 @@ def send_mail(subject, text, address_dict):
     else:
         message += f"{text}"
 
-    cmd = f"echo '{message}' | sendmail {','.join(address_dict['TO'])}"
-
-    os.system(cmd)
+    os.system(f"echo '{message}' | sendmail -t")
 
 #---------------------------------------------------------------------------------------
 #-- update_this_week_poc: update this_week_person_in_charge table                      -
