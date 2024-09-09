@@ -467,9 +467,9 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
 
             else:
 #
-#--- target name or coordindate change happens, acis si mode needs to be reviewed
+#--- coordinate change happens, acis si mode needs to be reviewed
 #
-                for aparam in ['targname', 'ra', 'dec']:
+                for aparam in ['ra', 'dec']:
                     chk = csd.compare_values(ct_dict[aparam][-2], ct_dict[aparam][-1])
                     if chk == 0:
                         acis_si = 'NA'
