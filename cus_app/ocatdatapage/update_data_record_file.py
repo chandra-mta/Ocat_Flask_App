@@ -101,16 +101,16 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
         note = {}
         note1 = check_coordinate_shift(ct_dict)
         if note1 != []:
-            note['coordinate_shift':note1]
+            note['coordinate_shift'] = note1
         note2 = check_obs_time(ct_dict)
         if note2 != []:
-            note['obsdate_under10':note2]
+            note['obsdate_under10'] = note2
         note3 = check_or_list(ct_dict)
         if note3 != []:
-            note['on_or_list':note3]
+            note['on_or_list'] = note3
         note4 = check_targname_change(ct_dict)
         if note4 != []:
-            note['targname_change':note4]
+            note['targname_change'] = note4
     else:
         ch_line = ''
         note    = {}
@@ -880,7 +880,7 @@ def check_targname_change(ct_dict):
     output: either <blank> or <obsid>
     """
     if ct_dict['targname'][-2]  != ct_dict['targname'][-1]:
-        return [ct_dict['obsid'][-1]]
+        return [ct_dict['obsid'][-1],]
     else:
         return []
 
