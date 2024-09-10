@@ -22,8 +22,7 @@ sender       = 'cus@cfa.harvard.edu'
 #
 #--- closing of email text
 #
-mail_end = '\n\nIf you have any questions about this email, please contact '
-mail_end = mail_end + 'bwargelin@cfa.harvard.edu.\n'
+mail_end = 'If you have any questions about this email, please contact bwargelin@cfa.harvard.edu.\n'
 
 #-----------------------------------------------------------------------------------------------
 #-- send_notifications: send notification email to POC, MP, ARCOPS, and HRC                   --
@@ -105,7 +104,7 @@ def hrc_si_notification(obsids_list, rev_dict):
         text    = 'HRC SI Mode Check is requested for Osid: ' + str(obsid) + ':\n\n'
         text    = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
 
-    text = text + mail_end
+    text = text + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -138,7 +137,7 @@ def arcops_notification(o_list, rev_dict, changed_params):
     ctext = changed_params.replace(' to ', '\t\t :: \t\t')
     ctext = ctext.replace(' changed from ', ':     ')
 
-    text  = text + ctext + mail_end
+    text  = text + ctext + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -263,7 +262,7 @@ def send_other_notification(asis, obsid, obsids_list):
     elif asis == 'clone':
         text = 'A split request for ' + obsid + ' is submitted.\n'
 
-    text = text + mail_end
+    text = text + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -293,7 +292,7 @@ def send_too_notification(ct_dict, asis, rev_dict):
         text  = text + '\tTOO Tigger: ' + ct_dict['too_trig'][-1]    + '\n'
         text  = text + '\tREMARKS:    ' + ct_dict['too_remarks'][-1] + '\n\n\n'
         text  = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
-        text  = text + mail_end
+        text  = text + "\n\n" + mail_end
  
         subject = otype.upper() + ' observation ' + str(obsid) + ' parameter updates'
         recipient = 'arcops@cfa.harvard.edu'
