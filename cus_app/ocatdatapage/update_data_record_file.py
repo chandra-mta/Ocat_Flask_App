@@ -98,13 +98,22 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
 #
 #--- check potential notification
 #
+        note = {}
         note1 = check_coordinate_shift(ct_dict)
+        if note1 != []:
+            note['coordinate_shift'] = note1
         note2 = check_obs_time(ct_dict)
+        if note2 != []:
+            note['obsdate_under10'] = note2
         note3 = check_or_list(ct_dict)
-        note  = [note1, note2, note3]
+        if note3 != []:
+            note['on_or_list'] = note3
+        note4 = check_targname_change(ct_dict)
+        if note4 != []:
+            note['targname_change'] = note4
     else:
         ch_line = ''
-        note    = [[], [], []]
+        note    = {}
 
     return ch_line, note
 
@@ -776,12 +785,12 @@ def set_obsidrev(ct_dict):
     return obsidrev
 
 #-----------------------------------------------------------------------------------------------
-#-- check_coordinate_shift: check wether there is a large coordindate shift                   --
+#-- check_coordinate_shift: check whether there is a large coordindate shift                   --
 #-----------------------------------------------------------------------------------------------
 
 def check_coordinate_shift(ct_dict):
     """
-    check wether there is a large coordindate shift
+    check whether there is a large coordindate shift
     input:  ct_dict --- a dict of <param> <--> <information>
     output: either <blank> or <obsid>
     """
@@ -859,5 +868,20 @@ def check_or_list(ct_dict):
             return [ct_dict['obsid'][-1],]
 
     return  []
-            
+
+#----------------------------------------------------------------------------------------------
+#-- check_targname_change: check whether there is a target name change                       --
+#----------------------------------------------------------------------------------------------
+
+def check_targname_change(ct_dict):
+    """
+    check whether there is a target name change
+    input:  ct_dict --- a dict of <param> <--> <information>
+    output: either <blank> or <obsid>
+    """
+    if ct_dict['targname'][-2]  != ct_dict['targname'][-1]:
+        return [ct_dict['obsid'][-1],]
+    else:
+        return []
+
 #-----------------------------------------------------------------------------------------------

@@ -22,8 +22,7 @@ sender       = 'cus@cfa.harvard.edu'
 #
 #--- closing of email text
 #
-mail_end = '\n\nIf you have any questions about this email, please contact '
-mail_end = mail_end + 'bwargelin@cfa.harvard.edu.\n'
+mail_end = 'If you have any questions about this email, please contact bwargelin@cfa.harvard.edu.\n'
 
 #-----------------------------------------------------------------------------------------------
 #-- send_notifications: send notification email to POC, MP, ARCOPS, and HRC                   --
@@ -105,7 +104,7 @@ def hrc_si_notification(obsids_list, rev_dict):
         text    = 'HRC SI Mode Check is requested for Osid: ' + str(obsid) + ':\n\n'
         text    = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
 
-    text = text + mail_end
+    text = text + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -138,7 +137,7 @@ def arcops_notification(o_list, rev_dict, changed_params):
     ctext = changed_params.replace(' to ', '\t\t :: \t\t')
     ctext = ctext.replace(' changed from ', ':     ')
 
-    text  = text + ctext + mail_end
+    text  = text + ctext + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -148,96 +147,78 @@ def arcops_notification(o_list, rev_dict, changed_params):
 def check_mp_notes(mp_note, rev_dict):
     """
     sending notification to MP
-    input:  mp_note --- a list of lists of MP notification
-                        [[<coordinate shift>], [obs date < 10 days], [ on OR list]]
+    input:  mp_note --- a dictionary of MP notification information
+                        keyed by targname_change, coordinate_shift, obsdate_under10, on_or_list
             rev_dict    --- a dict of obsid <--> revision #
     output: email sent to MP and POC
     """
     mtext = ''                              #--- message to MP
-    ptext = ''                              #--- message to POC
+    msubject = f'POC {current_user.username} submitted a request which requires MP attention'
 #
-#--- large coordindate shift
+#--- target name change
 #
-    if len(mp_note[0]) > 0:
-        msubject = 'POC requested a large coordinate shift'
-        psubject = 'You submitted a large coordinate shift'
+    if 'targname_change' in mp_note.keys():
+        mtext += "A target name change was requested for the following obsid(s)\n\n"
 
-        mtext    = mtext + 'A large coordindate shift is requested in following obsid(s)\n\n'
-        ptext    = ptext + 'You requested a large coordindate shift '
-        ptext    = ptext + 'which requres a CDO/MP permission in following obsid(s)\n\n'
-
-        for obsid in mp_note[0]:
-            obsidrev = str(obsid) + '.' +  rev_dict[obsid]
-            oline    = str(obsid)  + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + obsidrev + '\n'
-            mtext    = mtext + oline
-            ptext    = ptext + oline
-
-            rline  = obsidrev + '\n'
+        for obsid in mp_note['targname_change']:
+            obsidrev = f"{obsid}.{rev_dict[obsid]}"
+            oline = f"{obsid}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{obsidrev}\n"
+            mtext += f"{oline}"
+        mtext += f"{'-'*70}\n\n"
 #
-#--- keep a record of obsid.rev with a large coordindate shft so that orupdate can use it later
+#--- large coordinate shift
 #
-        rfile = os.path.join(current_app.config['OCAT_DIR'], 'cdo_warning_list')
+    if 'coordinate_shift' in mp_note.keys():
+        rline = ''
+        mtext += "A coordinate shift was requested for the following obsid(s)\n\n"
 
-        with open(rfile, 'a') as fo:
+        for obsid in mp_note['coordinate_shift']:
+            obsidrev = f"{obsid}.{rev_dict[obsid]}"
+            oline = f"{obsid}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{obsidrev}\n"
+            mtext += f"{oline}"
+            rline += obsidrev + '\n'
+        mtext += f"{'-'*70}\n\n"
+        with open(os.path.join(current_app.config['OCAT_DIR'], 'cdo_warning_list'), 'a') as fo:
             fo.write(rline)
 #
 #--- scheduled less than 10 days
 #
-    if len(mp_note[1]) > 0:
-        for obsid in mp_note[1]:
+    if 'obsdate_under10' in mp_note.keys():
+        subsection = ''
+        for obsid in mp_note['obsdate_under10']:
 #
-#--- if the obid is in the active OR list, list it in the OR section, not here
+#--- if the obsid is in the active OR list, list it in the OR section, not here
 #
-            if obsid in mp_note[2]:
-                continue
-            else:
-                msubject = f'POC {current_user.username} requested parameter values changes on obsids scheduled in less than 10 days'
-                psubject = 'You submitted Obsids scheduled in less than 10 days'
-
-                mtext    = mtext + f'POC {current_user.username} requested changes of parameter values in the following obsid(s) '
-                mtext    = mtext + 'which are scheduled in less than 10 days.\n\n'
-
-                ptext    = ptext + 'You requested changes of parameter values in the following obsid(s) '
-                ptext    = ptext + 'which are scheduled in less than 10 days.\n\n'
-
-                for obsid in mp_note[1]:
-                    oline = str(obsid)  + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid)
-                    oline = oline + '.' + rev_dict[obsid] + '\n'
-                    mtext = mtext + oline
-                    ptext = ptext + oline
+            if 'on_or_list' in mp_note.keys():
+                if obsid in mp_note['on_or_list']:
+                    continue
+            obsidrev = f"{obsid}.{rev_dict[obsid]}"
+            oline = f"{obsid}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{obsidrev}\n"
+            subsection += f"{oline}"
+        
+        if subsection != '':
+            mtext += f"A parameter change was requested for the following obsid(s) which are scheduled in less than 10 days\n\n {subsection}"
+            mtext += f"{'-'*70}\n\n"
 #
 #--- on active OR list
 #
-    if len(mp_note[2]) > 0:
-        msubject = f'POC {current_user.username} requested parameter values changes on obsids listed on the active OR List'
-        psubject = 'You requested parameter values changes on obsids listed on the active OR List'
+    if 'on_or_list' in mp_note.keys():
+        mtext += "A target name change was requested for the following obsid(s)\n\n"
 
-        mtext    = mtext + f'POC {current_user.username} requested changes of parameter values in following obsid(s) ' 
-        mtext    = mtext + 'which are in the active OR list.\n\n'
-        ptext    = ptext + 'You requested changes of parameter values in following obsid(s) ' 
-        ptext    = ptext + 'which are in the active OR list.\n\n'
-
-        for obsid in mp_note[2]:
-            oline = str(obsid) + ': ' + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid)
-            oline = oline      + '.'  + rev_dict[obsid] + '\n'
-            mtext = mtext + oline
-            ptext = ptext + oline
-
-        mtext = mtext + mail_end
-        ptext = ptext + mail_end
+        for obsid in mp_note['on_or_list']:
+            obsidrev = f"{obsid}.{rev_dict[obsid]}"
+            oline = f"{obsid}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{obsidrev}\n"
+            mtext += f"{oline}"
+        mtext += f"{'-'*70}\n\n"
+    
+    mtext += f"{mail_end}"
 #
 #--- sending email to MP
 #
     if mtext != '':
         recipient = 'mp@cfa.harvard.edu'
-        email.send_email(msubject, sender, recipient, mtext)
-#
-#--- sending email to POC
-#
-    if ptext != '':
-        recipient = current_user.email 
-        ptext     = ptext + '\n\n Please contact mp@cfa.harvard.edu, if you have not done so.\n\n'
-        email.send_email(psubject, sender, recipient, ptext)
+        bcc = current_user.email
+        email.send_email(msubject, sender, recipient, mtext, bcc = bcc)
 
 #-----------------------------------------------------------------------------------------------
 #-- send_other_notification: send a short notification for asis, remove, and clone case       --
@@ -281,7 +262,7 @@ def send_other_notification(asis, obsid, obsids_list):
     elif asis == 'clone':
         text = 'A split request for ' + obsid + ' is submitted.\n'
 
-    text = text + mail_end
+    text = text + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -311,7 +292,7 @@ def send_too_notification(ct_dict, asis, rev_dict):
         text  = text + '\tTOO Tigger: ' + ct_dict['too_trig'][-1]    + '\n'
         text  = text + '\tREMARKS:    ' + ct_dict['too_remarks'][-1] + '\n\n\n'
         text  = text + current_app.config['HTTP_ADDRESS'] + 'chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
-        text  = text + mail_end
+        text  = text + "\n\n" + mail_end
  
         subject = otype.upper() + ' observation ' + str(obsid) + ' parameter updates'
         recipient = 'arcops@cfa.harvard.edu'

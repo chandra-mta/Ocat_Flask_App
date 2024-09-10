@@ -353,10 +353,14 @@ def process_data_for_finalize(ct_dict, f_data):
 #
 #--- combine notes to mp;
 #
-        for k in range(0, 3):
-            note[k] = note[k] + notes[k]
+        for k in ['targname_change', 'coordinate_shift', 'obsdate_under10', 'on_or_list']:
+            if k in notes.keys():
+                if k in note.keys():
+                    note[k] = note[k] + notes[k]
+                else:
+                    note[k] = notes[k]
     else:
-        notes   = [[],[],[]]
+        notes   = {}
         ostatus = []
 #
 #--- send email to only "active" obsids
