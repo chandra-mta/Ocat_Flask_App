@@ -69,8 +69,8 @@ def submit_other_obsids(obsids_list, oct_dict, oind_dict,  asis, user):
             <data_dir>/updates_table.list
             <data_dir>/approved (if asis == 'asis'/'remove')
             various eamil sent out
-            note        --- a list of lists of notification
-                        [[<coordindate shift>], [sch date <10days?>], [OR list?]]
+            note        --- a dictionary of MP notification information
+                        keyed by targname_change, coordinate_shift, obsdate_under10, on_or_list
             status      --- a list of statuses of the observations
             no_change   --- a list of obsids which parameter values were not updated
     """
@@ -88,7 +88,7 @@ def submit_other_obsids(obsids_list, oct_dict, oind_dict,  asis, user):
             if oind_dict[param] == 0:
                 diff_dict[param] = [oct_dict[param][-1], oct_dict[param][4]]
 
-    note       = [[], [], []]
+    note       = {}
     no_change = []
     status     = []
     for obsid in obsids_list:
@@ -147,8 +147,12 @@ def submit_other_obsids(obsids_list, oct_dict, oind_dict,  asis, user):
 #
         if chk == 0:
             ch_line, out = udrf.update_data_record_file(ct_dict, ind_dict, asis, user)
-            for k in range(0, 3):
-                note[k] = note[k] + out[k]
+            for k in ['targname_change', 'coordinate_shift', 'obsdate_under10', 'on_or_list']:
+                if k in out.keys():
+                    if k in note.keys():
+                        note[k] = note[k] + out[k]
+                    else:
+                        note[k] = out[k]
         else:
             no_change.append(obsid)
 
