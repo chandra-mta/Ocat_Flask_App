@@ -210,12 +210,11 @@ def check_mp_notes(mp_note, rev_dict):
             oline = f"{obsid}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{obsidrev}\n"
             mtext += f"{oline}"
         mtext += f"{'-'*70}\n\n"
-    
-    mtext += f"{mail_end}"
 #
 #--- sending email to MP
 #
     if mtext != '':
+        mtext += f"{mail_end}"
         recipient = 'mp@cfa.harvard.edu'
         bcc = current_user.email
         email.send_email(msubject, sender, recipient, mtext, bcc = bcc)
