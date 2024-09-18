@@ -11,13 +11,8 @@ import os
 import re
 from flask_login        import current_user
 from flask              import current_app
-
-import cus_app.supple.ocat_common_functions         as ocf
 import cus_app.emailing                             as email
-#
-#--- directory
-#
-basedir = os.path.abspath(os.path.dirname(__file__))
+
 sender       = 'cus@cfa.harvard.edu'
 #
 #--- closing of email text
@@ -40,8 +35,9 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
     """
 #
 #--- find revision # for each obsids in the group
+#--- obsids as keys and values are all set as integer types by default
 #
-    o_list   = [str(ct_dict['obsid'][-1])] + obsids_list
+    o_list   = [ct_dict['obsid'][-1]] + [int(x) for x in obsids_list]
     rev_dict = find_rev_no(o_list)
 #
 #--- a standard parameter change is requsted
@@ -67,6 +63,7 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
         check_mp_notes(mp_note, rev_dict)
 #
 #--- asis, remove, and clone notification is simpler...
+#--- for convenience, intakes the obsid and obsids_list values as strings
 #
     elif asis in ['asis', 'remove', 'clone']:
         obsid = str(ct_dict['obsid'][-1])
@@ -87,22 +84,22 @@ def hrc_si_notification(obsids_list, rev_dict):
 
     if len(obsids_list) > 1:
         obsid   = obsids_list[0]
-        subject = 'HRC SI Mode Check Requested for obsid' + obsid + ' and related obsids'
-        text    = 'HRC SI Mode Check is requested for following obsids:\n\n'
-        text    = text + obsid + ':  ' +  current_app.config['HTTP_ADDRESS'] + '/chkupdata/' 
-        text    = text + obsid + '.'   + rev_dict[obsid] +  '\n\n'
+        subject = f'HRC SI Mode Check Requested for Obsid {obsid} and related obsids'
+        text    = 'HRC SI Mode Check is requested for the following obsids:\n\n'
+        for ent in obsids_list:
+            text += f"{ent}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{ent}.{rev_dict[ent]}\n"
 
-        text    = text + 'If it is correct, please sign off at\n\n'
-        text    = text + obsid + ':  ' +  current_app.config['HTTP_ADDRESS'] + '/orupdate/' 
-
-        for ent in obsids_list[1:]:
-            text = text + ent + '\n'
+        text += '\nIf these are correct, please sign off at\n\n'
+        text += f"{current_app.config['HTTP_ADDRESS']}/orupdate/"
 
     else:
         obsid   = obsids_list[0]
-        subject = 'HRC SI Mode Check Requested for obsid' + str(obsid)
-        text    = 'HRC SI Mode Check is requested for Osid: ' + str(obsid) + ':\n\n'
-        text    = text + current_app.config['HTTP_ADDRESS'] + '/chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
+        subject = f'HRC SI Mode Check Requested for Obsid {obsid}'
+        text    = f'HRC SI Mode Check is requested for Obsid: \n\n {obsid}:'
+        text    += f"{current_app.config['HTTP_ADDRESS']}/chkupdata/{obsid}.{rev_dict[obsid]}\n"
+
+        text += 'If this is correct, please sign off at\n\n'
+        text += f"{current_app.config['HTTP_ADDRESS']}/orupdate/"
 
     text = text + "\n\n" + mail_end
     email.send_email(subject, sender, recipient, text)
@@ -122,22 +119,19 @@ def arcops_notification(o_list, rev_dict, changed_params):
     recipient = 'arcops@cfa.harvard.edu'
     subject   = 'Multiple Obsids Are Submitted for Parameter Changes'
 
-    text   = 'A USINT user (' + current_user.email + ') '
-    text   = text + 'submitted parameter change requests to multiple obsids: \n\n'
+    text   = f'A USINT user ({current_user.email}) submitted parameter change requests to multiple obsids: \n\n'
     for ent in o_list:
-        obsid = int(float(ent))
-        text  = text + ent + ': ' + current_app.config['HTTP_ADDRESS'] + '/chkupdata/' 
-        text  = text + ent + '.' + rev_dict[obsid] + '\n'
+        text += f"{ent}: {current_app.config['HTTP_ADDRESS']}/chkupdata/{ent}.{rev_dict[ent]}\n"
 #
 #--- change a text format to make it more readable in the email body
 #
-    text  = text + f'\nUpdated parameters for {o_list[0]} are: \n'
-    text  = text + '\nParameter\t\t Original Value\t\tNew Value\n'
-    text  = text + '-'* 90 + '\n'
+    text += f'\nUpdated parameters for {o_list[0]} are: \n'
+    text += '\nParameter\t\t Original Value\t\tNew Value\n'
+    text += '-'* 90 + '\n'
     ctext = changed_params.replace(' to ', '\t\t :: \t\t')
     ctext = ctext.replace(' changed from ', ':     ')
 
-    text  = text + ctext + "\n\n" + mail_end
+    text += f"{ctext}\n\n{mail_end}"
     email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
@@ -308,7 +302,8 @@ def find_rev_no(o_list):
     output: rev_dict    --- a dict of <obsid> <--> <updated revision #>
     """
     ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-    data  = ocf.read_data_file(ifile)
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines()]
 
     rev_dict = {}
     for ent in data:
@@ -327,8 +322,7 @@ def find_rev_no(o_list):
     for obsid in o_list:
         obsid = int(obsid)
         if obsid in rev_dict.keys():
-            rev = rev_dict[obsid] 
-            rev = ocf.add_leading_zero(rev, 3)
+            rev = f"{rev_dict[obsid]:>03}"
             rev_dict[obsid] = rev
 
         else:
