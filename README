@@ -449,7 +449,7 @@ when you need to transit from the test phase to the actual operation. Here is my
 
 When you decide to activate the flask version of the Ocat Data Page, open:
 
-        https://icxc.harvard.edu/mta/CUS/Usint/change_http_file.cgi
+        https://icxc.harvard.edu/cus/Usint/change_http_file.cgi
 
 then submit:
 
@@ -472,7 +472,7 @@ Changing the html pointings.
 -----------------------------
 Sub html pages of Updated Target List page must be updated when the transition is finished.
 
-https://cxc.cfa.harvard.edu/mta/CUS/Usint/updated.html
+https://cxc.cfa.harvard.edu/cus/Usint/updated.html
 
 In /data/mta4/CUS/www/Usint/Save_month_html:
 
