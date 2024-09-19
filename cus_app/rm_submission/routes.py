@@ -338,9 +338,9 @@ def update_data_tables(form, data):
         else:
             lock = threading.Lock()
             data = ocf.read_data_file(approve_file)
+            line = write_approved_file(data, obsidrev)
             with lock:
                 with open(approve_file, 'w') as fo:
-                    line = write_approved_file(data, obsidrev)
                     fo.write(line)
 
     return False

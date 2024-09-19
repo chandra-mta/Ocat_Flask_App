@@ -719,13 +719,11 @@ def update_data(obsidrev, pos, discard=0):
 #--- update the data file
 #
         data = ocf.read_data_file(ufile)
+        os.system(f"cp -f {ufile} {ufile}~")
+        line = create_data_line(data, obsidrev, pos, sign, discard)
         lock = threading.Lock()
         with lock:
             with open(ufile, 'w') as fo:
-                cmd = 'cp  -f ' + ufile + ' ' + ufile + '~'
-                os.system(cmd)
-
-                line = create_data_line(data, obsidrev, pos, sign, discard)
                 fo.write(line)
 
         return False

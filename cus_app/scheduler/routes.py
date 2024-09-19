@@ -520,9 +520,9 @@ def update_schedule_database(schedule, poc_dict, uchk):
 #
     else:
         lock = threading.Lock()
+        line, c_chk = create_schedule_line(schedule, pschedule, ofile)
         with lock:
             with open(ofile, 'w') as fo:
-                line, c_chk = create_schedule_line(schedule, pschedule, ofile)
                 fo.write(line)
 #
 #--- if this change is sign-up or re-opening of a poc duty period, send email to 
