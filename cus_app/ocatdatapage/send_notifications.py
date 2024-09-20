@@ -62,10 +62,10 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #
         check_mp_notes(mp_note, rev_dict)
 #
-#--- asis, remove, and clone notification is simpler...
+#--- remove, and clone notification is simpler...
 #--- for convenience, intakes the obsid and obsids_list values as strings
 #
-    elif asis in ['asis', 'remove', 'clone']:
+    elif asis in ['remove', 'clone']:
         obsid = str(ct_dict['obsid'][-1])
         send_other_notification(asis, obsid, obsids_list)
 
@@ -219,7 +219,7 @@ def check_mp_notes(mp_note, rev_dict):
 
 def send_other_notification(asis, obsid, obsids_list):
     """
-    send a short notification for asis, remove, and clone case
+    send a short notification for remove, and clone case
     input:  asis        --- asis, remove, or clone
             obsid       ---  the main obsid
             obsids_list --- a list of obsids
@@ -234,16 +234,7 @@ def send_other_notification(asis, obsid, obsids_list):
     else:
         subject = obsid + ' is submitted as ' + asis
 
-    if asis == 'asis':
-        if chk == 0:
-            text = obsid + ' is approved. Thank you.\n'
-        else:
-            text = 'The following obsids are approved. Thank you.\n\n'
-            text = text + obsid + '\n'
-            for ent in obsids_list:
-               text = text + ent + '\n' 
-
-    elif asis == 'remove':
+    if asis == 'remove':
         if chk == 0:
             text = obsid + ' is removed from the approved list.\n'
         else:
