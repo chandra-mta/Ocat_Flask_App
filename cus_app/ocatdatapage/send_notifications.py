@@ -61,13 +61,6 @@ def send_notifications(asis, ct_dict, obsids_list, changed_parameters, mp_note):
 #--- mp special parameter change check
 #
         check_mp_notes(mp_note, rev_dict)
-#
-#--- asis, remove, and clone notification is simpler...
-#--- for convenience, intakes the obsid and obsids_list values as strings
-#
-    elif asis in ['asis', 'remove', 'clone']:
-        obsid = str(ct_dict['obsid'][-1])
-        send_other_notification(asis, obsid, obsids_list)
 
 #-----------------------------------------------------------------------------------------------
 #-- hrc_si_notification: notify hrc about hrc si mode change                                 ---
@@ -212,51 +205,6 @@ def check_mp_notes(mp_note, rev_dict):
         recipient = 'mp@cfa.harvard.edu'
         bcc = current_user.email
         email.send_email(msubject, sender, recipient, mtext, bcc = bcc)
-
-#-----------------------------------------------------------------------------------------------
-#-- send_other_notification: send a short notification for asis, remove, and clone case       --
-#-----------------------------------------------------------------------------------------------
-
-def send_other_notification(asis, obsid, obsids_list):
-    """
-    send a short notification for asis, remove, and clone case
-    input:  asis        --- asis, remove, or clone
-            obsid       ---  the main obsid
-            obsids_list --- a list of obsids
-    output: email sent to POC
-    """
-    recipient = current_user.email
-
-    chk = 0
-    if len(obsids_list) > 0:
-        subject = obsid + ' and related obsids are submitted as ' + asis
-        chk = 1
-    else:
-        subject = obsid + ' is submitted as ' + asis
-
-    if asis == 'asis':
-        if chk == 0:
-            text = obsid + ' is approved. Thank you.\n'
-        else:
-            text = 'The following obsids are approved. Thank you.\n\n'
-            text = text + obsid + '\n'
-            for ent in obsids_list:
-               text = text + ent + '\n' 
-
-    elif asis == 'remove':
-        if chk == 0:
-            text = obsid + ' is removed from the approved list.\n'
-        else:
-            text = 'The following obsids are removed from the approved list.\n\n'
-            text = text + obsid + '\n'
-            for ent in obsids_list:
-               text = text + ent + '\n' 
-
-    elif asis == 'clone':
-        text = 'A split request for ' + obsid + ' is submitted.\n'
-
-    text = text + "\n\n" + mail_end
-    email.send_email(subject, sender, recipient, text)
 
 #-----------------------------------------------------------------------------------------------
 #-- send_too_notification: notify arcops about a fast too observation parameter update        --
