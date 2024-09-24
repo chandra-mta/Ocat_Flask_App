@@ -22,17 +22,6 @@ import cus_app.supple.read_ocat_data            as rod
 #--- reading directory list
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #---- choices of pulldown fields. 
 #
@@ -70,7 +59,7 @@ rank_list = time_list + roll_list + awin_list
 def create_selection_dict(obsid):
     """
     input:  obsid
-    output: p_dict --- a dictioinary of <p_id> 
+    output: p_dict --- a dictionary of <p_id> 
                             <--> [<label>, <selection>, <selection type>,<group>, <org value>, <value>]
                         label           a discriptive name of the parameter
                         selection:      blank space, or a list of [(param, display name),...]

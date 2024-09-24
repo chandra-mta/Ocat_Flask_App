@@ -682,8 +682,8 @@ def convert_ra_dec_format(dra, ddec, format='switch'):
     #
     #--- Define output format
     #
-    dra = str(dra)
-    ddec = str(ddec)
+    dra = str(dra).strip()
+    ddec = str(ddec).strip()
     dra  = dra.replace(';', ':')
     ddec = ddec.replace(';', ':')
     try:
