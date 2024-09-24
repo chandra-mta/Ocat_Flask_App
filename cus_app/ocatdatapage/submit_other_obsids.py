@@ -23,17 +23,6 @@ import cus_app.ocatdatapage.update_data_record_file as udrf
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 
 null_list = [None, 'NA', 'N', 'NULL', 'None', 'NONE',  'n', 'null', 'none', '', ' ']
 
@@ -49,7 +38,7 @@ awin_list = ['chip', 'start_row', 'start_column',\
 rank_list = time_list + roll_list + awin_list
 
 skip_list = ['monitor_series', 'obsids_list', 'approved',\
-             'group_obsid', 'dec', 'ra', 'acis_open', 'hrc_open'] + rank_list
+             'group_obsid', 'acis_open', 'hrc_open'] + rank_list
 
 now       = Chandra.Time.DateTime().secs
 
@@ -68,7 +57,7 @@ def submit_other_obsids(obsids_list, oct_dict, oind_dict,  asis, user):
     output: <data_dir>/updates/<obsid>.<rev#>
             <data_dir>/updates_table.list
             <data_dir>/approved (if asis == 'asis'/'remove')
-            various eamil sent out
+            various email sent out
             note        --- a dictionary of MP notification information
                         keyed by targname_change, coordinate_shift, obsdate_under10, on_or_list
             status      --- a list of statuses of the observations

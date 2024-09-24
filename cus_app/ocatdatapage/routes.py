@@ -190,8 +190,8 @@ def update_ct_dict(ct_dict, f_data):
 #
 #--- update those with display values are different from those of the database values
 #
-    ct_dict = radec_convertion(ct_dict)
-    ct_dict = dither_convertion(ct_dict)
+    ct_dict = radec_conversion(ct_dict)
+    ct_dict = dither_conversion(ct_dict)
 #
 #--- if the instrument is hrc, the general si mode is same as hrc si mode
 #
@@ -260,7 +260,7 @@ def process_submit_data(ct_dict, f_data):
 #--- if the instrument was changed from acis to hrc or another way around
 #--- nullify the parameter values of the original instrument
 #
-        ct_dict  = radec_convertion(ct_dict)
+        ct_dict  = radec_conversion(ct_dict)
         ct_dict  = update_tstart_tstop(ct_dict)
         ct_dict  = csd.nullify_entries(ct_dict)
 #
@@ -563,8 +563,8 @@ def restore_parameters(ct_dict, form):
 #
 #--- update ra/dec and dither amp/freq
 #            
-    ct_dict = radec_convertion(ct_dict)
-    ct_dict = dither_convertion(ct_dict)
+    ct_dict = radec_conversion(ct_dict)
+    ct_dict = dither_conversion(ct_dict)
 #
 #--- ranked data passed differently; so handle them separately
 #
@@ -785,10 +785,10 @@ def adjust_time_format(ptime):
     return ptime
 
 #--------------------------------------------------------------------------
-#-- radec_convertion: update data dict ra dec values based on display ra dec values
+#-- radec_conversion: update data dict ra dec values based on display ra dec values
 #--------------------------------------------------------------------------
 
-def radec_convertion(ct_dict):
+def radec_conversion(ct_dict):
     """
     update data dict ra dec values based on display ra dec values
     input:  ct_dict --- a dict of <param> <---> <information>
@@ -805,10 +805,10 @@ def radec_convertion(ct_dict):
     return ct_dict
 
 #--------------------------------------------------------------------------
-#-- dither_convertion: update data dict dither amp and freq in degree based on amp and freq in asec
+#-- dither_conversion: update data dict dither amp and freq in degree based on amp and freq in asec
 #--------------------------------------------------------------------------
 
-def dither_convertion(ct_dict):
+def dither_conversion(ct_dict):
     """
     update data dict dither amp and freq in degree based on amp and freq in asec
     input:  ct_dict --- a dict of <param> <---> <information>
