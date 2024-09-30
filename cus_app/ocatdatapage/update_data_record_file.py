@@ -471,9 +471,6 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
             if len(acis_list) > 0 or len(awin_list) > 0:
                 acis_si = 'NA'
 
-            elif ct_dict['si_mode'][-1] in ['', None, 'None', 'Null', 'NULL']:
-                acis_si = 'NA'
-
             else:
 #
 #--- coordinate change happens, acis si mode needs to be reviewed
