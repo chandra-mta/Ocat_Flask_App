@@ -12,6 +12,7 @@ import re
 from flask_login        import current_user
 from flask              import current_app
 import cus_app.emailing                             as email
+import cus_app.supple.ocat_common_functions         as ocf
 
 sender       = 'cus@cfa.harvard.edu'
 #
@@ -250,8 +251,9 @@ def find_rev_no(o_list):
     output: rev_dict    --- a dict of <obsid> <--> <updated revision #>
     """
     ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-    with open(ifile) as f:
-        data = [line.strip() for line in f.readlines()]
+    data = ocf.lock_read(ifile)
+    if data == []:
+        current_app.logger.info(f'Something went wrong and cannot read "{ifile}"')
 
     rev_dict = {}
     for ent in data:

@@ -24,26 +24,9 @@ import getpass
 import pathlib
 from hmac import compare_digest as compare_hash
 from astropy.coordinates import Angle
-
-#sys.path.append('/proj/sot/ska3/flight/lib/python3.8/site-packages')
 import Chandra.Time
 
 from flask  import current_app
-#
-#--- directory
-#
-basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 
 #---------------------------------------------------------------------------------
 #-- clean_text: intake a section of text and format for Unix file conventions   --
@@ -622,7 +605,30 @@ def sleep_while_locked(ifile, tmax=10):
             chk = True
             break
 
-    return chk 
+    return chk
+
+
+#-------------------------------------------------------------------
+#-- lock_read: sleep until the file is unlocked                   --
+#-------------------------------------------------------------------
+def lock_read(ifile, tmax =10):
+    """
+    Read a file with lock checks in case the file is being written to.
+    NOTE: This assumes you are reading a shared resource which is meant to be non-empty
+    input: ifile --- a file with a full path
+           tmax  --- max time to wait: default 10 secs
+    output: File contents
+    """
+    step = 0.1
+    for k in range(int(tmax/step)):
+        if os.path.getsize(ifile) == 0:
+            time.sleep(step)
+        else:
+            with open(ifile,'r') as f:
+                data = [line.strip() for line in f.readlines()]
+            return data
+    return []
+
 #-----------------------------------------------------------------------------------------------
 #-- find_file_creation_time: find out a file creation time in Chandra Time                    --
 #-----------------------------------------------------------------------------------------------

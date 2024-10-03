@@ -34,18 +34,6 @@ import cus_app.emailing                             as email
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
-
 s_dir    = os.path.join(basedir, '../static/')
 #
 #--- current chandra time
@@ -137,18 +125,12 @@ def read_status_data():
 #--- Main database file
 #
     ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-#
-#--- if the file is locked sleep up to 10 sec
-#
-    chk    = ocf.sleep_while_locked(ufile)
-    if chk:
-        lock   = threading.Lock()
-        with lock:
-            with open(ufile) as f:
-                data = [line.strip() for line in f.readlines()]
-    else:
-        current_app.logger.info(f'Something went wrong and cannot open "{ufile}"')
+    data = ocf.lock_read(ufile)
+    if data == []:
+        current_app.logger.info(f'Something went wrong and cannot read "{ufile}"')
+        flash(f'Something went wrong and cannot "{ufile}"')
     data.reverse()
+    
 #
 #--- find out the last file modification time
 #
@@ -405,8 +387,10 @@ def check_comment(obsidrev):
     #If data directory corrupted/missing revision file, bigger problems exist
     #yet this comment check can act as a safety check.
     try:
-        with open(ifile, 'r') as f:
-            text = f.read()
+        data = ocf.lock_read(ifile)
+        if data == []:
+            current_app.logger.info(f'Something went wrong and cannot read "{ifile}"')
+        text = "\n".join(data)
     except Exception as check_comment_exc:
         return 2
 

@@ -33,21 +33,9 @@ import cus_app.supple.read_ocat_data            as rod
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #--- read ocat parameter list
 #
-#basedir = os.path.abspath(os.path.dirname(__file__))
 p_file  = os.path.join(basedir, '../static/param_list')
 with open(p_file, 'r') as f:
     all_param_list = [line.strip() for line in f.readlines()]

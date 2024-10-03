@@ -27,21 +27,7 @@ from cus_app.models         import register_user
 
 import cus_app.supple.ocat_common_functions     as ocf  #--- save commonly used functions
 import cus_app.scheduler.read_poc_schedule      as rps  #--- create a data table from the database
-#
-#--- directory
-#
-basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
 
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #--- set a list of years (from the last year to five year from the last year)
 #

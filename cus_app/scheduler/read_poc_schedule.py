@@ -19,22 +19,6 @@ import Chandra.Time
 import cus_app.supple.ocat_common_functions     as ocf      #--- save commonly used functions
 from flask          import current_app
 
-#
-#--- directory
-#
-basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
-
 #------------------------------------------------------------------------------
 #-- create_schedule_data_table: read current schedule and create a schedule data table
 #------------------------------------------------------------------------------
@@ -72,7 +56,9 @@ def create_schedule_data_table(ifile= ''):
     if ifile == '':
         ifile   = os.path.join(current_app.config['INFO_DIR'],'schedule')
 
-    data    = ocf.read_data_file(ifile)
+    data    = ocf.lock_read(ifile)
+    if data == []:
+        current_app.logger.info(f'Something went wrong and cannot read "{ifile}"')
 
     s_data  = []
     pid     = 0
@@ -123,7 +109,6 @@ def create_schedule_data_table(ifile= ''):
 
         t_save.append(str(pid))
         pid += 1
-
         s_data.append(t_save)
 #
 #--- fill the rest with open rows

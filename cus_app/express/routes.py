@@ -28,21 +28,7 @@ import cus_app.supple.ocat_common_functions         as ocf
 import cus_app.supple.read_ocat_data                as rod
 import cus_app.ocatdatapage.create_selection_dict   as csd
 import cus_app.ocatdatapage.update_data_record_file as udrf
-#
-#--- directory
-#
-basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
 
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #--- current chandra time
 #
