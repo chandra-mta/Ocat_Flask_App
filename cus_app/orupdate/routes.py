@@ -16,6 +16,8 @@ import time
 from datetime           import datetime
 import pathlib
 import threading
+import sqlite3 as sq
+import traceback
 
 from flask              import render_template, flash, redirect, url_for, session
 from flask              import request, g, jsonify, current_app
@@ -34,24 +36,12 @@ import cus_app.emailing                             as email
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
-
 s_dir    = os.path.join(basedir, '../static/')
 #
 #--- current chandra time
 #
 now    = int(Chandra.Time.DateTime().secs)
-today  = ocf.convert_chandra_time_to_display2(now, tformat='%m/%d/%y')
+today = datetime.now().strftime('%m/%d/%y')
 
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
@@ -603,14 +593,14 @@ def check_signoff(form, poc_dict, odata):
 #--- chk is True, if someone just updated the database file and the user
 #--- could not update the database files
 #
-                chk = update_data(obsidrev, 1)
+                chk = update_data(obsidrev, 'general_signoff')
 #
 #--- acis is signed off
 #
         elif mc2 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 2)
+                chk = update_data(obsidrev, 'acis_signoff')
                 if chk == False:
                     check_too_ddt(obsidrev, 'acis', odata, poc_dict[obsidrev])
 #
@@ -619,7 +609,7 @@ def check_signoff(form, poc_dict, odata):
         elif mc3 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 3)
+                chk = update_data(obsidrev, 'acis_si_mode_signoff')
                 if chk == False:
                     check_too_ddt(obsidrev, 'si', odata, poc_dict[obsidrev])
 #
@@ -628,7 +618,7 @@ def check_signoff(form, poc_dict, odata):
         elif mc4 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 4)
+                chk = update_data(obsidrev, 'hrc_si_mode-signoff')
                 if chk == False:
                     check_too_ddt(obsidrev, 'si', odata, poc_dict[obsidrev])
 #
@@ -637,14 +627,14 @@ def check_signoff(form, poc_dict, odata):
         elif mc5 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 5)
+                chk = update_data(obsidrev, 'usint_verification')
 #
 #--- vierification is signed off and approval is requested
 #
         elif mc6 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 5)
+                chk = update_data(obsidrev, 'usint_verification')
                 approve_obsid(obsidrev)
 
 #
@@ -653,7 +643,7 @@ def check_signoff(form, poc_dict, odata):
         elif mc7 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 5, discard=1)
+                chk = update_data(obsidrev, 'discard')
 
     return chk
 
@@ -683,100 +673,49 @@ def get_obsidrev(key, form):
     return obsidrev
 
 #----------------------------------------------------------------------------------
-#-- update_data: update <ocat_dir>/updates_table.list data file                   --
+#-- update_data: update <ocat_dir>/updates_table.db data file                   --
 #----------------------------------------------------------------------------------
 
-def update_data(obsidrev, pos, discard=0):
+def update_data(obsidrev, column_signoff):
     """ 
-    update <ocat_dir>/updates_table.list data file
+    update <ocat_dir>/updates_table.db data file
     input:  obsidrev    --- <obsid>.<rev#>
-            pos         --- position of sign-off
-                            1: general      --> col 1 
-                            2: acis         --> col 2
-                            3: acis si      --> col 3
-                            4: hrc si       --> col 4
-                            5: verified by  --> col 5
-                            note: col 0 is <obsid>.<rev>
-                                  col 6 is <seq #>
-                                  col 7 is <poc id>
-            discard       --- whether discard is asked or not 0/1 . 1: yes
-    output: updated <ocat_dir>/updates_table.list
+            column_signoff --- selection of column to put in signoff. If discard, then do special discard action
+    output: updated <ocat_dir>/updates_table.db
     """
-    user     = current_user.username    
-    sign     = user + ' ' + today
-    obsidrev = str(obsidrev)
-    #
-    #--- Main database file
-    #
-    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
 #
-#--- check whether the file is locked. if not lock the file for this round
+#--- Main database file
 #
-    if ocf.is_file_locked(ufile):
-        return True 
-    else:
+    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
+    try:
+        with sq.connect(ufile) as conn:
+            cur = con.cursor()
+            if column_signoff = 'discard':
 #
-#--- update the data file
+#--- Pull the current signoff status and replace any unfilled signoffs with "N/A"
 #
-        data = ocf.read_data_file(ufile)
-        os.system(f"cp -f {ufile} {ufile}~")
-        line = create_data_line(data, obsidrev, pos, sign, discard)
-        lock = threading.Lock()
-        with lock:
-            with open(ufile, 'w') as fo:
-                fo.write(line)
-
+                select_discard = f'SELECT general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff from revisions WHERE obsidrev = {obsidrev}'
+                res = cur.execute(select_discard)
+                curr_signoff = res.fetchone()
+                discard_execute = f'UPDATE revisions SET general_signoff = "{curr_signoff[0]}", acis_signoff = "{curr_signoff[1]}", acis_si_mode_signoff = "{curr_signoff[2]}", hrc_si_mode_signoff = "{curr_signoff[3]}", usint_verification = "{user}", usint_date = "{today}" WHERE obsidrev = {obsidrev}'
+                discard_execute = discard_execute.replace('NA','N/A').replace('"None"','NULL')
+                if current_app.config['DEVELOPMENT']:
+                    print(select_discard)
+                    print(discard_execute)
+                cur.execute(discard_execute)
+            else:
+#
+#--- Update signoff column and date
+#
+                date_col = column_signoff.replace("_signoff","_date").replace("_verification","_date")
+                update_execute = f'UPDATE revisions SET {column_signoff} = "{user}", {date_col} = "{today}" WHERE obsidrev = {obsidrev}'
+                if current_app.config['DEVELOPMENT']:
+                    print(update_execute)
+                cur.execute(update_execute)
         return False
-
-#----------------------------------------------------------------------------------
-#-- create_data_line: create data line to print out                              --
-#----------------------------------------------------------------------------------
-
-def create_data_line(data, obsidrev, pos, sign, discard):
-    """
-    create data line to print out
-    input:  data        --- a list of data
-            obsidreve   --- <obsid>.<rev #>
-            pos         --- position of sign-off
-            sign        --- <user name> <today's date>
-            discard       --- 0/1. if 1, discard all open sign-off
-    output: line        --- strings of output data
-    """
-    dlen     = len(data)
-#
-#--- reverse the data; assume that opened entries are close to the end 
-#
-    data.reverse()
-    for k in range(0, dlen):
-        ent   = data[k]
-        atemp = re.split('\t+', ent)
-        if atemp[0] == obsidrev:
-            atemp[pos] = sign
-#
-#--- if closing is asked, fill opened column with 'N/A' (except verified column)
-#
-            if discard > 0:
-                for m in range(1, 5):
-                    if atemp[m] == 'NA':
-                        atemp[m] = 'N/A'
-    
-            line = atemp[0] + '\t' + atemp[1] + '\t' + atemp[2] 
-            line = line     + '\t' + atemp[3] + '\t' + atemp[4]
-            line = line     + '\t' + atemp[5] + '\t' + atemp[6]
-            line = line     + '\t' + atemp[7] 
-            data[k] = line
-            break
-
-    data.reverse()
-
-    line = ''
-    for ent in data:
-        if ent == '':
-            continue
-        else:
-            line = line + ent + '\n'
-
-    return line
+    except OperationalError:
+        current_app.logger.error(traceback.format_exc())
+        return True
 
 #----------------------------------------------------------------------------------
 #-- approve_obsid: approve the obsid                                             --
