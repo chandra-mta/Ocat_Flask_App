@@ -18,6 +18,7 @@ import pathlib
 import threading
 import sqlite3 as sq
 import traceback
+from contextlib import closing
 
 from flask              import render_template, flash, redirect, url_for, session
 from flask              import request, g, jsonify, current_app
@@ -38,9 +39,8 @@ import cus_app.emailing                             as email
 basedir = os.path.abspath(os.path.dirname(__file__))
 s_dir    = os.path.join(basedir, '../static/')
 #
-#--- current chandra time
+#--- Define Globals
 #
-now    = int(Chandra.Time.DateTime().secs)
 TODAY = datetime.now()
 TODAY_STRING = TODAY.strftime('%m/%d/%y')
 FETCH_SIZE = 400
@@ -93,7 +93,7 @@ def index():
             ctime = float(request.form['mtime'])
             if mtime > ctime:
 #
-#--- after 10 mins, don't dispaly the message, even if someone modified the
+#--- after 10 mins, don't display the message, even if someone modified the
 #--- the database before submitting the data.
 #
                 if Chandra.Time.DateTime().secs - mtime < 700.0:
@@ -134,9 +134,10 @@ def read_status_data():
 #
 #--- SQL query to database
 #
-    with sq.connect(ufile) as conn:
-        cur = conn.cursor()
-        fetch_result = cur.execute(f"SELECT * from revisions ORDER BY rev_time DESC LIMIT {FETCH_SIZE}")
+    with closing(sq.connect(ufile)) as conn: # auto-closes
+        with conn: # auto-commits
+            with closing(conn.cursor()) as cur: # auto-closes
+                fetch_result = cur.execute(f"SELECT * from revisions ORDER BY rev_time DESC LIMIT {FETCH_SIZE}").fetchall()
 #
 #--- columns listed in the following order in the database:
 #--- obsidrev (0), general_signoff (1), general_date (2), acis_signoff (3), acis_date (4)
@@ -152,7 +153,7 @@ def read_status_data():
 #
 #--- Iterate over the fetch results
 #
-    for entry in fetch_result.fetchall():
+    for entry in fetch_result:
         obsid, rev = str(entry[0]).split('.')
         rev = int(rev)
 #
@@ -189,7 +190,7 @@ def read_status_data():
 #--- check the signed-off date is in the specified period
 #--- if so keep the record for informational display
 #
-            if (TODAY - datetime.strptime(entry[10],'%m/%d/%y')) < 2:
+            if (TODAY - datetime.strptime(entry[10],'%m/%d/%y')).days < 2:
                 cdata.append(sublist)
                 poc_dict[sublist[0]] = sublist[3]
 #
@@ -316,29 +317,6 @@ def check_file_creation_date(obsidrev):
         fname = pathlib.Path(ifile)
         mtime = datetime.fromtimestamp(fname.stat().st_ctime)
         return mtime.strftime("%m/%d/%y")
-
-#----------------------------------------------------------------------------------
-#-- check_sign_off_date: check whether this observation was signed off in a specified time period
-#----------------------------------------------------------------------------------
-
-def check_sign_off_date(line):
-    """
-    check whether this observation was signed off in a specified time period
-    input:  line    --- data line
-    output: 1: if yes, 0, otherwise
-    """
-    atemp = re.split('\t+', line)
-    out   = atemp[5]
-    btemp = re.split('\s+', out)
-    sdate = btemp[1]   
-    ltime = time.strftime('%Y:%j:%H:%M:%S', time.strptime(sdate, '%m/%d/%y'))
-    stime = Chandra.Time.DateTime(ltime).secs
-
-    diff  = now - stime
-    if diff < 129600:
-        return 1
-    else:
-        return 0
 
 #----------------------------------------------------------------------------------
 #-- update_notes: create a content of the note section                          ---
@@ -725,32 +703,33 @@ def update_data(obsidrev, column_signoff):
 #
     ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
     try:
-        with sq.connect(ufile) as conn:
-            cur = con.cursor()
-            if column_signoff = 'discard':
+        with closing(sq.connect(ufile)) as conn: # auto-closes
+            with conn: # auto-commits
+                with closing(conn.cursor()) as cur: # auto-closes
+                    if column_signoff == 'discard':
 #
 #--- Pull the current signoff status and replace any unfilled signoffs with "N/A"
 #
-                select_discard = f'SELECT general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff from revisions WHERE obsidrev = {obsidrev}'
-                res = cur.execute(select_discard)
-                curr_signoff = res.fetchone()
-                discard_execute = f'UPDATE revisions SET general_signoff = "{curr_signoff[0]}", acis_signoff = "{curr_signoff[1]}", acis_si_mode_signoff = "{curr_signoff[2]}", hrc_si_mode_signoff = "{curr_signoff[3]}", usint_verification = "{user}", usint_date = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
-                discard_execute = discard_execute.replace('NA','N/A').replace('"None"','NULL')
-                if current_app.config['DEVELOPMENT']:
-                    print(select_discard)
-                    print(discard_execute)
-                cur.execute(discard_execute)
-            else:
+                        select_discard = f'SELECT general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff from revisions WHERE obsidrev = {obsidrev}'
+                        res = cur.execute(select_discard)
+                        curr_signoff = res.fetchone()
+                        discard_execute = f'UPDATE revisions SET general_signoff = "{curr_signoff[0]}", acis_signoff = "{curr_signoff[1]}", acis_si_mode_signoff = "{curr_signoff[2]}", hrc_si_mode_signoff = "{curr_signoff[3]}", usint_verification = "{current_user.username}", usint_date = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
+                        discard_execute = discard_execute.replace('NA','N/A').replace('"None"','NULL')
+                        if current_app.config['DEVELOPMENT']:
+                            print(select_discard)
+                            print(discard_execute)
+                        cur.execute(discard_execute)
+                    else:
 #
 #--- Update signoff column and date
 #
-                date_col = column_signoff.replace("_signoff","_date").replace("_verification","_date")
-                update_execute = f'UPDATE revisions SET {column_signoff} = "{user}", {date_col} = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
-                if current_app.config['DEVELOPMENT']:
-                    print(update_execute)
-                cur.execute(update_execute)
+                        date_col = column_signoff.replace("_signoff","_date").replace("_verification","_date")
+                        update_execute = f'UPDATE revisions SET {column_signoff} = "{current_user.username}", {date_col} = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
+                        if current_app.config['DEVELOPMENT']:
+                            print(update_execute)
+                        cur.execute(update_execute)
         return False
-    except OperationalError:
+    except sq.OperationalError:
         current_app.logger.error(traceback.format_exc())
         return True
 
