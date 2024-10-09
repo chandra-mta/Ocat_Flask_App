@@ -15,6 +15,8 @@ import Chandra.Time
 import time
 import numpy
 from datetime       import datetime
+import sqlite3 as sq
+from contextlib import closing
 
 from flask          import render_template, flash, redirect, url_for, session
 from flask          import request, g, jsonify, current_app
@@ -32,17 +34,6 @@ import cus_app.ocatdatapage.update_data_record_file as udrf
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #--- current chandra time
 #
@@ -211,15 +202,20 @@ def check_obsid_status(obsid_list):
         approved.append(atemp[0])
     approved.reverse()
 #
-#--- read obsids in updates_table.list; create <obsid> <---> <poc> dict
+#--- read obsids in updates_table.db; create <obsid> <---> <poc> dict
 #
-    ifile    = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-    out      = ocf.read_data_file(ifile)
+    ufile    = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
+#
+#--- SQL query to database
+#
+    with closing(sq.connect(ufile)) as conn: # auto-closes
+        with conn: # auto-commits
+            with closing(conn.cursor()) as cur: # auto-closes
+                fetch_result = cur.execute(f"SELECT obsidev, submitter from revisions ORDER BY rev_time DESC").fetchall()
     updates  = {}
-    for ent in out:
-        atemp = re.split('\s+', ent)
-        btemp = re.split('\.',  atemp[0])
-        updates[btemp[0]] = atemp[-1]
+    for ent in fetch_result:
+        obsid = str(ent[0]).split('.')[0]
+        updates[obsid] = ent[1]
 
     checked_list = []
     o_list       = []
