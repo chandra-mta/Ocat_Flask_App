@@ -55,7 +55,7 @@ def submit_other_obsids(obsids_list, oct_dict, oind_dict,  asis, user):
             asis        --- asis status
             user        --- poc user
     output: <data_dir>/updates/<obsid>.<rev#>
-            <data_dir>/updates_table.list
+            <data_dir>/updates_table.db
             <data_dir>/approved (if asis == 'asis'/'remove')
             various email sent out
             note        --- a dictionary of MP notification information

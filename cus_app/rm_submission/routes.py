@@ -13,7 +13,9 @@ import re
 import string
 import Chandra.Time
 import time
-import threading
+import sqlite3 as sq
+from contextlib import closing
+import traceback
 from datetime       import datetime
 
 from flask          import render_template, flash, redirect, url_for, session
@@ -30,23 +32,16 @@ import cus_app.supple.ocat_common_functions         as ocf
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
 #
 #--- current chandra time and a day and a half ago
 #
 now   = int(Chandra.Time.DateTime().secs)
 ytime = now - 86400 * 1.5
 
+TODAY = datetime.now()
+TODAY_STRING = TODAY.strftime('%m/%d/%y')
+
+FETCH_SIZE = 1000
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
 #----------------------------------------------------------------------------------
@@ -69,24 +64,25 @@ def before_request():
 def index():
     current_app.logger.info(f"Opening Remove Submission")
 #
-#--- data:      a list form of updates_table.list
+#--- data:      a list form of updates_table.db
 #--- s_dict:    a dict of <obsid.rev> <--> <data info> for a given user
-#--- disp_list: a list of last 10 entries on updates_table.list
+#--- disp_list: a list of last 10 entries on updates_table.db
 #---            this one is used only when there is no entry that the user can 
 #---            reverse the sign-off status
 #--- mtime:     a file modified time; this will be used to check whether other updated the file
 #--- warning    if True, someone updated the database file and display the warning
 #
     data, s_dict = find_sign_off_entries()
+    #TODO clarify change based on fetch_result varibale name
     disp_list    = create_display_data(data)
-    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
+    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
     mtime        = ocf.find_file_modification_time(updates_file)
     warning      = False
 
     if 'submit_test' in request.form.keys():
 #
 #--- check whether the database file is modified while checking the data
-#--- if not, update updates_table.list and possibly approved file
+#--- if not, update updates_table.db and possibly approved file
 #
         ctime    = int(float(request.form['mtime']))
         if ctime > mtime:
@@ -113,103 +109,58 @@ def index():
 def find_sign_off_entries():
     """
     find entries which the user can reverse the sign-off status
-    input:  none, but read from <ocat_dir>/updates_table.list
-    output: data    --- updates_table.list in a list format
+    input:  none, but read from <ocat_dir>/updates_table.db
+    output: data    --- updates_table.db in a list format
             s_dict  --- a dict <obsidrev> <---> <data info
                         only entries which the user can reverse the sign-off status
                         are included
     """
     user  = current_user.username
-    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
+    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
 #
-#--- read data table and reverse the order so that we can check from newest
+#--- SQL query to database
 #
-    data  = ocf.read_data_file(updates_file)
-    data.reverse()
+    with closing(sq.connect(ufile)) as conn: # auto-closes
+        with conn: # auto-commits
+            with closing(conn.cursor()) as cur: # auto-closes
+                fetch_result = cur.execute(f"SELECT * from revisions WHERE submitter = '{current_user.username}' ORDER BY rev_time DESC LIMIT {FETCH_SIZE}").fetchall()
 #
-#--- check only the first 1000 or less
+#--- columns listed in the following order in the database:
+#--- obsidrev (0), general_signoff (1), general_date (2), acis_signoff (3), acis_date (4)
+#--- acis_si_mode_signoff (5), acis_si_mode_date (6), hrc_si_mode_signoff (7), hrc_si_mode_date (8)
+#--- usint_verification (9), usint_date (10), sequence (11), submitter (12), rev_time (13) (creation of rev in epoch time)
 #
-    dlen = len(data)
-    if dlen > 1000:
-        dlen = 1000
     s_dict = {}
-    for k in range(0, dlen):
+    for entry in fetch_result:
+        if entry[9] == 'NA':
 #
-#--- find entries of the row signed off by the user
+#--- Reverting regular signoffs
 #
-        mc = re.search(user, data[k])
-        if mc is None:
-            continue
+            for idx in range(7,0,-2): # Range between sign off column indexes in reverse order
+                if entry[idx] == current_user.username:
+                    if (TODAY - datetime.strptime(entry[idx+1],'%m/%d/%y')).days < 2:
 #
-#--- if the obsid is not verified by a POC
-#--- check in order of acis/hrc si mode then general/acis. if si mode was signed off
-#--- we don't need to check general/acis
+#--- If the  current user signed off on this particular column within the last two days, then list it as reversible
 #
-        atemp = re.split('\t+', data[k])
-        if atemp[5] == 'NA':                    #--- indicates that obsid.rev is not verified yet
-            chk = 0
-            for m in range(4, 0, -1):
-#
-#--- checking whether the entry is signed off by the user
-#
-                mc = re.search(user, atemp[m])
-                if mc is not None:
-                    btemp = re.split('\s+', atemp[m])
-#
-#--- if the signing off was more than a day and a half old, the user cannnot
-#--- reverse the signoff
-#
-                    stime = convert_display_time_to_chandra(btemp[1])
-                    if stime < ytime:
-                        continue
-                    else:
-                        s_dict[atemp[0]] = [atemp, m]
-                        chk = 1
+                        s_dict[str(entry[0])] = [entry, (idx // 2) + 1]
                         break
-                else:
-#
-#--- the entry is either not signed off or signed off by someone else
-#--- if it is signed off by someone else, stop checking
-#
-                    if atemp[m] in ['NULL', 'NA']:
-                        continue
                     else:
-                        chk = 1
-                        break
-#
-#--- the data is submitted the data from Ocat Data Page
-#
-            if chk == 0:
-                s_dict[atemp[0]] = [atemp, 0]
-#
-#--- if the obsid is verified by the user
-#
+                        continue
         else:
-            mc = re.search(user, atemp[5])
-            if mc is not None:
-                btemp = re.split('\s+', atemp[5])
-                stime = convert_display_time_to_chandra(btemp[1])
-                if stime < ytime:
-                    continue
+#
+#--- Obsid has been verified by the user. Therefore need to check if undoing 'asis' approval or a regular usint verification
+#
+            if (TODAY - datetime.strptime(entry[10],'%m/%d/%y')).days < 2:
+#
+#--- Check if it's an ASIS revision but noting if the sign columns are all None
+#
+                if (entry[1] == None) and (entry[3] == None) and (entry[5] == None) and (entry[7] == None):
+                    s_dict[str(entry[0])] = [entry, 6]
                 else:
-#
-#--- check whether this is "asis" submission. if so, position is 6 to
-#--- indicate that. 
-#
-                    chk = 0
-                    for k in range(0, 4):
-                        if atemp[k+1] == 'N\A':
-                            atemp[k+1] = 'NA'
-
-                        if atemp[k+1] != 'NULL':
-                            chk += 1
-
-                    if chk > 0:
-                        s_dict[atemp[0]] = [atemp, 5]
-                    else:
-                        s_dict[atemp[0]] = [atemp, 6]
-
-    return data, s_dict
+                    s_dict[str(entry[0])] = [entry, 5]
+            else:
+                continue
+    return fetch_results, s_dict
 
 #----------------------------------------------------------------------------------
 #--  update_data_tables: modifiy updates_table.list and possibley approved list   -
@@ -223,6 +174,7 @@ def update_data_tables(form, data):
     output: updated <ocat_dir>/updates_table.list
                     <ocat_dir/approved
     """
+    #TODO change for db format
     updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
     approve_file = os.path.join(current_app.config['OCAT_DIR'],'approved')
 #
@@ -401,12 +353,13 @@ def convert_display_time_to_chandra(ltime):
 def create_display_data(data):
     """
     create a table data of the last 10 entries for the case no entries to reverse sign-off status
-    input:  data    --- a list format of updates_table.list
+    input:  data    --- a fetch result format of updates_table.db
     output: data_list   --- a list of lists:
                             [<obsidrev>,<general>, <acis>, <acis si>, <hrc si>,
                              <verified>, <seq nbr>, <poc>]
     """
     data_list = []
+    #TODO change for fetch_result format
     for k in range(0, 10):
         atemp = re.split('\t+', data[k])
         data_list.append([atemp, 10])

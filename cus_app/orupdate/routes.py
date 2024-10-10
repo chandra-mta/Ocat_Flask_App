@@ -731,6 +731,7 @@ def update_data(obsidrev, column_signoff):
         return False
     except sq.OperationalError:
         current_app.logger.error(traceback.format_exc())
+        email.send_error_email()
         return True
 
 #----------------------------------------------------------------------------------
