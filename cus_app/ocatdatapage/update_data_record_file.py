@@ -474,7 +474,7 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
         signoff = 'NA'
 
     ufile  = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
-    rev_file = os.path/join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
+    rev_file = os.path.join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
     rev_time = int(os.stat(rev_file).st_mtime)
     add_statement = f'INSERT INTO revisions (obsidrev, general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff, usint_verification, sequence, submitter, rev_time)'
     add_statement += f'VALUES ({obsidrev}, "{general}", "{acis}", "{acis_si}", "{hrc_si}", "{signoff}", {sequence}, "{user}", {rev_time})'.replace('"NULL"','NULL')

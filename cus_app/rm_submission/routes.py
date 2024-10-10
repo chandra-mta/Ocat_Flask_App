@@ -29,19 +29,12 @@ import cus_app.emailing as email
 
 import cus_app.supple.ocat_common_functions         as ocf
 #
-#--- directory
+#--- Define Globals
 #
-basedir = os.path.abspath(os.path.dirname(__file__))
-#
-#--- current chandra time and a day and a half ago
-#
-now   = int(Chandra.Time.DateTime().secs)
-ytime = now - 86400 * 1.5
-
 TODAY = datetime.now()
 TODAY_STRING = TODAY.strftime('%m/%d/%y')
-
 FETCH_SIZE = 1000
+
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
 #----------------------------------------------------------------------------------
@@ -72,9 +65,7 @@ def index():
 #--- mtime:     a file modified time; this will be used to check whether other updated the file
 #--- warning    if True, someone updated the database file and display the warning
 #
-    data, s_dict = find_sign_off_entries()
-    #TODO clarify change based on fetch_result varibale name
-    disp_list    = create_display_data(data)
+    fetch_result, s_dict = find_sign_off_entries()
     updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
     mtime        = ocf.find_file_modification_time(updates_file)
     warning      = False
@@ -88,16 +79,14 @@ def index():
         if ctime > mtime:
             warning = True
         else:
-            warning      = update_data_tables(request.form, data)
-            data, s_dict = find_sign_off_entries()
-            disp_list    = create_display_data(data)
+            warning      = update_data_tables(request.form, fetch_result)
+            fetch_result, s_dict = find_sign_off_entries()
 
         if warning == False:
             return redirect(url_for('rm_submission.index'))
-
     return render_template('rm_submission/index.html',
                             s_dict    = s_dict,
-                            disp_list = disp_list,
+                            disp_list = [[format_display(entry), 10] for entry in fetch_result],
                             mtime     = mtime,
                             warning   = warning
                           )
@@ -116,14 +105,14 @@ def find_sign_off_entries():
                         are included
     """
     user  = current_user.username
-    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
+    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
 #
 #--- SQL query to database
 #
     with closing(sq.connect(ufile)) as conn: # auto-closes
         with conn: # auto-commits
             with closing(conn.cursor()) as cur: # auto-closes
-                fetch_result = cur.execute(f"SELECT * from revisions WHERE submitter = '{current_user.username}' ORDER BY rev_time DESC LIMIT {FETCH_SIZE}").fetchall()
+                fetch_result = cur.execute(f"SELECT * from revisions ORDER BY rev_time DESC LIMIT {FETCH_SIZE}").fetchall()
 #
 #--- columns listed in the following order in the database:
 #--- obsidrev (0), general_signoff (1), general_date (2), acis_signoff (3), acis_date (4)
@@ -142,11 +131,11 @@ def find_sign_off_entries():
 #
 #--- If the  current user signed off on this particular column within the last two days, then list it as reversible
 #
-                        s_dict[str(entry[0])] = [entry, (idx // 2) + 1]
+                        s_dict[str(entry[0])] = [format_display(entry), (idx // 2) + 1]
                         break
                     else:
                         continue
-        else:
+        elif entry[9] == current_user.username:
 #
 #--- Obsid has been verified by the user. Therefore need to check if undoing 'asis' approval or a regular usint verification
 #
@@ -155,20 +144,85 @@ def find_sign_off_entries():
 #--- Check if it's an ASIS revision but noting if the sign columns are all None
 #
                 if (entry[1] == None) and (entry[3] == None) and (entry[5] == None) and (entry[7] == None):
-                    s_dict[str(entry[0])] = [entry, 6]
+                    s_dict[str(entry[0])] = [format_display(entry), 6]
                 else:
-                    s_dict[str(entry[0])] = [entry, 5]
+                    s_dict[str(entry[0])] = [format_display(entry), 5]
             else:
                 continue
-    return fetch_results, s_dict
+    return fetch_result[:10], s_dict
 
 #----------------------------------------------------------------------------------
-#--  update_data_tables: modifiy updates_table.list and possibley approved list   -
+#--  format_display: modify updates_table.db entries into Jinja2 parseable lists  -
+#----------------------------------------------------------------------------------
+def format_display(entry):
+    """
+    modify updates_table.db entries into Jinja2 parseable lists 
+    input: entry -- SQLite updates_table.db data row entry
+    output: data_list -- formatted list
+    """
+#
+#--- columns listed in the following order in the database:
+#--- obsidrev (0), general_signoff (1), general_date (2), acis_signoff (3), acis_date (4)
+#--- acis_si_mode_signoff (5), acis_si_mode_date (6), hrc_si_mode_signoff (7), hrc_si_mode_date (8)
+#--- usint_verification (9), usint_date (10), sequence (11), submitter (12), rev_time (13) (creation of rev in epoch time)
+#
+    data_list = [str(entry[0])]
+#
+#--- General Signoff
+#
+    if entry[1] in ['NA', 'N/A']:
+        data_list.append(entry[1])
+    elif entry[1] == None:
+        data_list.append('NULL')
+    else:
+        data_list.append(f'{entry[1]} {entry[2]}')
+#
+#--- ACIS Signoff
+#
+    if entry[1] in ['NA', 'N/A']:
+        data_list.append(entry[3])
+    elif entry[1] == None:
+        data_list.append('NULL')
+    else:
+        data_list.append(f'{entry[3]} {entry[4]}')
+#
+#--- ACIS SI Mode Signoff
+#
+    if entry[1] in ['NA', 'N/A']:
+        data_list.append(entry[5])
+    elif entry[1] == None:
+        data_list.append('NULL')
+    else:
+        data_list.append(f'{entry[5]} {entry[6]}')
+#
+#--- HRC SI Mode Signoff
+#
+    if entry[1] in ['NA', 'N/A']:
+        data_list.append(entry[7])
+    elif entry[1] == None:
+        data_list.append('NULL')
+    else:
+        data_list.append(f'{entry[7]} {entry[8]}')
+#
+#--- Usint Verification
+#
+    if entry[1] in ['NA', 'N/A']:
+        data_list.append(entry[9])
+    elif entry[1] == None:
+        data_list.append('NULL')
+    else:
+        data_list.append(f'{entry[9]} {entry[10]}')
+
+    data_list += [entry[11], entry[12]]
+    return data_list
+
+#----------------------------------------------------------------------------------
+#--  update_data_tables: modify updates_table.list and possibly approved list     -
 #----------------------------------------------------------------------------------
 
 def update_data_tables(form, data):
     """
-    modifiy updates_table.list and possibley approved list
+    modify updates_table.list and possibley approved list
     input;  form    --- form data
             data    --- a list format of updates_table.list
     output: updated <ocat_dir>/updates_table.list
@@ -330,46 +384,9 @@ def write_approved_file(data, obsidrev):
         send_notification(obsid)
 
     return line
-
-#----------------------------------------------------------------------------------
-#-- convert_display_time_to_chandra: convert data fomat from <mm>/<dd>/<yy> to chadra time
-#----------------------------------------------------------------------------------
-
-def convert_display_time_to_chandra(ltime):
-    """
-    convert data fomat from <mm>/<dd>/<yy> to chadra time
-    input:  ltime   --- time in <mm>/<dd>/<yy>
-            ctime   --- time in secs from 1998.1.1
-    """
-    ltime = time.strftime('%Y:%j:%H:%M:%S', time.strptime(ltime, '%m/%d/%y'))
-    ctime = int(Chandra.Time.DateTime(ltime).secs)
-
-    return ctime
-
-#----------------------------------------------------------------------------------
-#-- create_display_data: create a table data of the last 10 entries              --
-#----------------------------------------------------------------------------------
-
-def create_display_data(data):
-    """
-    create a table data of the last 10 entries for the case no entries to reverse sign-off status
-    input:  data    --- a fetch result format of updates_table.db
-    output: data_list   --- a list of lists:
-                            [<obsidrev>,<general>, <acis>, <acis si>, <hrc si>,
-                             <verified>, <seq nbr>, <poc>]
-    """
-    data_list = []
-    #TODO change for fetch_result format
-    for k in range(0, 10):
-        atemp = re.split('\t+', data[k])
-        data_list.append([atemp, 10])
-
-    data_list.reverse()
-
-    return data_list
         
 #----------------------------------------------------------------------------------
-#-- send_notification: sending removal from cus_approved list                        --
+#-- send_notification: sending removal from cus_approved list                    --
 #----------------------------------------------------------------------------------
 
 def send_notification(obsid):
