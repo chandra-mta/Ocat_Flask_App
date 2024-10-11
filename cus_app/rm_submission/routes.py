@@ -217,19 +217,18 @@ def format_display(entry):
     return data_list
 
 #----------------------------------------------------------------------------------
-#--  update_data_tables: modify updates_table.list and possibly approved list     -
+#--  update_data_tables: modify updates_table.db and possibly approved list     -
 #----------------------------------------------------------------------------------
 
-def update_data_tables(form, data):
+def update_data_tables(form):
     """
-    modify updates_table.list and possibley approved list
+    modify updates_table.db and possibly approved list
     input;  form    --- form data
-            data    --- a list format of updates_table.list
-    output: updated <ocat_dir>/updates_table.list
+            data    --- a list format of updates_table.db
+    output: updated <ocat_dir>/updates_table.db
                     <ocat_dir/approved
     """
-    #TODO change for db format
-    updates_file = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
+    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
     approve_file = os.path.join(current_app.config['OCAT_DIR'],'approved')
 #
 #--- find out which entry is asked to be reversed sign-off status
@@ -243,9 +242,23 @@ def update_data_tables(form, data):
 #
     for key in form.keys():
         if form[key] == 'Remove':
-            atemp    = re.split('_', key)
+            atemp    = key.split("_")
             obsidrev = atemp[0]
-            pos      = int(float(atemp[1]))
+            pos      = int(atemp[1])
+#
+#--- Parse options of pos for type of reversal action
+#
+            if pos == 0:
+                os.system(f"rm -rf {os.path.join(current_app.config['OCAT_DIR'],'updates',obsidrev)}")
+
+#
+#--- SQL query to database
+#
+    with closing(sq.connect(ufile)) as conn: # auto-closes
+        with conn: # auto-commits
+            with closing(conn.cursor()) as cur: # auto-closes
+                cur.execute(reversal_statement)
+
 #
 #--- go through each entry 
 #
