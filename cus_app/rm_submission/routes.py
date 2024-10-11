@@ -248,121 +248,45 @@ def update_data_tables(form):
 #
 #--- Parse options of pos for type of reversal action
 #
+            reversal_statement = None
             if pos == 0:
-                os.system(f"rm -rf {os.path.join(current_app.config['OCAT_DIR'],'updates',obsidrev)}")
-
+                file_remove = os.path.join(current_app.config['OCAT_DIR'],'updates',obsidrev)
+                try:
+                    os.system(f"rm -rf {file_remove}")
+                except:
+                    current_app.logger.error(f"Couldn't remove {file_remove} in rm_sumbission page.")
+                    email.send_error_email()
+                reversal_statement = f"DELETE FROM revisions WHERE obsidrev = {obsidrev}"
+            elif pos == 1:
+                reversal_statement = f"UPDATE revisions SET general_signoff = 'NA', general_date = NULL WHERE obsidrev = {obsidrev}"
+            elif pos == 2:
+                reversal_statement = f"UPDATE revisions SET acis_signoff = 'NA', acis_date = NULL WHERE obsidrev = {obsidrev}"
+            elif pos == 3:
+                reversal_statement = f"UPDATE revisions SET acis_si_mode_signoff = 'NA', acis_si_mode_date = NULL WHERE obsidrev = {obsidrev}"
+            elif pos == 4:
+                reversal_statement = f"UPDATE revisions SET hrc_si_mode_signoff = 'NA', hrc_si_mode_date = NULL WHERE obsidrev = {obsidrev}"
+            elif pos == 5:
+                reversal_statement = f"UPDATE revisions SET usint_verification = 'NA', usint_date = NULL WHERE obsidrev = {obsidrev}"
+            elif pos == 6:
+                reversal_statement = f"UPDATE revisions SET usint_verification = 'NA', usint_date = NULL WHERE obsidrev = {obsidrev}"
+                with open(approve_file,'r') as f:
+                    data = [line.strip() for line in f.readlines()]
+                    line = write_approved_file(data, obsidrev)
+                    with open(approve_file, 'w') as fo:
+                        fo.write(line)
+            if reversal_statement:
 #
 #--- SQL query to database
 #
-    with closing(sq.connect(ufile)) as conn: # auto-closes
-        with conn: # auto-commits
-            with closing(conn.cursor()) as cur: # auto-closes
-                cur.execute(reversal_statement)
-
-#
-#--- go through each entry 
-#
-    chk = 0
-    save = []
-    for ent in data:
-#
-#--- if chk == 1, the modification is already done; so skip checking
-#
-        if chk == 0:
-#
-#--- the data row with the <obsid>.<rev> is found
-#
-            mc = re.search(obsidrev, ent)
-            if mc is not None:
-#
-#--- if pos == 0, remove the submitted data entirely
-#
-                if pos == 0:
-                    cmd = 'rm -rf ' + current_app.config['OCAT_DIR'] + '/updates/' + obsidrev
-                    os.system(cmd)
-                    continue
-#
-#--- otherwise, just revert the signoff
-#
-                atemp = re.split('\t+', ent)
-                if pos == 1:
-                    atemp[1] = 'NA'
-                elif pos == 2:
-                    atemp[2] = 'NA'
-                elif pos == 3:
-                    atemp[3] = 'NA'
-                elif pos == 4:
-                    atemp[4] = 'NA'
-#
-#--- when you reverse "verified by", check also other entries
-#--- if other entries are 'N/A', it means that it was signed-off by the 
-#--- person who verified; so reverse them to 'NA'
-#
-                elif pos == 5:
-                    atemp[5] = 'NA'
-                    for k in range(1, 4):
-                        if atemp[k] == 'N/A':
-                            atemp[k] = 'NA'
-#
-#--- if pos is 6, it means the submission was 'asis' verified by
-#
-                elif pos == 6:
-                    atemp[5] = 'NA'
-
-                line = atemp[0]
-                for k in range(1, 8):
-                    line = line + '\t' + atemp[k]
-             
-                save.append(line)
-                chk = 1
-#
-#--- otherwise, just keep the data line as it is
-#
+                with closing(sq.connect(ufile)) as conn: # auto-closes
+                    with conn: # auto-commits
+                        with closing(conn.cursor()) as cur: # auto-closes
+                            cur.execute(reversal_statement)
+                return False
             else:
-                save.append(ent)
-        else:
-            save.append(ent)
-#
-#--- data are newest to oldest; so reverse the order before printing
-#
-    save.reverse()
-    line = ''
-    for ent in save:
-        line = line + ent + '\n'
-#
-#--- check whether the file is currently not updated by the other user; 
-#--- if it is open, lock the file and  proceed the changes
-#
-    if ocf.is_file_locked(updates_file):
-        return True
-    else:
-        lock = threading.Lock()
-        with lock:
-            if float(os.path.getsize(updates_file)) > 0:
-                cmd   = 'cp -f ' + updates_file + ' ' + updates_file + '~'
-                os.system(cmd)
-
-            with open(updates_file, 'w') as fo:
-                fo.write(line)
-#
-#--- if this is 'asis' case, and verified by sign-off is reversed, also reverse approved list 
-# 
-    if pos == 6:
-#
-#--- check whether the file is locked, if not lock it for writing
-#
-        if ocf.is_file_locked(approve_file):
-            return True
-
-        else:
-            lock = threading.Lock()
-            data = ocf.read_data_file(approve_file)
-            line = write_approved_file(data, obsidrev)
-            with lock:
-                with open(approve_file, 'w') as fo:
-                    fo.write(line)
-
-    return False
+                current_app.logger.error(f"Attempting to remove submission with undetermined status: {atemp}")
+                email.send_error_email()
+                return True
                 
 #----------------------------------------------------------------------------------
 #-- write_approved_file: create obsidrev removed approved list for updating the datafile

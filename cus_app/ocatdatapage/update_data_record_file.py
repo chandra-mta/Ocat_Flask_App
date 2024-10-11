@@ -17,6 +17,7 @@ import Chandra.Time
 import sqlite3 as sq
 from contextlib import closing
 import traceback
+import threading
 from flask          import flash, current_app, abort
 from flask_login    import current_user
 
@@ -477,7 +478,7 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
     rev_file = os.path.join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
     rev_time = int(os.stat(rev_file).st_mtime)
     add_statement = f'INSERT INTO revisions (obsidrev, general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff, usint_verification, sequence, submitter, rev_time)'
-    add_statement += f'VALUES ({obsidrev}, "{general}", "{acis}", "{acis_si}", "{hrc_si}", "{signoff}", {sequence}, "{user}", {rev_time})'.replace('"NULL"','NULL')
+    add_statement += f'VALUES ({obsidrev}, "{general}", "{acis}", "{acis_si}", "{hrc_si}", "{signoff}", {ct_dict["seq_nbr"][-1]}, "{user}", {rev_time})'.replace('"NULL"','NULL')
 #
 #--- SQL query to database
 #
@@ -767,7 +768,6 @@ def set_obsidrev(ct_dict):
         rev   = 1
 
     obsidrev = str(obsid) + '.' + ocf.add_leading_zero(rev, 3)
-
     return obsidrev
 
 #-----------------------------------------------------------------------------------------------

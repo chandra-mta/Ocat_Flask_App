@@ -12,6 +12,8 @@ import re
 from flask_login        import current_user
 from flask              import current_app
 import cus_app.emailing                             as email
+import sqlite3 as sq
+from contextlib import closing
 
 sender       = 'cus@cfa.harvard.edu'
 #
