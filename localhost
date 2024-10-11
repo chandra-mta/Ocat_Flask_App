@@ -27,6 +27,7 @@ setenv FLASK_APP usint
 
 #If you want to test the error handler in the script itself... You need to turn this off.
 setenv FLASK_DEBUG True
+setenv SEND_ERROR_EMAIL False
 #setenv FLASK_DEBUG False
 
 #This variable typically defined by the Apache LDAP module after authentication.
