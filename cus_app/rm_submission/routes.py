@@ -34,7 +34,7 @@ import cus_app.supple.ocat_common_functions         as ocf
 TODAY = datetime.now()
 TODAY_STRING = TODAY.strftime('%m/%d/%y')
 FETCH_SIZE = 1000
-
+NULL_SIGN_LIST = ['NA',None]
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
 #----------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ def index():
         if ctime > mtime:
             warning = True
         else:
-            warning      = update_data_tables(request.form, fetch_result)
+            warning      = update_data_tables(request.form)
             fetch_result, s_dict = find_sign_off_entries()
 
         if warning == False:
@@ -121,12 +121,19 @@ def find_sign_off_entries():
 #
     s_dict = {}
     for entry in fetch_result:
-        if entry[9] == 'NA':
+#
+#--- If there are no signoffs whatsoever, check if can we remove the obsidrev itself
+#
+        if (entry[12] == user) and (entry[1] in NULL_SIGN_LIST) and (entry[3] in NULL_SIGN_LIST) and (entry[5] in NULL_SIGN_LIST) and (entry[7] in NULL_SIGN_LIST) and (entry[9] in NULL_SIGN_LIST):
+            if (TODAY - datetime.fromtimestamp(entry[13])).days < 2:
+                s_dict[str(entry[0])] = [format_display(entry), 0]
+
+        elif entry[9] == 'NA':
 #
 #--- Reverting regular signoffs
 #
             for idx in range(7,0,-2): # Range between sign off column indexes in reverse order
-                if entry[idx] == current_user.username:
+                if entry[idx] == user:
                     if (TODAY - datetime.strptime(entry[idx+1],'%m/%d/%y')).days < 2:
 #
 #--- If the  current user signed off on this particular column within the last two days, then list it as reversible
@@ -135,7 +142,7 @@ def find_sign_off_entries():
                         break
                     else:
                         continue
-        elif entry[9] == current_user.username:
+        elif entry[9] == user:
 #
 #--- Obsid has been verified by the user. Therefore need to check if undoing 'asis' approval or a regular usint verification
 #
@@ -179,36 +186,36 @@ def format_display(entry):
 #
 #--- ACIS Signoff
 #
-    if entry[1] in ['NA', 'N/A']:
+    if entry[3] in ['NA', 'N/A']:
         data_list.append(entry[3])
-    elif entry[1] == None:
+    elif entry[3] == None:
         data_list.append('NULL')
     else:
         data_list.append(f'{entry[3]} {entry[4]}')
 #
 #--- ACIS SI Mode Signoff
 #
-    if entry[1] in ['NA', 'N/A']:
+    if entry[5] in ['NA', 'N/A']:
         data_list.append(entry[5])
-    elif entry[1] == None:
+    elif entry[5] == None:
         data_list.append('NULL')
     else:
         data_list.append(f'{entry[5]} {entry[6]}')
 #
 #--- HRC SI Mode Signoff
 #
-    if entry[1] in ['NA', 'N/A']:
+    if entry[7] in ['NA', 'N/A']:
         data_list.append(entry[7])
-    elif entry[1] == None:
+    elif entry[7] == None:
         data_list.append('NULL')
     else:
         data_list.append(f'{entry[7]} {entry[8]}')
 #
 #--- Usint Verification
 #
-    if entry[1] in ['NA', 'N/A']:
+    if entry[9] in ['NA', 'N/A']:
         data_list.append(entry[9])
-    elif entry[1] == None:
+    elif entry[9] == None:
         data_list.append('NULL')
     else:
         data_list.append(f'{entry[9]} {entry[10]}')
@@ -268,13 +275,15 @@ def update_data_tables(form):
             elif pos == 5:
                 reversal_statement = f"UPDATE revisions SET usint_verification = 'NA', usint_date = NULL WHERE obsidrev = {obsidrev}"
             elif pos == 6:
-                reversal_statement = f"UPDATE revisions SET usint_verification = 'NA', usint_date = NULL WHERE obsidrev = {obsidrev}"
+                reversal_statement = f"DELETE FROM revisions WHERE obsidrev = {obsidrev}"
                 with open(approve_file,'r') as f:
                     data = [line.strip() for line in f.readlines()]
                     line = write_approved_file(data, obsidrev)
                     with open(approve_file, 'w') as fo:
                         fo.write(line)
             if reversal_statement:
+                if current_app.config['DEVELOPMENT']:
+                    print(reversal_statement)
 #
 #--- SQL query to database
 #
