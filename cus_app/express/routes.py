@@ -211,7 +211,7 @@ def check_obsid_status(obsid_list):
     with closing(sq.connect(ufile)) as conn: # auto-closes
         with conn: # auto-commits
             with closing(conn.cursor()) as cur: # auto-closes
-                fetch_result = cur.execute(f"SELECT obsidev, submitter from revisions ORDER BY rev_time DESC").fetchall()
+                fetch_result = cur.execute(f"SELECT obsidrev, submitter from revisions ORDER BY rev_time DESC").fetchall()
     updates  = {}
     for ent in fetch_result:
         obsid = str(ent[0]).split('.')[0]
