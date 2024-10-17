@@ -148,7 +148,7 @@ def find_sign_off_entries():
 #
             if (TODAY - datetime.strptime(entry[10],'%m/%d/%y')).days < 2:
 #
-#--- Check if it's an ASIS revision but noting if the sign columns are all None
+#--- Check if it's an ASIS revision by noting if the sign columns are all None
 #
                 if (entry[1] == None) and (entry[3] == None) and (entry[5] == None) and (entry[7] == None):
                     s_dict[str(entry[0])] = [format_display(entry), 6]
@@ -275,6 +275,16 @@ def update_data_tables(form):
             elif pos == 5:
                 reversal_statement = f"UPDATE revisions SET usint_verification = 'NA', usint_date = NULL WHERE obsidrev = {obsidrev}"
             elif pos == 6:
+#
+#--- Removing an ASIS submittion involves, removing the parameter file recording only the ASIS change, 
+#--- removing obsidrev from the approved list, and removing the ASIS revision from the updates_table.db
+#
+                file_remove = os.path.join(current_app.config['OCAT_DIR'],'updates',obsidrev)
+                try:
+                    os.system(f"rm -rf {file_remove}")
+                except:
+                    current_app.logger.error(f"Couldn't remove {file_remove} in rm_sumbission page.")
+                    email.send_error_email()
                 reversal_statement = f"DELETE FROM revisions WHERE obsidrev = {obsidrev}"
                 with open(approve_file,'r') as f:
                     data = [line.strip() for line in f.readlines()]
