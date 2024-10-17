@@ -6,68 +6,54 @@
 #                                                                                       #
 #           author: w. aaron (william.aaron@cfa.harvard.edu)                            #
 #                                                                                       #
-#           last update: Aug 05, 2024                                                   #
+#           last update: Oct 17, 2024                                                   #
 #                                                                                       #
 #########################################################################################
 
 import os
-import re
-import numpy
+import sqlite3 as sq
+from contextlib import closing
 
 OCAT_DIR = "/data/mta4/CUS/www/Usint/ocat"
 COPY_DIR = "/proj/web-cxc/cgi-gen/mta/Obscat/ocat"
-#
-#--- read the current test data list
-#
-with open(f'{COPY_DIR}/updates_table.list', 'r') as f:
-    data1 = [line.strip() for line in f.readlines()]
-#
-#--- copy the real data list and approved list
-#
-os.system(f"cp -f {OCAT_DIR}/updates_table.list {COPY_DIR}/updates_table.list")
+LIVE_DB = f"{OCAT_DIR}/updates_table.db"
+TEST_DB = f"{COPY_DIR}/updates_table.db"
 
-os.system(f"cp -f {OCAT_DIR}/approved {COPY_DIR}/approved")
 #
-#--- read the updated test data list
+#--- Determine differences in individual parameter revision files
 #
-with open(f'{COPY_DIR}/updates_table.list', 'r') as f:
-    data2 = [line.strip() for line in f.readlines()]
-#
-#--- read the list from the previous day
-#
-if os.path.isfile(f'{COPY_DIR}/comp_list'):
-    with open(f'{COPY_DIR}/comp_list', 'r') as f:
-        data3 = [line.strip() for line in f.readlines()]
+with closing(sq.connect(LIVE_DB)) as conn: #Auto-closes
+    with conn: #Auto-commits
+        with closing(conn.cursor()) as cur: #Auto-closes
+            live_fetch = cur.execute(f"SELECT obsidrev, rev_time FROM revisions").fetchall()
+set_live = set(live_fetch)
+
+if os.path.exists(TEST_DB):
+    with closing(sq.connect(TEST_DB)) as conn: #Auto-closes
+        with conn: #Auto-commits
+            with closing(conn.cursor()) as cur: #Auto-closes
+                test_fetch = cur.execute(f"SELECT obsidrev, rev_time FROM revisions").fetchall()
+    set_test = set(test_fetch)
 else:
-    os.system(f"cp {COPY_DIR}/updates_table.list {COPY_DIR}/comp_list")
-    exit(1)
-#
-#--- compare lists and remove the test data added a day before
-#
-added = numpy.setdiff1d(data1, data3)
+    raise Exception(f"Cannot find existing TEST_DB {TEST_DB} for updates comparison.")
 
-if len(added) > 0:
-    for ent in added:
-        atemp = re.split('\t+', ent)
-        os.system(f"rm -f {COPY_DIR}/updates/{atemp[0]}")
-#
-#--- compare lists and add the data added in the real database
-#
-added = numpy.setdiff1d(data2, data3)
-
-if len(added) > 0:
-    for ent in added:
-        atemp = re.split('\t+', ent)
-        os.system(f"cp -fp {OCAT_DIR}/updates/{atemp[0]} {COPY_DIR}/updates/")
-
-    os.system(f"cp -f {COPY_DIR}/updates_table.list {COPY_DIR}/comp_list")
+changed_in_test = set_test - set_live
+recent_live_revisions = set_live - set_test
 
 #
-#--- Copy Current TOO Schedule
+#--- Remove individual parameter revision files located only in the test database
 #
-os.system(f'cp -f {OCAT_DIR}/Info_save/too_contact_info/schedule  {COPY_DIR}/Info_save/too_contact_info/schedule')
-
+for entry in changed_in_test:
+    os.system(f"rm -rf {COPY_DIR}/updates/{entry[0]}")
 #
-#--- Copy cdo_warning_list
+#--- Copy over new individual parameter revision files 
 #
-os.system(f"cp -f {OCAT_DIR}/cdo_warning_list {COPY_DIR}/cdo_warning_list")
+for entry in recent_live_revisions:
+    os.system(f"cp -f --preserve=all {OCAT_DIR}/updates/{entry[0]} {COPY_DIR}/updates/")
+#
+#--- Copy the real database, approved list, TOO Schedule
+#
+os.system(f"cp --f --preserve=all {OCAT_DIR}/updates_table.db {COPY_DIR}/updates_table.db")
+os.system(f"cp --f --preserve=all {OCAT_DIR}/approved {COPY_DIR}/approved")
+os.system(f"cp -f --preserve=all {OCAT_DIR}/Info_save/too_contact_info/schedule  {COPY_DIR}/Info_save/too_contact_info/schedule")
+os.system(f"cp -f --preserve=all {OCAT_DIR}/cdo_warning_list {COPY_DIR}/cdo_warning_list")

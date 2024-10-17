@@ -12,6 +12,8 @@ import re
 from flask_login        import current_user
 from flask              import current_app
 import cus_app.emailing                             as email
+import sqlite3 as sq
+from contextlib import closing
 
 sender       = 'cus@cfa.harvard.edu'
 #
@@ -249,32 +251,23 @@ def find_rev_no(o_list):
     input:  o_list      --- a list of obsids
     output: rev_dict    --- a dict of <obsid> <--> <updated revision #>
     """
-    ifile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-    with open(ifile) as f:
-        data = [line.strip() for line in f.readlines()]
-
+    ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
+    search_pattern = " OR obsidrev LIKE ".join([f"'{obsid}%'" for obsid in o_list])
+#
+#--- SQL query to database5
+#
+    with closing(sq.connect(ufile)) as conn: # auto-closes
+        with conn: # auto-commits
+            with closing(conn.cursor()) as cur: # auto-closes
+                fetch_result = cur.execute(f"SELECT obsidrev from revisions WHERE obsidrev LIKE {search_pattern} ORDER BY rev_time DESC").fetchall()
     rev_dict = {}
-    for ent in data:
-        atemp = re.split('\s+', ent)
-        btemp = re.split('\.',  atemp[0])
-        if btemp[0] in o_list:
-            obsid = int(float(btemp[0]))
-            rev   = int(float(btemp[1]))
-            if obsid in rev_dict.keys():
-                prev = rev_dict[obsid]
-                if prev < rev:
-                    rev_dict[obsid] = rev
-            else:
-                rev_dict[obsid] = rev
-
-    for obsid in o_list:
-        obsid = int(obsid)
-        if obsid in rev_dict.keys():
-            rev = f"{rev_dict[obsid]:>03}"
+    for entry in fetch_result:
+        obsid, rev = str(entry[0]).split('.')
+        if rev_dict.get(obsid) == None or rev_dict.get(obsid) < rev:
             rev_dict[obsid] = rev
-
-        else:
+    
+    for obsid in o_list:
+        if rev_dict.get(obsid) == None:
             rev_dict[obsid] = '001'
-
     return rev_dict
 

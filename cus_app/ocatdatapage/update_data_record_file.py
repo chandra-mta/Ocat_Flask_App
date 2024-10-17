@@ -14,8 +14,11 @@ import re
 import math
 import time
 import Chandra.Time
+import sqlite3 as sq
+from contextlib import closing
+import traceback
 import threading
-from flask          import flash, current_app
+from flask          import flash, current_app, abort
 from flask_login    import current_user
 
 import cus_app.supple.ocat_common_functions         as ocf
@@ -25,18 +28,6 @@ import cus_app.ocatdatapage.create_selection_dict   as csd
 #--- directory
 #
 basedir = os.path.abspath(os.path.dirname(__file__))
-"""
-p_file  = os.path.join(basedir, '../static/dir_list')
-with  open(p_file, 'r') as f:
-    data = [line.strip() for line in f.readlines()]
-
-for ent in data:
-    atemp = re.split(':', ent)
-    var  = atemp[1].strip()
-    line = atemp[0].strip()
-    exec("%s = '%s'" %(var, line))
-"""
-
 null_list = [None, 'NA', 'N', 'NULL', 'None', 'NONE',  'n', 'null', 'none', '', ' ']
 skip_list = ['monitor_series', 'obsids_list', 'remarks', 'comments', 'approved',\
              'group_obsid', 'dec', 'ra', 'acis_open', 'hrc_open']
@@ -57,7 +48,7 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
             asis        --- asis status
             user        --- current poc user name
     output: <data_dir>/updates/<obsid>.<rev#>
-            <data_dir>/updates_table.list
+            <data_dir>/updates_table.db
             <data_dir>/approved (if asis == 'asis'/'remove')
             various eamil sent out
             ch_line     --- a text listing parameters with updated values
@@ -87,7 +78,7 @@ def update_data_record_file(ct_dict, ind_dict, asis, user):
         elif asis in ['remove', 'clone']:
             send_clone_remove_notification(ct_dict, obsidrev, asis)
 #
-#--- update signoff status data in <ocat_dir>/updates_table.list
+#--- update signoff status data in <ocat_dir>/updates_table.db
 #
         update_status_data_file(ct_dict, user, asis, data[1], obsidrev)
 #
@@ -395,18 +386,18 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
     return line, cline
 
 #-----------------------------------------------------------------------------------------------
-#-- update_status_data_file: status table update: <ocat_dir>/updates_table.list              ---
+#-- update_status_data_file: status table update: <ocat_dir>/updates_table.db                ---
 #-----------------------------------------------------------------------------------------------
 
 def update_status_data_file(ct_dict, user, asis, data, obsidrev):
     """
-    status table update: <ocat_dir>/updates_table.list 
+    status table update: <ocat_dir>/updates_table.db
     input:  ct_dict     --- a dict of <param> <--> <information>
             user        --- poc user
             asis        --- asis status
             data        --- a list of lists of parameter names with updated values
             obsidrev    --- <obsid>.<rev#>
-    output: updated: <ocat_dir>/updates_table.list
+    output: updated: <ocat_dir>/updates_table.db
     """
 #
 #--- open the data into each list
@@ -416,12 +407,14 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
 #
 #--- for the case that we don't need to check updated parameter values
 #
+    signoff_date = 'NULL'
     if asis in ['asis', 'remove']:
         general = 'NULL'
         acis    = 'NULL'
         acis_si = 'NULL'
         hrc_si  = 'NULL'
-        signoff =  user + ' ' + get_today_date()
+        signoff =  user
+        signoff_date = f'"{get_today_date()}"'
 
     elif asis == 'clone':
         general = 'NA'
@@ -482,30 +475,31 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
                         break
 
         signoff = 'NA'
+
+    ufile  = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
+    rev_file = os.path.join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
+    rev_time = int(os.stat(rev_file).st_mtime)
+    add_statement = f'INSERT INTO revisions (obsidrev, general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff, usint_verification, usint_date, sequence, submitter, rev_time)'
+    add_statement += f'VALUES ({obsidrev}, "{general}", "{acis}", "{acis_si}", "{hrc_si}", "{signoff}", {signoff_date},{ct_dict["seq_nbr"][-1]}, "{user}", {rev_time})'.replace('"NULL"','NULL')
+    if current_app.config['DEVELOPMENT']:
+        print(add_statement)
 #
-#--- status data line
+#--- SQL query to database
 #
-    line = obsidrev + '\t' + general + '\t' + acis       + '\t'  + acis_si
-    line = line     + '\t' + hrc_si  + '\t' + signoff   
-    line = line     + '\t' + str(ct_dict['seq_nbr'][-1]) + '\t' + user + '\n'
-#
-#--- lock the file before adding the data line
-#
-    ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.list')
-#
-#--- if the file is locked sleep up to 10 sec
-#
-    chk    = ocf.sleep_while_locked(ofile)
-    if chk:
-        lock   = threading.Lock()
-        with lock:
-            cmd    = 'cp -f ' + ofile + ' ' + ofile + '~'
-            os.system(cmd)
-    
-            with open(ofile, 'a') as fo:
-                fo.write(line)
-    else:
-        flash('Something went wrong and cannot open "updates_table.list" file.')
+    try:
+        with closing(sq.connect(ufile)) as conn: # auto-closes
+            with conn: # auto-commits
+                with closing(conn.cursor()) as cur: # auto-closes
+                    cur.execute(add_statement)
+        
+    except sq.IntegrityError:
+        current_app.logger.error(traceback.format_exc())
+        flash(f"{ufile} Database Integrity Failure.")
+        email.send_error_email()
+    except sq.OperationalError:
+        current_app.logger.error(traceback.format_exc())
+        flash(f"Something went wrong and couldn't update {ufile}.")
+        email.send_error_email()
 
 #-----------------------------------------------------------------------------------------------
 #-- update_approved_list: update approved data list                                           --
@@ -778,7 +772,6 @@ def set_obsidrev(ct_dict):
         rev   = 1
 
     obsidrev = str(obsid) + '.' + ocf.add_leading_zero(rev, 3)
-
     return obsidrev
 
 #-----------------------------------------------------------------------------------------------

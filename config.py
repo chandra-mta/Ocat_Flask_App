@@ -12,6 +12,7 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
 
     DEBUG      = True
+    SEND_ERROR_EMAIL = os.environ.get('SEND_ERROR_EMAIL') or False
     HTTP_ADDRESS = os.environ.get('HTTP_ADDRESS')
 #
 #--- application directory
@@ -68,6 +69,7 @@ class Config(object):
 
 class ProdConfig(Config):
     DEBUG    = False
+    SEND_ERROR_EMAIL = os.environ.get('SEND_ERROR_EMAIL') or True
     DEVELOPMENT = False
 #
 #--- Live Directory Settings

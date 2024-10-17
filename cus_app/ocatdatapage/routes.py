@@ -313,7 +313,7 @@ def process_data_for_finalize(ct_dict, f_data):
             sobsid_list     --- a list of obsids successfully update
             not_processed   --- a list of obsids which were not udpated
             <data_dir>/updates/<obsid>.<rev#>
-            <data_dir>/updates_table.list
+            <data_dir>/updates_table.db
             <data_dir>/approved (if asis == 'asis'/'remove')
     """
     ct_dict     = restore_parameters(ct_dict, f_data)

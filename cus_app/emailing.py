@@ -97,8 +97,12 @@ def send_error_email():
     msg["From"] = "UsintErrorHandler"
     msg["To"] = ",".join(current_app.config['ADMINS'])
     msg["Subject"] = f"Usint Error-[{datetime.now().strftime('%c')}]"
-    p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
-    p.communicate(msg.as_bytes())
+
+    if current_app.config['SEND_ERROR_EMAIL']:
+        p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+        p.communicate(msg.as_bytes())
+    else:
+        print(f"Running localhost test with SEND_ERROR_EMAIL = {current_app.config['SEND_ERROR_EMAIL']}\nTherefore interrupting UsintErrorHandler Email")
 
 
 #--------------------------------------------------------------
