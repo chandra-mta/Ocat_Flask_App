@@ -117,7 +117,7 @@ related scripts:            ocatdatapage/create_selection_dict.py
                             ocatdatapage/update_data_record_file.py
 
 data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
-                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/updates_table.db
                             current_app.config['DATA_DIR']/updates/approved
                             AXAF sybase batabase (via read_ocat_data.py)
 
@@ -142,7 +142,7 @@ related scripts:            supple/read_ocat_data.py
                             email.py
 
 data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
-                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/updates_table.db
                             current_app.config['DATA_DIR']/updates/approved
                             AXAF sybase batabase (via read_ocat_data.py)
                             <obs_ss>/mp_long_term           --- planned roll angle from MP site
@@ -167,7 +167,7 @@ related scripts:            supple/get_value_from_sybase.py
                             ocatdatapage/update_data_record_file.py
 
 data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
-                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/updates_table.db
                             current_app.config['DATA_DIR']/updates/approved
                             AXAF sybase batabase (via read_ocat_data.py)
 
@@ -189,7 +189,7 @@ routies.py                  --- a main script
 __init__.py                 --- a script to setup the function 
 
 data:                       current_app.config['DATA_DIR']/updates/<obsid>.<rev>
-                            current_app.config['DATA_DIR']/updates/updates_table.list
+                            current_app.config['DATA_DIR']/updates/updates_table.db
                             current_app.config['DATA_DIR']/updates/approved
 
 template:   index.html      --- the main page
@@ -258,22 +258,29 @@ Active databases are located in: /data/mta4/CUS/www/Usint/ocat/
 * approved  --- a list of approved obsid
                 <obsid> <seq #> <poc>   <date of approved>
 
-* updates_table.list    --- a list of sign-off status
+* updates_table.db    --- a SQLite Database of sign-off status
                 <obsid>.<rev>
                 <general sign-off status>
+                <general sign-off date>
                 <acis sign-off status>
+                <acis sign-off date>
                 <acis si sign-off status>
+                <acis si sign-off date>
                 <hrc si sign-off status>
-                <verified by sttus>
+                <hrc si sign-off status>
+                <usint verification status>
+                <usint verification date>
                 <seq #>
-                <poc id>
+                <submitter>
+                <epoch time of creation of revision>
                 NULL    --- the column does not need to sign-off
                 NA      --- the column needs to be signed-off
+                N/A     --- the column did require sign-off but this set of changes is no longered desired by usint
 
 * updates/<obsid>.<rev> --- a record of updated parameters for <obsid>.<rev>
 
 * /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/schedule
-            --- POC duety schedule
+            --- POC duty schedule
 
 /data/mta4/obs_ss/mp_long_term           --- planned roll angle from MP site
 /data/mta4/obs_ss/scheduled_obs_list     --- scheduled obsids
@@ -421,10 +428,6 @@ mta on c3po-v
 #--- SOT Database
 #
 30 * * * * cd  /data/mta4/obs_ss/;  /data/mta4/obs_ss/sot_data.ksh >> $HOME/Logs/sot_data.cron 2>&1
-#
-#--- Copying Data Set
-#
-12 3,9,15,21 * * * cd /data/mta4/CUS/www/Usint/ocat; cp /data/mta4/CUS/www/Usint/ocat/updates_table.list /data/mta4/CUS/www/Usint/ocat/updates_table.list~  >> /dev/null 2>&1
 
 
 cus on r2d2-v
@@ -433,7 +436,10 @@ cus on r2d2-v
 #--- update test data
 #
 14 3 * * * cd /proj/web-cxc/cgi-gen/mta/Obscat/ocat; /proj/web-cxc/cgi-gen/mta/Obscat/ocat/copy_data_to_test.py >  /dev/null 2>&1
-16 3 * * * cd /proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info; /proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/clean_coppy_schedule.py > /dev/null 2>&1
+#
+#--- Copying Data Set
+#
+12 3,9,15,21 * * * cd /data/mta4/CUS/www/Usint/ocat; cp /data/mta4/CUS/www/Usint/ocat/updates_table.db /data/mta4/CUS/www/Usint/ocat/updates_table.db~  >> /dev/null 2>&1
 
 
 
@@ -454,7 +460,7 @@ When you decide to activate the flask version of the Ocat Data Page, open:
 then submit:
 
 chmod 777 /data/mta4/CUS/www/Usint/ocat/approved*
-chmod 777 /data/mta4/CUS/www/Usint/ocat/updates_table.list*
+chmod 777 /data/mta4/CUS/www/Usint/ocat/updates_table.db*
 chmod 777 -R /data/mta4/CUS/www/Usint/ocat/updates
 and 
 chmod 777 /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/schedule*
