@@ -1,0 +1,301 @@
+
+#######################
+USINT Related Scripts
+#######################
+
+==============
+PYTHON Scripts
+==============
+
+check_hrc_si_mode_sign_off.py
+------------------------------
+check hrc si mode sign off status and send out email to hrc group if the signoff is required
+
+    input:  /data/mta4/CUS/www/Usint/ocat/updates_table.list
+    output: email sent to hrc group
+
+cronjob as cus on r2d2-v:
+34 5 * * * cd /data/mta4/CUS/www/Usint; /data/mta4/CUS/www/Usint/check_hrc_si_mode_sign_off.py >> $HOME/Logs/check_hrc_si_mode_sign_off.cron 2>&1
+
+
+
+check_unobserved_obsids.py
+---------------------------
+check obsids with unobserved status and send out email to admin if they are not assigned 
+an observation time for more than three months.
+
+    input:  /data/mta4/obs_ss/sot_ocat.out
+    output: email sent to admin
+
+cronjob as cus on r2d2-v:
+23 3 * * 0 cd /data/mta4/CUS/www/Usint; /data/mta4/CUS/www/Usint/check_unobserved_obsids.py >> $HOME/Logs/check_unobserved_obsids.cron 2>&1
+
+
+create_schedule_table.py
+-------------------------
+update the schedule table html page and send out the duty notification to POC
+
+    input:  <too_dir>/schedule
+    output: <cusdir>/too_contact_schedule.html
+            https://icxc.harvard.edu/mta/CUS/Usint/too_contact_schedule.html
+            <too_dir>/this_week_person_in_charge
+            email sent to poc/admin
+
+cronjob as cus on r2d2-v:
+3 0 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/create_schedule_table.py > /data/mta4/CUS/www/Usint/schedule_log 2>&1
+
+
+find_mismatch.py
+----------------
+check update_table.list and check whether a phantom entry is created in the list
+
+    input:  /data/mta4/CUS/www/Usint/ocat/updates_table.list
+    output: email sent out to tech
+
+cronjob as cus on r2d2-v:
+5 5,8,10,12,14  * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/find_mismatch.py >> $HOME/Logs/find_mismatch.cron 2>&1
+
+signoff_request.py
+------------------
+send out signoff notifications
+
+    input: <ocat_dir>/updates_table.list
+    output: email sent out
+
+cronjob as cus on r2d2-v:
+0 4 * * 0-6 cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/signoff_request.py >> $HOME/Logs/signoff_request.cron 2 >&1
+
+updated_fill.py
+---------------
+update updated.html page
+
+    input:  <ocat_dir>/udates_table.list
+    output: https://icxc.harvard.edu/mta/CUS/Usint/updated.html
+            Save_month_html/<MMM>_<yyyy>.html
+
+cronjob as cus on r2d2-v:
+20 2,10,12,14,16,18,20 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/updated_fill.py  > $HOME/Logs/update_fill_cus.cron 2>&1
+
+########     IMPORTANT!!!!     ###############
+NOTE: after the new Ocat Data Page is turned on,  you need to change the html pointing of all html pages in:
+        /data/mta4/CUS/www/Usint/Save_month_html
+
+Use sed command:
+sed -i "s/https:\/\/cxc.harvard.edu\/mta\/CUS\/Usint\/chkupdata.cgi?/http:\/\/<NEW HTTP ADDRESS>\/chkupdata\//g' *.html
+
+Comment out line 266 of updated_fill.py. Update http address on 267 and un-comment that line.
+
+##############################################
+
+
+write_this_week_too_poc.py
+---------------------------
+write out this week's POC to /data/mta/TOO-POC 
+
+    input: <too_dir>/this_week_person_in_charge
+    output: /data/mta/TOO-POC
+
+    Note: this script is run by mta not cus as /data/mta/TOO-POC is only writable by mta
+
+cronjob as cus on r2d2-v:
+20 2,10,12,14,16,18,20 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/updated_fill.py  > $HOME/Logs/update_fill_cus.cron 2>&1
+
+cus_common_functions.py
+------------------------
+python function library
+
+./ocat/Backup/backup_database.py
+---------------------------------
+backup updates_table.list and approved and if something seems wrong, notify admin
+
+cronjob as cus on r2d2-v:
+19 * * * * cd /data/mta4/CUS/www/Usint/ocat/Backup; /data/mta4/CUS/www/Usint/ocat/Backup/backup_database.py > $HOME/Logs/backup_database.cron
+
+
+TOO_Obs
+------
+Check TOO/DDT observations and update related information
+see: /data/mta4/CUS/www/Usint/TOO_Obs/Scripts/README
+
+cronjob as cus on r2d2-v:
+50 *  * * * cd  /data/mta4/CUS/www/Usint/TOO_Obs/Scripts; /data/mta4/CUS/www/Usint/TOO_Obs/Scripts/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron 2>&1
+
+
+================
+PERL CGI Scripts
+================
+
+chkupdata.cgi
+-------------
+
+Display the information about a given obsid.rev
+
+    input:  <ocat_dir>/uppdates/<obsid>.<rev>
+    output: none
+
+express_signoff.cgi
+-------------------
+Let a user to sign off multiple obsids at the same time
+
+    input:  <ocat_dir>/uppdates/<obsid>.<rev>
+    output: <ocat_dir>/updates_tble.list
+            <ocat_dir>/uppdates/<obsid>.<rev>
+            email sent out 
+
+insert_person.cgi
+----------------
+Let a user to add/delete user information.
+
+    input: <too_dir>/personal_list
+    output: updated <too_dir>/personal_list
+
+obsid_poc_list.cgi/obsid_usint_list.cgi
+----------------------------------------
+Display who is in charge for DDT/TOO  or Scheduled observations
+
+    input: <too_dir>/too_list
+           <too_dir>/ddt_list
+           <too_dir>/new_obs_list
+    output: none
+
+ocatdata2html.cgi
+-----------------
+Display information about the obsid, and let a user to update the information.
+
+    input:  axaf database
+    output: <ocat_dir>/updates_tble.list
+            <ocat_dir>/uppdates/<obsid>.<rev>
+            email sent out 
+
+orupdate.cgi
+------------
+Display sign off status and let a user to sign off when the task is completed.
+
+    input:  <ocat_dir>/updates_tble.list
+    output: <ocat_dir>/updates_tble.list
+            email sent out
+
+orupdated.cgi
+------------
+Display the past signoff status of all <obsid>.<rev>
+
+    input:  <ocat_dir>/updates_tble.list
+    output: none.
+
+poc_obsid_list.cgi
+------------------
+Display a list of observations for a specific POC
+
+    input: <too_dir>/too_list
+           <too_dir>/ddt_list
+           <too_dir>/new_obs_list
+    output: none
+
+rm_submission.cgi
+-----------------
+Let a user to remove an accidental submission
+
+    input:  <ocat_dir>/updates_tble.list
+            <ocat_dir>/uppdates/<obsid>.<rev>
+    output: updated: <ocat_dir>/updates_tble.list
+            removed: <ocat_dir>/uppdates/<obsid>.<rev>o
+
+schedule_submitter.cgi
+----------------------
+Let a user to submit POC duty dates
+
+    input:  <ocat_dir>/schedule
+    output: <ocat_dir>/schedule
+
+Viz/sub_viz.cgi
+---------------
+ACIS Custom subarray visualizer
+
+    input:  none
+    output: none
+
+go_form/cycle**.cgi
+-------------------
+A cycle letter generator. This is pointed from AO**.html and creates a resulting letter. 
+
+Note: there is a php version available for test/approval.
+    ao_cycle_letter.php
+    create_contact_letter.py
+    mk_info_dict.py
+
+Note2: This set of scripts are own by mta, not cus.
+
+===============
+Related Scripts
+===============
+
+Please also read: /data/mta4/obs_ss/README
+
+==========
+HTML pages
+==========
+The follwoing html pages are linked from ocatdata2html.cgi
+
+eventfilter_answer.html
+search.html
+user_help.html
+
+=========
+Directory
+=========
+'/data/mta4/obs_ss/':                                           obs_ss
+'/data/mta4/CUS/www/Usint/Pass_dir/':                           pass_dir
+'/data/mta4/CUS/www/Usint/ocat/Working_dir/cus/':               ctemp_dir
+'/data/mta4/CUS/www/Usint/ocat/Working_dir/http/':              htemp_dir
+'/data/mta4/CUS/www/Usint/ocat/Working_dir/mta/':               mtemp_dir
+'/data/mta4/CUS/www/Usint/ocat/Info_save/':                     data_dir
+'/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/':    too_dir
+'/data/mta4/CUS/www/Usint/ocat/house_keeping/':                 house_keeping
+'/data/mta4/CUS/www/Usint/ocat/':                               ocat_dir
+'/data/mta4/CUS/www/Usint/':                                    cusdir
+'/usr/bin/':                                                    op_dir
+'/data/mta4/CUS/www/Usint/':                                    bin_dir
+'/data/mta4/CUS/www/Usint/TOO_Obs/Scripts/':                    too_bin_dir
+'/data/mta/Script/Python3.6/MTA/':                              mta_dir
+
+
+Pass_dir
+-------
+cxc_user                    --- a list of cxc users 
+user_email_list             --- a list of users (old)
+usint_users                 --- a list of usint users
+cycle_letter_user.txt       --- a list of cycle letter users
+
+ocat
+----
+approved                    --- a list of approved observation
+updates_table.list          --- a list of signoff status
+cdo_warning_list            --- a list CDO warning 
+
+ocat/update        
+-----------
+<obsid>.<rev>               --- a reacord of changes of obsid information
+
+ocat/house_keeping
+------------------
+keeping templates and other things used by python scripts
+
+ocat/Info_save
+--------------
+dir_list*                   --- a list of directories used by cgi and py scripts
+name_list                   --- a list of descriptive names used by ocatdata2html.cgi
+ocat_values                 --- a list of permissble value/value range used by ocatdata2html.cgi
+
+ocat/Info_save/too_cntact_info
+------------------------------
+ddt_list                    --- a list of ddt
+too_list                    --- a list of too
+new_obs_lsit                --- a list of scheduled observations
+obs_in_30days               --- a list of obsrvation schedule within 30 days
+perosnal_list               --- a list of usint person information
+propno_poc_list             --- a list of proposal # <--> poc
+schedule                    --- a list of poc duety dates
+special_obsid_poc_list      --- a list of obsid with nonstandard poc
+this_week_person_in_charge  --- a file to show who is this week's poc
+tooddt_prop_obsid_list      --- a list of proposal # <---> obsid list
+usint_personal              --- a list usint person

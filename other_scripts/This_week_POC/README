@@ -1,0 +1,24 @@
+
+
+This script finds who is this week's POC and update /home/mta/TOO-POC 
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_write_this_week_too_poc.html
+
+Script:
+-------
+write_this_week_too_poc.py
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/this_week_person_in_charge 
+
+Output:
+-------
+/home/mta/TOO-POC 
+
+
+Cron Job:
+---------
+c3po-v as mta:
+30 0 * * * /data/mta4/CUS/www/Usint/write_this_week_too_poc.py >> $HOME/Logs/write_this_week_too_poc.cron

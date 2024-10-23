@@ -1,0 +1,26 @@
+
+check update_table.list and check whether a phantom entry is created in the list 
+
+Dir: /data/mta4/CUS/www/Usint
+
+Scripts:
+--------
+find_mismatch_warp_script
+find_mismatch_main_script
+find_mismatch.py
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/save_file
+/data/mta4/CUS/www/Usint/ocat/updates/*
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+
+Output:
+-------
+email sent out
+
+Cron Job:
+---------
+r2d2-v as cus
+0 5,8,10,12,14  * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/find_mismatch_warp_script >> $HOME/Logs/find_mismatch.cron
+

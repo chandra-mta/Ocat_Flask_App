@@ -1,0 +1,27 @@
+
+This script extract planned roll agnles
+----------------------------------------
+
+Dir: /data/mta4/obs_ss/
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_find_planned_roll.html
+
+Script:
+-------
+find_planned_roll.perl
+
+
+Data:
+-----
+/proj/web-icxc/htdocs/mp/lts/lts-current.html
+
+Output:
+-------
+/data/mta4/obs_ss/mp_long_term 
+
+
+Cron job
+--------
+c3po-v as mta
+35 * * * * cd /data/mta4/obs_ss; perl find_planned_roll.perl >> $HOME/Logs/find_planned_roll.cron 
+
+

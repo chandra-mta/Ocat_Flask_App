@@ -1,0 +1,1 @@
+TERM=dummy; export TERM; /bin/tcsh  < /data/mta4/CUS/www/Usint/find_mismatch_main_script

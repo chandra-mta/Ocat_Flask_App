@@ -1,0 +1,33 @@
+
+send_sign_off_req.perl  sends out signoff requests to user. 
+
+naggem.pl is a script to parse the updates log and nag (via email) people who haven't
+signed off changes they requested
+
+Dir: /data/mta4/CUS/www/Usint/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_send_sign_off_req.html
+
+
+Script:
+-------
+send_sign_off_req.perl  
+naggem.pl
+
+Data:
+-----
+/data/mta4/CUS/www/Usint/Pass_dir/usint_users
+/data/mta4/CUS/www/Usint/Pass_dir/user_email_list
+/data/mta4/CUS/www/Usint/ocat/updates_table.list
+/data/mta4/CUS/www/Usint/ocat/updates/<obsid>.<ver#>
+
+Output:
+-------
+email sent out
+
+Cron job:
+---------
+c3po-v as cus
+0 5 * * 0-6 perl /data/mta4/CUS/www/Usint/send_sign_off_req.perl >> $HOME/Logs/send_sign_off_req.cron 
+
+c3po-v as mta
+0 4 * * 0-6 perl /data/mta4/CUS/www/Usint/naggem.pl >> $HOME/Logs/naggem.cron
