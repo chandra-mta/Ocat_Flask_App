@@ -1,0 +1,13 @@
+source /home/mta/.ascrc
+
+rm -rf param
+mkdir param
+source /home/mta/bin/reset_param
+setenv PFILES "${PDIRS}"
+set path = (/home/ascds/DS.release/bin/  $path)
+
+cd /data/mta4/CUS/www/Usint 
+/home/ascds/DS.release/bin/perl  /data/mta4/CUS/www/Usint/extract_too_list.perl
+/home/ascds/DS.release/bin/perl  /data/mta4/CUS/www/Usint/extract_too_ddt_info.perl
+
+rm -rf param

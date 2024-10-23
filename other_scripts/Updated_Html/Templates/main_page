@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Updated Target List</title>
+<style  type='text/css'>
+    table{
+            text-align:center;
+            margin-left:auto;
+            margin-right:auto;
+            border-style:solid;
+            border-spacing:8px;
+            border-width:2px;
+            border-collapse:separate
+        }
+    a:link {color:blue;}
+    a:visited {color:teal;}
+</style>
+</head>
+
+<body style='color:#000000;background-color:#FFFFE0'>
+
+<h1>Updated Targets List</h1>
+<p>This list contains all targets which have been verified as updated.</p>
+<ul>
+    <li>Please select a verified month to see the list of targets.</li>
+    <li style='padding-top:6px'>If you want to see the most recent data list, 
+        plese reload this page<br /> 
+        before open a list of targets. The update may take several seconds.</li>
+</ul>
+
+<table border=1>
+

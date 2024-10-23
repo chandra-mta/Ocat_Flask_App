@@ -1,0 +1,72 @@
+
+********************************************************************
+Update new_obs_list, too_list, and ddt_list (and related data files)
+********************************************************************
+
+Dir: /data/mta4/CUS/www/Usint/TOO_Obs
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_too_ddt_update.html
+
+update_new_obs_list.py
+----------------------
+This script reads sot list and udate new_obs_ist, too_list, ddt_list, and obs_in_30days 
+
+Input:  /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/special_obsid_poc_list
+        /data/mta4/obs_ss/sot_ocat.dat
+
+Output: /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/too_list
+        /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/ddt_list
+        /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/new_obs_list
+        /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/obs_in_30days
+        /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/new_obs_list.txt
+
+update_tooddt_prop_list.py
+--------------------------
+update tooddt_prop_obsid_list and propno_poc_list
+
+Output: /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/tooddt_prop_obsid_list
+        /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/propno_poc_list
+
+update_ddt_too_list.py
+-----------------------
+read sot list and udate ddt_list and too_list 
+
+Output: /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/too_list
+        /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/ddt_list
+
+update_pornum_poc_list.py
+-------------------------
+update propno_poc_list
+
+Output: /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/propno_poc_list
+
+DBI.py
+------
+Ska.DBI provides simple methods for database access and data insertion.
+Features:
+
+- Sqlite and sybase connections are supported.
+- Automatic fetching of Ska database account passwords.
+- Integration with numpy record arrays.
+- Verbose mode to show transaction information.
+- Insert method smooths over syntax differences between 
+
+readSQL.py
+---------
+Using DBI.py, read data from sql database
+
+input: obsid
+
+output :(group_id, pre_id, pre_min_lead, pre_max_lead, grating, type, instrument,   \
+         obs_ao_str, status, seq_nbr, ocat_propid, soe_st_sched_date, lts_lt_plan,targname)
+
+tooddtFunctions.py
+------------------
+a collections of functions used for TOO/DDT list updates
+
+
+Cron Job
+--------
+50 *  * * * cd  /data/mta4/CUS/www/Usint/TOO_Obs; /data/mta4/CUS/www/Usint/TOO_Obs/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron 2>&1
+
+55 2 * * 1 /data/mta4/CUS/www/Usint/TOO_Obs; /data/mta4/CUS/www/Usint/TOO_Obs/update_pornum_poc_list.py >> $Home/Logs/update_pornum_poc_list.cron 2>&1
+

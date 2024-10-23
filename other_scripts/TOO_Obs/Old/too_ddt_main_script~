@@ -1,0 +1,14 @@
+cd /data/mta4/CUS/www/Usint/TOO_Obs
+
+/data/mta4/CUS/www/Usint/TOO_Obs/update_tooddt_prop_list.py
+
+/data/mta4/CUS/www/Usint/TOO_Obs/find_too_ddt_email.py
+
+/data/mta4/CUS/www/Usint/TOO_Obs/update_new_obs_list.py
+
+chgrp mtagroup /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/ddt_list 
+chgrp mtagroup /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/too_list 
+chgrp mtagroup /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/propno_poc_list 
+chgrp mtagroup /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/new_obs_list 
+chgrp mtagroup /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/obs_in_30days 
+chgrp mtagroup /data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/new_obs_list.txt

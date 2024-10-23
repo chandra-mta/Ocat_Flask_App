@@ -1,0 +1,26 @@
+
+This set of scripts finds which observations is MP scheduled.
+
+Dir: /data/mta4/obs_ss/ 
+See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_find_scheduled_obs.html
+
+Scripts:
+--------
+find_scheduled_obs_wrap_script
+find_scheduled_obs_main_script
+find_scheduled_obs.perl
+
+Data:
+-----
+/data/mpcrit1/mplogs/<year>/<month*>/input/<month*>*.or
+/data/mta4/CUS/www/Usint/ocat/approved
+/data/mta4/obs_ss/sign_off_request
+
+Output:
+-------
+/data/mta4/obs_ss/scheduled_obs_list
+
+Cron job:
+--------
+c3po-v as mta:
+0 3 * * * cd /data/mta4/obs_ss/; /data/mta4/obs_ss/find_scheduled_obs_wrap_script > $HOME/Logs/find_scheduled_obs.cron

@@ -1,0 +1,12 @@
+'/data/mta4/CUS/www/Usint/TOO_Obs/'			:bin_dir
+'/proj/web-icxc/cgi-bin/obs_ss/'			:obs_ss
+'/proj/web-icxc/cgi-bin/obs_ss/.Pass_dir/'		:pass_dir
+'/data/udoc1/ocat/Working_dir/cus/'			:ctemp_dir
+'/data/udoc1/ocat/Working_dir/http/'			:htemp_dir
+'/data/udoc1/ocat/Working_dir/mta/'			:mtemp_dir
+'/data/udoc1/ocat/Info_save/'				:data_dir
+'/data/udoc1/ocat/Info_save/too_contact_info_py/'		:too_dir
+'/data/udoc1/ocat/'					:ocat_dir
+'/proj/web-cxc/cgi-gen/mta/Obscat/ocat/'		:test_dir
+'/data/mta4/www/CUS/Usint/'				:cus_dir
+'/data/mta/Script/Python_script/'			:mta_dir
