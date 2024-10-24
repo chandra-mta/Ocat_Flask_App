@@ -1,0 +1,23 @@
+This script supports legacy text and html files for TOO POC scheduling
+
+Script:
+----------
+
+create_schedule_wrap_script
+create_schedule_main_script     --- Environment Setting Scripts
+
+create_schedule_table.py
+-------------------------
+
+1. Update schedule html page and TOO-POC contact information.
+2. Send out duty start notification to personnel and warnings if the schedule needs more signups
+
+input:  none but read from <too_contact_dir>/schedule
+output: <usint_dir>/too_contact_schedule.html
+        /home/mta/TOO-POC
+        Duty Notifications
+
+Cronjob
+----------
+cus@r2d2-v
+3 0 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/create_schedule_wrap_script >> $HOME/Logs/too_contact.cron 2>&1
