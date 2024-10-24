@@ -535,7 +535,7 @@ if __name__ == "__main__":
         USINT_DIR = CONFIG['USINT_DIR']
         LIVE_DIR = CONFIG['LIVE_DIR']
         TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
-        HOUSE_KEEPING = f"{LIVE_DIR}/../house_keeping"
+        HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
 
         if args.email != None:
             ADMIN = args.email
