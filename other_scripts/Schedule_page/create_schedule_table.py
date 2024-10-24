@@ -40,6 +40,7 @@ USINT_DIR = CONFIG['USINT_DIR']
 LIVE_DIR = CONFIG['LIVE_DIR']
 TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
 HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
+TOO_POC_DIR = "/home/mta"
 
 #
 #--- a few emails addresses
@@ -491,8 +492,11 @@ def update_this_week_poc(k_list, d_dict, poc_dict, stime):
         ent   = ent.replace('#', '')
         atemp = ent.split(',')
         poc   = atemp[0]
+        contact = atemp[-1]
         if poc == name:
             line = line + ent + '\n'
+            with open(f"{TOO_POC_DIR}/TOO-POC",'w') as f:
+                f.write(f"{contact}\n")
         else:
             line = line  + '#' + ent + '\n'
 #
@@ -534,7 +538,16 @@ if __name__ == "__main__":
                   'LIVE_DIR': f"{os.getcwd()}"}
         USINT_DIR = CONFIG['USINT_DIR']
         LIVE_DIR = CONFIG['LIVE_DIR']
+        OLD = TOO_CONTACT_DIR
         TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
+        os.makedirs(TOO_CONTACT_DIR, exist_ok = True)
+        if not os.path.exists(f"{TOO_CONTACT_DIR}/schedule"):
+            os.system(f"cp {OLD}/schedule {TOO_CONTACT_DIR}/schedule")
+        if not os.path.exists(f"{TOO_CONTACT_DIR}/active_usint_personnel"):
+            os.system(f"cp {OLD}/active_usint_personnel {TOO_CONTACT_DIR}/active_usint_personnel")
+        if not os.path.exists(f"{TOO_CONTACT_DIR}/this_week_person_in_charge"):
+            os.system(f"cp {OLD}/this_week_person_in_charge {TOO_CONTACT_DIR}/this_week_person_in_charge")
+        TOO_POC_DIR = f"{USINT_DIR}"
         HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
 
         if args.email != None:
