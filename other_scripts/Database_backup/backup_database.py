@@ -1,14 +1,11 @@
 #!/proj/sot/ska3/flight/bin/python
 
-#########################################################################################
-#													                                    #
-#       backup_database.py: backup usint related databases                              #
-#													                                    #
-#		    author: t. isobe (tisobe@cfa.harvard.edu)	                                #
-#													                                    #
-#		    last update: Oct 25, 2024								                    #
-#													                                    #
-#########################################################################################
+#
+#--- backup_database.py: backup usint related databases
+#--- author: w. aaron (william.aaron@cfa.harvard.edu)
+#--- last update: Oct 25, 2024
+#
+
 import sys
 sys.path.append("/data/mta4/Script/Python3.11/lib/python3.11/site-packages")
 import os
@@ -93,7 +90,6 @@ def compare_size(old, new):
     output: True/Fale   --- if something wrong, True. otherwise False
     """
     diff = os.path.getsize(new) - os.path.getsize(old)
-    #TODO make this clean
     oldsize = os.path.getsize(old)
     newsize = os.path.getsize(new)
     if diff < 0:
