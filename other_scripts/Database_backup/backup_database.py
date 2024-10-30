@@ -1,28 +1,26 @@
-#!/usr/bin/env /data/mta/Script/Python3.8/envs/ska3-shiny/bin/python
+#!/proj/sot/ska3/flight/bin/python
 
 #########################################################################################
 #													                                    #
 #       backup_database.py: backup usint related databases                              #
 #													                                    #
-#       Note: this script is run by mta, not cus                                        #
-#                                                                                       #
 #		    author: t. isobe (tisobe@cfa.harvard.edu)	                                #
 #													                                    #
-#		    last update: Oct 28, 2021								                    #
+#		    last update: Oct 25, 2024								                    #
 #													                                    #
 #########################################################################################
-
 import sys
+sys.path.append("/data/mta4/Script/Python3.11/lib/python3.11/site-packages")
 import os
-import string
-import re
-import time
-import random
-rtail  = int(time.time() * random.random())
-zspace = '/tmp/zspace' + str(rtail)
+from dotenv import dotenv_values
+import argparse
+import getpass
 
-admin = 'lina.pulgarin-duque@cfa.harvard.edu'
-admin = 'tisobe@cfa.harvard.edu'
+TECH = 'william.aaron@cfa.harvard.edu'
+CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
+USINT_DIR = CONFIG['USINT_DIR']
+OCAT_DIR = f"{USINT_DIR}/ocat"
+BACKUP_DIR = f"{OCAT_DIR}/Backup"
 
 #--------------------------------------------------------------------------------------
 #-- backup_database: backup usint related databases                                  --
@@ -86,15 +84,18 @@ def backup_database():
 #-- compare_size: check the file size change                                         --
 #--------------------------------------------------------------------------------------
 
-def compare_size(csize, psize):
+def compare_size(old, new):
     """
     check the file size change. if the new file is more than 5% smaller than the last
     something may be wrong.
-    input:  csize   --- the current file size
-            psize   --- the last file size
+    input:  old --- old file
+            new --- new file
     output: True/Fale   --- if something wrong, True. otherwise False
     """
-    diff = csize - psize
+    diff = os.path.getsize(new) - os.path.getsize(old)
+    #TODO make this clean
+    oldsize = os.path.getsize(old)
+    newsize = os.path.getsize(new)
     if diff < 0:
         chk = abs(diff) / psize
         if chk > 0.05:
