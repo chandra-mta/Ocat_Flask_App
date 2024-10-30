@@ -14,6 +14,7 @@ import argparse
 import getpass
 
 TECH = 'william.aaron@cfa.harvard.edu'
+CC = 'mtadude@cfa.harvard.edu'
 CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 USINT_DIR = CONFIG['USINT_DIR']
 OCAT_DIR = f"{USINT_DIR}/ocat"
@@ -25,56 +26,26 @@ BACKUP_DIR = f"{OCAT_DIR}/Backup"
 
 def backup_database():
     """
-    backup usint related databases
-    input:  none
-    output: sending email if there is some potential problems
-            updated backupdatabase  --- updates_table.list
-                                        approved
+    Backup Usint related databases
+    input:  None
+    output: Create a backup of updates_table.db and approved files
+            Also send a warning email if there is some potential problems with database integrity
     """
-    file1 = '/data/mta4/CUS/www/Usint/ocat/updates_table.list'
-    file2 = '/data/mta4/CUS/www/Usint/ocat/approved'
-    
-    size1 = os.path.getsize(file1)
-    size2 = os.path.getsize(file2)
-    
-    with open('./last_size', 'r') as f:
-        data = [line.strip() for line in f.readlines()]
-    
-    for ent in data:
-        mc = re.search('updates', ent)
-        atemp = re.split(':', ent)
-        if mc is not None:
-            psize1 = int(atemp[1])
-        else:
-            psize2 = int(atemp[1])
-#
-#--- check updates_table.list file
-#        
-    chk = 0
-    if compare_size(size1, psize1):
-        send_warning("updates_table.list")
+    if compare_size(f"{OCAT_DIR}/updates_table.db", f"{BACKUP_DIR}/updates_table.db"):
+        os.system(f"cp -f --preserver--all {OCAT_DIR}/updates_table.db {BACKUP_DIR}/updates_table.db")
     else:
-        cmd = 'cp -f ' + file1 + ' /data/mta4/CUS/www/Usint/ocat/Backup/.'
-        os.system(cmd)
-        chk += 1
-#
-#--- check approved file
-#        
-    if compare_size(size2, psize2):
-        send_warning("approved")
+        text = f"{OCAT_DIR}/updates_table.db file is over 5% smaller than back up in {BACKUP_DIR}.\n"
+        text += "Please check the backup and live databases.\n"
+        text += f"This message was sent to {TECH} and {CC}."
+        send_mail("Check Usint Backup: updates_table.db", text, {"TO":TECH, "CC": CC})
+    
+    if compare_size(f"{OCAT_DIR}/approved", f"{BACKUP_DIR}/approved"):
+        os.system(f"cp -f --preserver--all {OCAT_DIR}/approved {BACKUP_DIR}/approved")
     else:
-        cmd = 'cp -f ' + file2 + ' /data/mta4/CUS/www/Usint/ocat/Backup/.'
-        os.system(cmd)
-        chk += 1
-#
-#--- update size info file if there is not nay problem
-#
-    if chk == 2:
-        line = 'updates:' + str(size1) + '\n'
-        line = line + 'approved:' + str(size2) + '\n'
-
-        with open('./last_size', 'w') as fo:
-            fo.write(line)
+        text = f"{OCAT_DIR}/approved file is over 5% smaller than back up in {BACKUP_DIR}.\n"
+        text += "Please check the backup and live databases.\n"
+        text += f"This message was sent to {TECH} and {CC}."
+        send_mail("Check Usint Backup: approved", text, {"TO":TECH, "CC": CC})
 
 
 #--------------------------------------------------------------------------------------
@@ -87,7 +58,7 @@ def compare_size(old, new):
     something may be wrong.
     input:  old --- old file
             new --- new file
-    output: True/False   --- if something wrong, True. otherwise False
+    output: True/False   --- if something wrong, return False. If size comparison is fine, return True
     """
     diff = os.path.getsize(new) - os.path.getsize(old)
     if diff < 0:
@@ -97,25 +68,34 @@ def compare_size(old, new):
 
     return False
 
-#--------------------------------------------------------------------------------------
-#-- send_warning: sending a warning email                                            --
-#--------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------
+#-- send_mail: sending email                                                          --
+#---------------------------------------------------------------------------------------
 
-def send_warning(name):
+def send_mail(subject, text, address_dict):
     """
-    sending a warning email
-    input:  name    --- the name of the file
-    output: email send out to admin
+    sending email
+    input:  subject      --- subject line
+            test         --- text or template file of text
+            address_dict --- email address dictionary
+    output: email sent
     """
-    text = 'It seems that database /data/mta4/CUS/www/Usint/ocat/' + name
-    text = text + ' may have some problems. Please check. The backup data are'
-    text = text = ' in /data/mta4/CUS/www/Usint/ocat/Backup.\n'
+    message = ''
+    message += f"TO:{','.join(address_dict['TO'])}\n"
+    if 'CC' in address_dict.keys():
+        message += f"CC:{','.join(address_dict['CC'])}\n"
+    if 'BCC' in address_dict.keys():
+        message += f"BCC:{','.join(address_dict['BCC'])}\n"
 
-    with open(zspace, 'w') as fo:
-        fo.write(text)
+    message += f"Subject:{subject}\n"
+    
+    if os.path.isfile(text):
+        with open(text) as f:
+            message += f.read()
+    else:
+        message += f"{text}"
 
-    cmd = 'cat ' + zspace + '|mailx -s "Subject: Please check the database" ' + admin
-    os.system(cmd)
+    os.system(f"echo '{message}' | sendmail -t")
 
 #--------------------------------------------------------------------------------------
 
