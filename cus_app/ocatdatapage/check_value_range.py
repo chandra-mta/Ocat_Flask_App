@@ -235,7 +235,7 @@ def ra_dec_range_check(ct_dict, warning_list):
     if note == '':
         diff      = math.sqrt((ora -ra)**2 + (odec - dec)**2)
         if diff > 0.1333:
-            note = 'The coordindated was shifted more than 8 arcmin. You need a CDO permssion.\n'
+            note = 'The coordinates were shifted by more than 8 arcmin.  You need CDO approval.\n'
 
     if note != '':
         warning_list.append(note)
