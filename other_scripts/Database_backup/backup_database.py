@@ -87,13 +87,11 @@ def compare_size(old, new):
     something may be wrong.
     input:  old --- old file
             new --- new file
-    output: True/Fale   --- if something wrong, True. otherwise False
+    output: True/False   --- if something wrong, True. otherwise False
     """
     diff = os.path.getsize(new) - os.path.getsize(old)
-    oldsize = os.path.getsize(old)
-    newsize = os.path.getsize(new)
     if diff < 0:
-        chk = abs(diff) / psize
+        chk = abs(diff) / os.path.getsize(old)
         if chk > 0.05:
             return True
 
