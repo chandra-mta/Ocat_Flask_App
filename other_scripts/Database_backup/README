@@ -18,4 +18,4 @@ backup_database.py
 Cronjob
 ----------
 cus@r2d2-v
-3 0 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/create_schedule_wrap_script >> $HOME/Logs/too_contact.cron 2>&1
+19 */3 * * * cd /data/mta4/CUS/www/Usint/ocat/Backup; /data/mta4/CUS/www/Usint/ocat/Backup/backup_database.py -m flight > $HOME/Logs/backup_database.cron
