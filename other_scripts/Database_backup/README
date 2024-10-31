@@ -1,0 +1,21 @@
+This script supports database backups and data integrity
+
+Script:
+----------
+backup_database.py
+-------------------------
+
+1. backup_database(): backup usint related databases, sending warning emails if the file size suggests a large amount of data is missing.
+    input:  None
+    output: Create a backup of updates_table.db and approved files
+            Also send a warning email if there is some potential problems with database integrity,
+            such as the newer version of the updates_table.db or approved files being over 5% smaller
+
+2. check_mismatch(): check for discrepancy between revision files and updates_table.db
+    input:  --- none, but read from updates_table.db and OCAT_DIR/updates
+    output: --- notification emails if discrepancy has occured.
+
+Cronjob
+----------
+cus@r2d2-v
+3 0 * * * cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/create_schedule_wrap_script >> $HOME/Logs/too_contact.cron 2>&1
