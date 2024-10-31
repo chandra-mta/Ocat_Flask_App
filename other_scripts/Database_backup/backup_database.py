@@ -44,7 +44,7 @@ def backup_database():
         text = f"{OCAT_DIR}/updates_table.db file is over 5% smaller than back up in {BACKUP_DIR}.\n"
         text += "Please check the backup and live databases.\n"
         text += f"This message was sent to {TECH} and {CC}."
-        send_mail("Check Usint Backup: updates_table.db", text, {"TO":TECH, "CC": CC})
+        send_mail("Check Usint Backup: updates_table.db", text, {"TO":[TECH], "CC": [CC]})
     
     if compare_size(f"{OCAT_DIR}/approved", f"{BACKUP_DIR}/approved"):
         os.system(f"cp -f --preserve=all {OCAT_DIR}/approved {BACKUP_DIR}/approved")
@@ -52,7 +52,7 @@ def backup_database():
         text = f"{OCAT_DIR}/approved file is over 5% smaller than back up in {BACKUP_DIR}.\n"
         text += "Please check the backup and live databases.\n"
         text += f"This message was sent to {TECH} and {CC}."
-        send_mail("Check Usint Backup: approved", text, {"TO":TECH, "CC": CC})
+        send_mail("Check Usint Backup: approved", text, {"TO": [TECH], "CC": [CC]})
 
 
 #--------------------------------------------------------------------------------------
@@ -65,15 +65,17 @@ def compare_size(old, new):
     something may be wrong.
     input:  old --- old file
             new --- new file
-    output: True/False   --- if something wrong, return False. If size comparison is fine, return True
+    output: True/False   --- if something wrong, return True. If size comparison is fine, return False
     """
+    if not os.path.exists(new):
+        return True
     diff = os.path.getsize(new) - os.path.getsize(old)
     if diff < 0:
         chk = abs(diff) / os.path.getsize(old)
         if chk > 0.05:
-            return True
+            return False
 
-    return False
+    return True
 
 #---------------------------------------------------------------------------------------
 #-- send_mail: sending email                                                          --
@@ -145,23 +147,55 @@ def check_mismatch():
     
     missing_updates = rev_set - updates_set
     missing_rev = updates_set - rev_set
-    
     if missing_updates != set():
         text = "The following revisions have revision files but are missing from the updates_table.\n"
         for i in missing_updates:
             text += f"{i}\n"
         text += "Please check the database integrity."
-        send_mail("Check Missing Usint Status Entry", text, {"TO":TECH, "CC": CC})
+        send_mail("Check Missing Usint Status Entry", text, {"TO":[TECH], "CC": [CC]})
         
     if missing_rev != set():
         text = "The following revisions are present in the updates_table but are missing revision files.\n"
         for i in missing_updates:
             text += f"{i}\n"
         text += "Please check the database integrity."
-        send_mail("Check Missing Usint Revision File", text, {"TO":TECH, "CC": CC})
+        send_mail("Check Missing Usint Revision File", text, {"TO":[TECH], "CC": [CC]})
 
 #--------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
+    parser.add_argument("-p", "--path", required = False, help = "Directory path to determine output location of backups.")
+    args = parser.parse_args()
+#
+#--- Determine if running in test mode and change pathing if so
+#
+    if args.mode == "test":
+#
+#--- Path output to same location as unit tests
+#
+        SEND_MAIL = False
+        BACKUP_DIR = f"{os.getcwd()}/test/outTest"
+        os.makedirs(BACKUP_DIR, exist_ok= True)
+        backup_database()
+        check_mismatch()
 
-    backup_database()
+    elif args.mode == "flight":
+#
+#--- Create a lock file and exit strategy in case of race conditions
+#
+        name = os.path.basename(__file__).split(".")[0]
+        user = getpass.getuser()
+        if os.path.isfile(f"/tmp/{user}/{name}.lock"):
+            sys.exit(f"Lock file exists as /tmp/{user}/{name}.lock. Process already running/errored out. Check calling scripts/cronjob/cronlog.")
+        else:
+            os.system(f"mkdir -p /tmp/{user}; touch /tmp/{user}/{name}.lock")
+
+        backup_database()
+        check_mismatch()
+
+#
+#--- Remove lock file once process is completed
+#
+        os.system(f"rm /tmp/{user}/{name}.lock")
