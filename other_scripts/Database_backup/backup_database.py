@@ -10,6 +10,10 @@ import sys
 sys.path.append("/data/mta4/Script/Python3.11/lib/python3.11/site-packages")
 import os
 from dotenv import dotenv_values
+import glob
+from datetime import datetime
+import sqlite3 as sq
+from contextlib import closing
 import argparse
 import getpass
 
@@ -19,6 +23,8 @@ CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 USINT_DIR = CONFIG['USINT_DIR']
 OCAT_DIR = f"{USINT_DIR}/ocat"
 BACKUP_DIR = f"{OCAT_DIR}/Backup"
+NOW = int(datetime.now().strftime('%s'))
+SEND_MAIL = True
 
 #--------------------------------------------------------------------------------------
 #-- backup_database: backup usint related databases                                  --
@@ -29,10 +35,11 @@ def backup_database():
     Backup Usint related databases
     input:  None
     output: Create a backup of updates_table.db and approved files
-            Also send a warning email if there is some potential problems with database integrity
+            Also send a warning email if there is some potential problems with database integrity,
+            such as the newer version of the updates_table.db or approved files being over 5% smaller
     """
     if compare_size(f"{OCAT_DIR}/updates_table.db", f"{BACKUP_DIR}/updates_table.db"):
-        os.system(f"cp -f --preserver--all {OCAT_DIR}/updates_table.db {BACKUP_DIR}/updates_table.db")
+        os.system(f"cp -f --preserve=all {OCAT_DIR}/updates_table.db {BACKUP_DIR}/updates_table.db")
     else:
         text = f"{OCAT_DIR}/updates_table.db file is over 5% smaller than back up in {BACKUP_DIR}.\n"
         text += "Please check the backup and live databases.\n"
@@ -40,7 +47,7 @@ def backup_database():
         send_mail("Check Usint Backup: updates_table.db", text, {"TO":TECH, "CC": CC})
     
     if compare_size(f"{OCAT_DIR}/approved", f"{BACKUP_DIR}/approved"):
-        os.system(f"cp -f --preserver--all {OCAT_DIR}/approved {BACKUP_DIR}/approved")
+        os.system(f"cp -f --preserve=all {OCAT_DIR}/approved {BACKUP_DIR}/approved")
     else:
         text = f"{OCAT_DIR}/approved file is over 5% smaller than back up in {BACKUP_DIR}.\n"
         text += "Please check the backup and live databases.\n"
@@ -94,8 +101,64 @@ def send_mail(subject, text, address_dict):
             message += f.read()
     else:
         message += f"{text}"
+    if SEND_MAIL:
+        os.system(f"echo '{message}' | sendmail -t")
+    else:
+        print(message)
 
-    os.system(f"echo '{message}' | sendmail -t")
+
+#--------------------------------------------------------------------------------------
+#-- check_mismatch: check for discrepancy between revision files and updates_table.db--
+#--------------------------------------------------------------------------------------
+def check_mismatch():
+    """
+    check for discrepancy between revision file and updates_table.db
+    input:  --- none, but read from updates_table.db and OCAT_DIR/updates
+    output: --- notification emails if discrepancy has occured.
+    """
+    cutoff = NOW - 3.156e7
+    #
+    #--- Work only with checking revision files in proper format
+    #
+    rev_list = glob.glob(f"{OCAT_DIR}/updates/*")
+    rev_list.sort(key=os.path.getmtime)
+    rev_list = [os.path.basename(x) for x in rev_list if os.path.getmtime(x) > cutoff]
+    rev_set = set()
+    for x in rev_list:
+        #
+        #--- If the file can be converted into a float, then it's in obsid.rev format
+        #
+        try:
+            y = float(x)
+            rev_set.add(y)
+        except ValueError:
+            pass
+            
+    #
+    #--- Fetch revision in database which have rev_time (discarding known missing legacy files)
+    #
+    with closing(sq.connect(f"{OCAT_DIR}/updates_table.db")) as conn: #Auto-closes
+        with conn: #Auto-commits
+            with closing(conn.cursor()) as cur: #Auto-closes
+                fetch_result = cur.execute(f"SELECT obsidrev FROM revisions WHERE rev_time > {cutoff} ORDER BY rev_time DESC").fetchall()
+    updates_set = set([x[0] for x in fetch_result])
+    
+    missing_updates = rev_set - updates_set
+    missing_rev = updates_set - rev_set
+    
+    if missing_updates != set():
+        text = "The following revisions have revision files but are missing from the updates_table.\n"
+        for i in missing_updates:
+            text += f"{i}\n"
+        text += "Please check the database integrity."
+        send_mail("Check Missing Usint Status Entry", text, {"TO":TECH, "CC": CC})
+        
+    if missing_rev != set():
+        text = "The following revisions are present in the updates_table but are missing revision files.\n"
+        for i in missing_updates:
+            text += f"{i}\n"
+        text += "Please check the database integrity."
+        send_mail("Check Missing Usint Revision File", text, {"TO":TECH, "CC": CC})
 
 #--------------------------------------------------------------------------------------
 
