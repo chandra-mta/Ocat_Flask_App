@@ -765,6 +765,7 @@ def set_obsidrev(ct_dict):
     """
     obsid = ct_dict['obsid'][-1]
     data = [each for each in os.listdir(f"{current_app.config['OCAT_DIR']}/updates/") if each.startswith(str(obsid)+".")]
+    data.sort()
     if len(data) > 0:
         atemp = re.split('\.', data[-1])
         rev   = int(atemp[1]) + 1
