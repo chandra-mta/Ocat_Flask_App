@@ -1984,8 +1984,6 @@ def strip_spaces(line):
     """
     text = ''
     for ent in line:
-        if ent.isalpha() or ent.isnumeric()\
-             or (ent in ['+', '-', '=', '@', '#', '$', '%', '&', '*','(', ')']):
+        if not ent.isspace():
             text = text + ent.lower()
-
     return text
