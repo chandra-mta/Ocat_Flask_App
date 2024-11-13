@@ -113,7 +113,7 @@ def send_mail(subject, text, address_dict):
     else:
         message += f"{text}"
     if SEND_MAIL:
-        os.system(f"echo '{message}' | sendmail -t")
+        os.system(f"echo '{message}' | /sbin/sendmail -t")
     else:
         print(message)
 

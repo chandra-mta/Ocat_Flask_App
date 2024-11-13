@@ -286,7 +286,7 @@ def send_email(subject, text, addresses):
 
     if not LIVE_EMAIL:
         print(f"Echoing the following message into sendmail.\n{message}")
-    os.system(f"echo '{message}' | sendmail -t")
+    os.system(f"echo '{message}' | /sbin/sendmail -t")
 
 #---------------------------------------------------------------------------------------
 #-- create_email: create signoff request email                                       ---

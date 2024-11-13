@@ -450,7 +450,7 @@ def send_mail(subject, text, address_dict):
     else:
         message += f"{text}"
 
-    os.system(f"echo '{message}' | sendmail -t")
+    os.system(f"echo '{message}' | /sbin/sendmail -t")
 
 #---------------------------------------------------------------------------------------
 #-- update_this_week_poc: update this_week_person_in_charge table                      -
