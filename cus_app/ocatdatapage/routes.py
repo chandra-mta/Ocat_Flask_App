@@ -238,7 +238,7 @@ def process_submit_data(ct_dict, f_data):
     input:  ct_dict     --- a dict of data
             f_data      --- form data
     output: asis        --- asis status
-            wnote       --- warning note, such as whether obsid is on OR list
+            note       --- warning note, such as whether obsid is on OR list
             dis_param_list  --- a list of parameter names which will be
                                 displayed on the page
             obsids_disp     --- a list of obsids which will be update similarly
@@ -288,6 +288,7 @@ def process_submit_data(ct_dict, f_data):
 #--- if multiple obsids are submitted, pass the list of the obsids
 #
         obsids_disp = create_display_obsid_list(f_data, ct_dict['obsid'][-1])
+        current_app.logger.info(f"Multi-obsids: {obsids_disp}")
 #
 #--- check whether any of obsids are in the active OR list
 #

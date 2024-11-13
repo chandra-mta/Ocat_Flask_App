@@ -380,8 +380,16 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
     if  ct_dict['status'][-1]  in ['scheduled', 'unobserved', 'untriggered']:
 
         ofile  = os.path.join(current_app.config['OCAT_DIR'], 'updates', obsidrev)
-        with open(ofile, 'w') as fo:
-            fo.write(line)
+        #
+        # --- If revision file write fail's remove ofile then raise error
+        # --- This prevents empty revision files from being created
+        #
+        try:
+            with open(ofile, 'w') as fo:
+                fo.write(line)
+        except Exception as e:
+            os.system(f"rm -f {ofile}")
+            raise(e)
 
     return line, cline
 
