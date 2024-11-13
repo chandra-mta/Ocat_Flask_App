@@ -26,6 +26,10 @@ OCAT_DIR = f"{USINT_DIR}/ocat"
 BACKUP_DIR = f"{OCAT_DIR}/Backup"
 NOW = datetime.now()
 SEND_MAIL = True
+#
+# --- Set of known mismatches to ignore
+#
+IGNORE = {30479.001, 30479.002}
 
 # --------------------------------------------------------------------------------------
 # -- backup_database: backup usint related databases                                  --
@@ -158,6 +162,8 @@ def check_mismatch():
 
     missing_updates = rev_set - updates_set
     missing_rev = updates_set - rev_set
+    missing_updates = missing_updates - IGNORE
+    missing_rev = missing_rev - IGNORE
     if missing_updates != set():
         text = "The following revisions have revision files but are missing from the updates_table.\n"
         if len(missing_updates) > 30:
