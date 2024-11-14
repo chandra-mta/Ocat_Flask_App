@@ -164,6 +164,9 @@ def check_mismatch():
     missing_rev = updates_set - rev_set
     missing_updates = missing_updates - IGNORE
     missing_rev = missing_rev - IGNORE
+    #
+    # --- Check if updates_table is missing content.
+    #
     if missing_updates != set():
         text = "The following revisions have revision files but are missing from the updates_table.\n"
         if len(missing_updates) > 30:
@@ -179,19 +182,21 @@ def check_mismatch():
                 text += f"{i}\n"
         text += "Please check the database integrity."
         send_mail("Check Missing Usint Status Entry", text, {"TO": [TECH], "CC": [CC]})
-
+    #
+    # --- Check if revision files is missing content.
+    #
     if missing_rev != set():
         text = "The following revisions are present in the updates_table but are missing revision files.\n"
-        if len(missing_updates) > 30:
+        if len(missing_rev) > 30:
             missing_rev_file = (
                 f"{BACKUP_DIR}/missing_rev_{NOW.strftime('%Y:%m:%d:%H:%M:%S')}"
             )
             text += f"Too many revision files are missing, recording list in {missing_rev_file}\n"
-            with open(missing_updates_file, "w") as f:
-                for i in missing_updates:
+            with open(missing_rev_file, "w") as f:
+                for i in missing_rev:
                     f.write(f"{i}\n")
         else:
-            for i in missing_updates:
+            for i in missing_rev:
                 text += f"{i}\n"
         text += "Please check the database integrity."
         send_mail("Check Missing Usint Revision File", text, {"TO": [TECH], "CC": [CC]})
