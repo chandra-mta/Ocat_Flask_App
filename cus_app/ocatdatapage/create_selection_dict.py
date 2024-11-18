@@ -312,7 +312,7 @@ def create_selection_dict(obsid):
 
     p_id         = 'type'
     label        = 'Type'
-    choice       = ('GO', 'TOO', 'GTO', 'CAL', 'DDT', 'CAL_ER', 'ARCHIVE', 'CDFS')
+    choice       = ('GO', 'TOO', 'GTO', 'CAL', 'DDT', 'CAL_ER', 'ARCHIVE', 'CDFS', 'CLP')
     choices      = [(x, x) for x in choice]
     lind         = 'l'
     group        = 'gen'

@@ -70,7 +70,7 @@ class OcatParamForm(FlaskForm):
     grating      = SelectField(label=label, choices=[(x, x) for x in choice])
 
     label        = 'type'
-    choice       = ('GO', 'TOO', 'GTO', 'CAL', 'DDT', 'CAL_ER', 'ARCHIVE', 'CDFS')
+    choice       = ('GO', 'TOO', 'GTO', 'CAL', 'DDT', 'CAL_ER', 'ARCHIVE', 'CDFS', 'CLP')
     type         = SelectField(label=label, choices=[(x, x) for x in choice])
 
     label        = 'targname'
