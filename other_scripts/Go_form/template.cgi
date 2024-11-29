@@ -134,8 +134,7 @@ if ($stage eq "mailit") {
 	    print h2("Your email has been sent to $cxc_email!");
 	    print "<p style='padding-bottom:40px'>";
         print "Please check to make sure it appears correctly. ";
-        print "If not, please email to <a href=mailto:isobe\@head.cfa.harvard.edu>";
-        print "<em>T. Isobe</em></a>.</p>";
+	print "If you see any problems, please email <a href=mailto:bwargelin\@cfa.harvard.edu>Brad Wargelin</a> and <a href=mailto:william.aaron\@cfa.harvard.edu>Will Aaron</a>.</p>";
 #
 #--- select the correct backlink page
 #
