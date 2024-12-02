@@ -385,7 +385,7 @@ def create_data_record_file(ct_dict, ind_dict, user, asis, data, obsidrev):
         # --- This prevents empty revision files from being created
         #
         try:
-            with open(ofile, 'w') as fo:
+            with open(ofile, 'w', encoding='utf-8') as fo:
                 fo.write(line)
         except Exception as e:
             os.system(f"rm -f {ofile}")
@@ -548,7 +548,7 @@ def update_approved_list(ct_dict, user, asis):
                 with lock:
                     cmd   = 'cp -f ' + ofile + ' ' + ofile + '~'
                     os.system(cmd)
-                    with open(ofile, 'a') as fo:
+                    with open(ofile, 'a', encoding='utf-8') as fo:
                         fo.write(line)
             else:
                 flash('Something went wrong and cannot open "approved" file.')
@@ -570,7 +570,7 @@ def update_approved_list(ct_dict, user, asis):
                 os.system(cmd)
                 line  = remove_data_line(data, obsid)
     
-                with open(ofile, 'w') as fo:
+                with open(ofile, 'w', encoding='utf-8') as fo:
                     fo.write(line)
         else:
             flash('Something went wrong and cannot open "approved" file.')
