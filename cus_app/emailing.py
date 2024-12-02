@@ -36,7 +36,7 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
     """
     cus = CUS
 #
-#--- if this is a test say so
+#--- if this is a test, say so
 #
     if current_app.config['DEVELOPMENT']:
         print(f"App in Development. Interrupting the following email to send to testing user instead.\n\
@@ -48,7 +48,6 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
         cus        = ''
         recipients = current_user.email
         bcc    = ''
-
 #
 #--- Cleaning step
 #
@@ -66,14 +65,18 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
             bcc = f"{bcc},{cus}"
         else:
             bcc = cus
-
-    if bcc:
-        message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail -t"
-    else:
-        message = f"To:{recipients}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail -t"
-    os.system(cmd)
+#
+#--- Construct message in MIMEText
+#
+    msg = MIMEText(text_body)
+    msg['Subject'] = subject
+    msg['To'] = recipients
+    msg['CC'] = bcc
+#
+#--- Send Email
+#
+    p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+    p.communicate(msg.as_bytes())
 
 #--------------------------------------------------------------
 #-- send_error_email: sending out error email to admin       --
