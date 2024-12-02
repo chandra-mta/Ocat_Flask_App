@@ -289,7 +289,7 @@ def update_data_tables(form):
                 with open(approve_file,'r') as f:
                     data = [line.strip() for line in f.readlines()]
                     line = write_approved_file(data, obsidrev)
-                    with open(approve_file, 'w') as fo:
+                    with open(approve_file, 'w', encoding='utf-8') as fo:
                         fo.write(line)
             if reversal_statement:
                 if current_app.config['DEVELOPMENT']:

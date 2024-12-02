@@ -9,7 +9,7 @@
 #############################################################################
 
 import os
-from flask          import current_app
+from flask          import current_app, flash
 from flask_login    import current_user
 from cus_app            import mail
 from cus_app.supple.ocat_common_functions   import clean_text
@@ -17,7 +17,8 @@ from cus_app.supple.ocat_common_functions   import clean_text
 from email.mime.text    import MIMEText
 from subprocess         import Popen, PIPE
 from datetime           import datetime
-
+import platform
+import locale
 CUS  = 'cus@cfa.harvard.edu'
 
 #--------------------------------------------------------------
@@ -36,7 +37,7 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
     """
     cus = CUS
 #
-#--- if this is a test say so
+#--- if this is a test, say so
 #
     if current_app.config['DEVELOPMENT']:
         print(f"App in Development. Interrupting the following email to send to testing user instead.\n\
@@ -48,7 +49,6 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
         cus        = ''
         recipients = current_user.email
         bcc    = ''
-
 #
 #--- Cleaning step
 #
@@ -66,20 +66,32 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
             bcc = f"{bcc},{cus}"
         else:
             bcc = cus
-
-    if bcc:
-        message = f"To:{recipients}\nCC:{bcc}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail -t"
-    else:
-        message = f"To:{recipients}\nSubject:{subject}\n{text_body}"
-        cmd = f"echo '{message}' | sendmail -t"
-    os.system(cmd)
+#
+#--- Construct message in MIMEText
+#
+    msg = MIMEText(text_body)
+    msg['Subject'] = subject
+    msg['To'] = recipients
+    msg['CC'] = bcc
+#
+#--- Send Email
+#
+    p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+    (out, error) = p.communicate(msg.as_bytes())
+    if error is not None:
+        current_app.logger.error(error)
+        flash("Error sending notification email. Check Inbox.")
+        send_error_email()
 
 #--------------------------------------------------------------
 #-- send_error_email: sending out error email to admin       --
 #--------------------------------------------------------------    
 
 def send_error_email():
+    sysinfo = platform.uname()._asdict()
+    sysinfo['encode'] = locale.getencoding()
+    sysinfo['prefencode'] = locale.getpreferredencoding()
+    current_app.logger.info(str(sysinfo))
     handler_list = current_app.logger.handlers
     for item in handler_list:
         if item.name == "Error-Info":
