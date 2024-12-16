@@ -34,4 +34,4 @@ setenv SEND_ERROR_EMAIL False
 #This stage of test server doesn't run on Apache, so we define it directly.
 setenv REMOTE_USER $USER
 
-/data/mta4/Script/Python3.11/bin/flask run --no-reload
+/data/mta4/Script/PyUsint/bin/flask run --no-reload

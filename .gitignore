@@ -1,7 +1,23 @@
+#MTA standard
+outTest/
+example/
+logs/
+
 #Ignore Pycache Files
 __pycache__/
-logs/
-outTest/
+
 #Ignore Database Files
 *.db
 *.db~
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Sphinx documentation
+docs/_build/
