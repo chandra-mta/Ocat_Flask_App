@@ -506,6 +506,7 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
         email.send_error_email()
     except sq.OperationalError:
         current_app.logger.error(traceback.format_exc())
+        current_app.logger.info(f"SQL Statement: {add_statement}")
         flash(f"Something went wrong and couldn't update {ufile}.")
         email.send_error_email()
 
