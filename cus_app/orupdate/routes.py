@@ -633,7 +633,7 @@ def check_signoff(form, poc_dict, odata):
         elif mc4 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 'hrc_si_mode-signoff')
+                chk = update_data(obsidrev, 'hrc_si_mode_signoff')
                 if chk == False:
                     check_too_ddt(obsidrev, 'si', odata, poc_dict[obsidrev])
 #
@@ -702,6 +702,7 @@ def update_data(obsidrev, column_signoff):
 #--- Main database file
 #
     ufile = os.path.join(current_app.config['OCAT_DIR'], 'updates_table.db')
+    sql_record = ''
     try:
         with closing(sq.connect(ufile)) as conn: # auto-closes
             with conn: # auto-commits
@@ -711,13 +712,14 @@ def update_data(obsidrev, column_signoff):
 #--- Pull the current signoff status and replace any unfilled signoffs with "N/A"
 #
                         select_discard = f'SELECT general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff from revisions WHERE obsidrev = {obsidrev}'
+                        sql_record += f"SQL Select Discard: {select_discard}\n"
                         res = cur.execute(select_discard)
                         curr_signoff = res.fetchone()
                         discard_execute = f'UPDATE revisions SET general_signoff = "{curr_signoff[0]}", acis_signoff = "{curr_signoff[1]}", acis_si_mode_signoff = "{curr_signoff[2]}", hrc_si_mode_signoff = "{curr_signoff[3]}", usint_verification = "{current_user.username}", usint_date = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
                         discard_execute = discard_execute.replace('NA','N/A').replace('"None"','NULL')
+                        sql_record += f"SQL Update DIscard: {discard_execute}\n"
                         if current_app.config['DEVELOPMENT']:
-                            print(select_discard)
-                            print(discard_execute)
+                            print(sql_record)
                         cur.execute(discard_execute)
                     else:
 #
@@ -725,13 +727,16 @@ def update_data(obsidrev, column_signoff):
 #
                         date_col = column_signoff.replace("_signoff","_date").replace("_verification","_date")
                         update_execute = f'UPDATE revisions SET {column_signoff} = "{current_user.username}", {date_col} = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
+                        sql_record += f"SQL Update: {update_execute}\n"
                         if current_app.config['DEVELOPMENT']:
-                            print(update_execute)
+                            print(sql_record)
                         cur.execute(update_execute)
         return False
     except sq.OperationalError:
         current_app.logger.error(traceback.format_exc())
+        current_app.logger.info(sql_record)
         email.send_error_email()
+        flash(f"Something went wrong and couldn't update {ufile}.")
         return True
 
 #----------------------------------------------------------------------------------
