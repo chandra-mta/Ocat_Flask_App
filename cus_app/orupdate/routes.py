@@ -633,7 +633,7 @@ def check_signoff(form, poc_dict, odata):
         elif mc4 is not None:
             obsidrev = get_obsidrev(key, form)
             if obsidrev != 0:
-                chk = update_data(obsidrev, 'hrc_si_mode-signoff')
+                chk = update_data(obsidrev, 'hrc_si_mode_signoff')
                 if chk == False:
                     check_too_ddt(obsidrev, 'si', odata, poc_dict[obsidrev])
 #
