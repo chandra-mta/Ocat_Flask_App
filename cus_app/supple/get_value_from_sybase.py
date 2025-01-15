@@ -6,7 +6,7 @@
 #                                                                                   #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                               #
 #                                                                                   #
-#           last update: Apr 20, 2021                                               #
+#           last update: Jan 15, 2025                                               #
 #                                                                                   #
 #   Note: this function must be run after setting:                                  #
 #           source /soft/SYBASE16.0/SYBASE.csh                                      #
@@ -23,16 +23,14 @@ import re
 import json
 import time
 import datetime
-import sybpydb
+import ska_dbi.sqsh as sqsh
+from astropy.utils.misc import JsonCustomEncoder
 #
-#--- set parameters
+#--- set sqsh parameters
 #
-pass_dir = '/data/mta4/CUS/www/Usint/Pass_dir/'
-serv     = 'ocatsqlsrv'
-usr      = 'mtaops_internal_web'
-line     = pass_dir + '.targpass_internal'
-with  open(line, 'r') as f:
-    passwd = f.readline().strip()
+_SERV = 'ocatsqlsrv'
+_USR = 'mtaops_internal_web'
+_AUTHDIR = "/data/mta4/CUS/authorization"
 
 #------------------------------------------------------------------------------------
 #-- get_value_from_sybase: run sybase command for python3.8                        --
@@ -46,28 +44,16 @@ def get_value_from_sybase(cmd, db='axafocat'):
     output: row --- a json string (of a list of lists)
     """
 #
-#--- connect to sybase
+#--- connect to sybase with Sqsh class
 #
-    conn = sybpydb.connect(servername=serv, user=usr, password=passwd)
-    cur  = conn.cursor()
-#
-#--- set db name
-#
-    dcmd = 'use ' + db
-    cur.execute(dcmd)
+    conn = sqsh.Sqsh(dbi='sybase', server=_SERV, database = db, user = _USR, authdir = _AUTHDIR)
 #
 #--- fetch data
 #
     try:
-        cur.execute(cmd)
-        row = cur.fetchall()
-
-        cur.close()
-        conn.close()
+        row = conn.fetchall(cmd)
 
     except:
-        cur.close()
-        conn.close()
         return [[]]
 #
 #--- convert none string data into string
@@ -102,7 +88,7 @@ def get_value_from_sybase(cmd, db='axafocat'):
 #
 #--- convert a list to a json string so that we can pass back to the main script
 #
-    row = json.dumps(save)
+    row = json.dumps(save, cls=JsonCustomEncoder)
 
     #return row
     return save
@@ -130,10 +116,8 @@ def convert_lob_to_string(cmd, pos):
 #
 #--- return the sybase command
 #
-    conn = sybpydb.connect(servername=serv, user=usr, password=passwd)
-    cur  = conn.cursor()
-    cur.execute(cmd)
-    row  = cur.fetchone()
+    conn = sqsh.Sqsh(dbi='sybase', server=_SERV, database = db, user = _USR, authdir = _AUTHDIR)
+    row = conn.fetchone(cmd)
 #
 #--- convert lob object to a string
 #
