@@ -1,125 +1,235 @@
 #!/proj/sot/ska3/flight/bin/python
 
+"""
+**update_user_database.py**: Update the Usint user database based on the .groups file
+
+:Author: W. Aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: Jan 16, 2025
+
+"""
+
 import os
-import sqlite3
+import sqlite3 as sq
+from contextlib import closing
 import argparse
 
 IFILE = "/data/mta4/CUS/www/.groups"
 OUT_DIR = "/data/mta4/CUS/Data/Users"
-ADMIN = 'william.aaron@cfa.harvard.edu'
+ADMIN = "william.aaron@cfa.harvard.edu"
+_CREATE_TABLE = """CREATE TABLE user (id INT PRIMARY KEY NOT NULL, username string(64) NOT NULL, email string(64) NOT NULL,groups_string string(64) NOT NULL,full_name string(64) NOT NULL);"""
 
-def update_user_database():
-    """
-    Read the .groups file determining ldap authentication for the Ocat Flask app and 
-    fill out the relevant user information for app.db
-    input: none, but read groups from IFILE
-    output: none, but fill our app.db
-    """
-#
-#--- Generate dictionary of user information
-#
+
+def main():
+    """Read the Usint LDAP .groups authentication file to generate the Ocat Flask Application user database."""
+    os.system(f"cp -f {OUT_DIR}/app.db {OUT_DIR}/app.db~")
     users_dict = read_groups(IFILE)
     users_dict = find_email(users_dict)
     users_dict = find_full_name(users_dict)
-#    
-#--- Creating SQL table
-#
-    #Save previous state
-    os.system(f"cp -f {OUT_DIR}/app.db {OUT_DIR}/app.db~")
-
-    #As designed by the Ocat Flask App, the user database must be named app.db
-    con = sqlite3.connect(f"{OUT_DIR}/app.db")
-    cur = con.cursor()
-
-    #Drop possibly outdated info
-    cur = cur.execute('DROP TABLE IF EXISTS User')
+    if not os.path.isfile(f"{OUT_DIR}/app.db"):
+        create_user_database(users_dict)
+    else:
+        update_user_database(users_dict)
 
 
-    table = """CREATE TABLE user (
-                id INT PRIMARY KEY NOT NULL,
-                username string(64) NOT NULL,
-                email string(64) NOT NULL,
-                groups_string string(64) NOT NULL,
-                full_name string(64) NOT NULL);"""
-    
-    cur.execute(table)
-    #Test user in ID 0
-    cur.execute(f"INSERT INTO User VALUES ('0', 'testUSINT', '{ADMIN}', 'test', 'Test User');")
-    for user, info in users_dict.items():
-        id = info['id']
-        email = info['email']
-        groups_string = info['groups_string']
-        full_name = info['full_name']
-        cur.execute(f'INSERT INTO User VALUES ("{id}", "{user}", "{email}", "{groups_string}", "{full_name}");')
-    con.commit()
+def read_groups(ifile=IFILE):
+    """Read an LDAP .groups formatted file and return member dictionary
 
-def read_groups(ifile = IFILE):
+    :param ifile: Path to the LDAP groups file, defaults to IFILE
+    :type ifile: str, optional
+    :return: Dictionary of user information with groups.
+    :rtype: dict
     """
-    Read an ldap .groups formatted file and return member dictionary
-    input: ifile --- .groups file path
-    output: users_dict --- dictionary of member information based on file.
-    """
-    with open(ifile, 'r') as f:
-        data = [line.strip() for line in f.readlines() if line.strip() != '']
-    
-    k = 1 #ID number 0 saved for a test user added later
+    with open(ifile, "r") as f:
+        data = [line.strip() for line in f.readlines() if line.strip() != ""]
     users_dict = dict()
-    
+
     for ent in data:
-        atemp = [a.strip() for a in ent.split(':')]
+        atemp = [a.strip() for a in ent.split(":")]
         group = atemp[0]
         member_subset = atemp[1].split()
         for member in member_subset:
             if member not in users_dict.keys():
-                #Unlisted member
-                users_dict[member] = {'id': k, 'groups_string': group}
-                k += 1
+                #
+                # --- Unlisted member
+                #
+                users_dict[member] = {"groups_string": group}
             else:
-                #Listed member
-                users_dict[member]['groups_string'] += f":{group}"
-    
+                #
+                # --- Listed member
+                #
+                users_dict[member]["groups_string"] += f":{group}"
+
     return users_dict
+
 
 def find_email(users_dict):
+    """Input an email found through the getent command into a users information dictionary
+
+    :param users_dict: Dictionary of user information with groups.
+    :type users_dict: dict
+    :raises Exception: If the listed POGO username does not have a matching email listed in the NameSwitch library.
+    :return: Dictionary of user information with groups and email.
+    :rtype: dict
     """
-    Input a email found through the getent command into a users information dictionary
-    input: users_dict --- users dictionary keyed by username and values with id and groups_string
-    output: users_dict --- users dictionary keyed by username and values with id and groups_string and email
-    """
-#
-#--- Read the NameSwitch Library Alias Database
-#
-    search = [x.split(':') for x in os.popen(f'getent aliases').read().split('\n')]
-    #Note that the email string will still contain whitespace which must be striped
+    #
+    # --- Read the NameSwitch Library Alias Database
+    #
+    search = [x.split(":") for x in os.popen(f"getent aliases").read().split("\n")]
+    #
+    # --- Note that the email string will still contain whitespace which must be striped
+    #
     for ent in search:
         if ent[0] in users_dict.keys():
-            users_dict[ent[0]]['email'] = ent[1].strip()
+            users_dict[ent[0]]["email"] = ent[1].strip()
+    #
+    # --- Check results of search and warn script runner that an email has not been found.
+    #
+    for user, info in users_dict.items():
+        if "email" not in info.keys():
+            raise Exception(f"getent could not find email from username: {user}")
     return users_dict
+
 
 def find_full_name(users_dict):
+    """Input a full name found through the getent command into a users information dictionary
+
+    :param users_dict: Dictionary of user information with groups and email.
+    :type users_dict: dict
+    :raises Exception: If the listed POGO username does not have a matching full name listed in the NameSwitch library.
+    :return: Dictionary of user information with groups, email, and full name.
+    :rtype: dict
     """
-    Input a full name found through the getent command into a users information dictionary
-    input: users_dict --- users dictionary keyed by username and values with id and groups_string and email
-    output: users_dict --- users dictionary including full name
-    """
-#
-#--- Read the NameSwitch Library Alias Database
-#
-    search = [x.split(':') for x in os.popen(f'getent passwd').read().split('\n')]
+    #
+    # --- Read the NameSwitch Library Alias Database
+    #
+    search = [x.split(":") for x in os.popen(f"getent passwd").read().split("\n")]
     for ent in search:
         if ent[0] in users_dict.keys():
-            users_dict[ent[0]]['full_name'] = ent[4].split(',')[0].strip()
+            users_dict[ent[0]]["full_name"] = ent[4].split(",")[0].strip()
+    #
+    # --- Check results of search and warn script runner that a full name has not been found.
+    #
+    for user, info in users_dict.items():
+        if "full_name" not in info.keys():
+            raise Exception(f"getent could not find full name from username: {user}")
     return users_dict
 
-if __name__=="__main__":
+
+def create_user_database(users_dict):
+    """If the database file doesn't exist, then we create the table with the users_dict as generated by the .groups file.
+
+    :param users_dict: Dictionary of user information with groups, email, and full name.
+    :type users_dict: dict
+    """
+    with closing(sq.connect(f"{OUT_DIR}/app.db")) as conn:  #: Auto-closes
+        with conn:  #: Auto-commits
+            with closing(conn.cursor()) as cur:  #: Auto-closes
+                cur.execute(_CREATE_TABLE)
+                cur.execute(
+                    f"INSERT INTO User VALUES ('0', 'testUSINT', '{ADMIN}', 'test', 'Test User');"
+                )
+                k = 1
+                for user, info in users_dict.items():
+                    email = info["email"]
+                    groups_string = info["groups_string"]
+                    full_name = info["full_name"]
+                    cur.execute(
+                        f'INSERT INTO User VALUES ("{k}", "{user}", "{email}", "{groups_string}", "{full_name}");'
+                    )
+                    k += 1
+
+
+def current_user_dict():
+    """Create a current user dictionary from the existing database.
+
+    :return: Dictionary of user information with groups, email, and full name.
+    :rtype: dict
+    """
+    with closing(sq.connect(f"{OUT_DIR}/app.db")) as conn:  # Auto-closes
+        conn.row_factory = sq.Row
+        with conn:  # Auto-commits
+            with closing(conn.cursor()) as cur:  # Auto-closes
+                fetch_result = cur.execute(f"SELECT * FROM User").fetchall()
+
+    curr_dict = {}
+    for ent in fetch_result:
+        curr_dict[ent["username"]] = {
+            "groups_string": ent["groups_string"],
+            "email": ent["email"],
+            "full_name": ent["full_name"],
+        }
+    return curr_dict
+
+
+def update_user_database(users_dict):
+    """Update the existing database file with the new .groups file requested database
+
+    :param users_dict: Dictionary of user information with groups, email, and full name.
+    :type users_dict: dict
+    """
+
+    curr_dict = current_user_dict()
+    new_users = set(users_dict.keys()) - set(curr_dict.keys())
+    remove_users = set(curr_dict.keys()) - set(users_dict.keys())
+    remove_users.discard("testUSINT")
+    #
+    # --- Setup sequence of updates to the User table
+    #
+    with closing(sq.connect(f"{OUT_DIR}/app.db")) as conn:  #: Auto-closes
+        conn.row_factory = sq.Row
+        with conn:  #: Auto-commits
+            with closing(conn.cursor()) as cur:  #: Auto-closes
+                k = cur.execute(f"SELECT MAX(id) FROM User").fetchall()[0][0]
+                #
+                # --- Permute across requested userbase
+                #
+                for user, info in users_dict.items():
+                    email = info["email"]
+                    groups_string = info["groups_string"]
+                    full_name = info["full_name"]
+                    if user in new_users:
+                        k += 1
+                        print(f"New User: {user}")
+                        cur.execute(
+                            f'INSERT INTO User VALUES ("{k}", "{user}", "{email}", "{groups_string}", "{full_name}");'
+                        )
+                    else:
+                        cur.execute(
+                            f'UPDATE User SET email = "{email}", groups_string = "{groups_string}", full_name = "{full_name}" WHERE username = "{user}"'
+                        )
+                #
+                # --- Remove users no longer listed in file
+                #
+                for user in remove_users:
+                    print(f"Remove User: {user}")
+                    cur.execute(f'DELETE FROM User WHERE username = "{user}"')
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
-    parser.add_argument("-p", "--path", required = False, help = "Determine path to a .groups file determining LDAP authentication groups.")
-    parser.add_argument("-d", "--directory", required = False, help = "Determine path to a database directory for storing the application's app.db")
+    parser.add_argument(
+        "-m",
+        "--mode",
+        choices=["flight", "test"],
+        required=True,
+        help="Determine running mode.",
+    )
+    parser.add_argument(
+        "-p",
+        "--path",
+        required=False,
+        help="Determine path to a .groups file determining LDAP authentication groups.",
+    )
+    parser.add_argument(
+        "-d",
+        "--directory",
+        required=False,
+        help="Determine path to a database directory for storing the application's app.db",
+    )
     args = parser.parse_args()
-#
-#--- Determine if running in test mode and change pathing if so
-#
+    #
+    # --- Determine if running in test mode and change pathing if so
+    #
     if args.mode == "test":
         if args.path:
             IFILE = args.path
@@ -129,7 +239,6 @@ if __name__=="__main__":
             OUT_DIR = args.directory
         else:
             OUT_DIR = f"{os.getcwd()}"
-
-        update_user_database()
+        main()
     else:
-        update_user_database()
+        main()
