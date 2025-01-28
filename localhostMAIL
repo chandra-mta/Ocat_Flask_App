@@ -1,37 +1,38 @@
 #!/bin/tcsh
 #Commands to run Ocat Flask App (cus_app) on localhost in dev configuration
 
-#Setup mimics Env varibales in place in the /proj/web-cxc-dmz-test server config as of 06/23/24.
-#Testing on Local host should mimic initial conditions as much as possible pre-python interpreter call
-#As setup changes in python scripts are more readily available
-
 #As of 06/23/24, web-cxc, Ska3/flight, and MTA PyUsint all use a version of Python 3.11, All of these must be compatible versions.
 #Therefore, if one of these three upgrades to Python 3.12, then all must be upgraded.
-
 #setenv PYTHONPATH "/proj/sot/ska3/flight/lib:/proj/sot/ska3/flight/lib/python3.11/site-packages:/data/mta4/Script/Python3.11:/data/mta4/Script/Python3.11/lib/python3.11/site-packages"
-setenv PYTHONPATH "/proj/sot/ska3/flight/lib:/proj/sot/ska3/flight/lib/python3.11/site-packages:/data/mta4/Script/PyUsint:/data/mta4/Script/PyUsint/lib/python3.11/site-packages"
+#setenv PYTHONPATH "/proj/sot/ska3/flight/lib:/proj/sot/ska3/flight/lib/python3.11/site-packages:/data/mta4/Script/PyUsint:/data/mta4/Script/PyUsint/lib/python3.11/site-packages"
 
+#As of 01/28/25, The Ocat Flask Application will be supported by one of three Usint python conda environments instead of using an extensions approach.
+#To retain MTA usage, we source from the ska3-cus-r2d2-v environment specifically.
+source /data/mta4/CUS/ska3-cus-r2d2-v/bin/ska_envs.csh
 
+#These two environment variables are instantiated before the apache web server httpd process is called.
+#This is required for the Sybase python library sybpydb to function.
 setenv LD_LIBRARY_PATH "/soft/SYBASE16.0/OCS-16_0/lib"
 setenv SYBASE "/soft/SYBASE16.0"
 
-#For running in an Apache Web server, the python script should have no file extension name
+#For running in an Apache Web server, the python script should have no file extension name so that URL's are clean.
 #For running in Flask local host, a .py extension is required.
+#We circumvent this by symlinking usint.py to usint
 setenv FLASK_APP usint
 
-#When running tests, turning FLASK_DEBUG to True will make the werkzeug error handler supercede any other
+#When running tests, turning FLASK_DEBUG to True will make the werkzeug error handler supersede any other
 #error handling you have in place
 
 #Leaving this variable as True means that we don't mess around with logging errors in a file (and error emails), instead it 
-#just pushes errors into a popup in the web browser
+#just pushes errors into a popup in the web browser.
 
-#If you want to test the error handler in the script itself... You need to turn this off.
-#setenv FLASK_DEBUG True
+#If you want to test the UsintErrorHandler emails in the script itself... You need to turn FLASK_DEBUG to False and SEND_ERROR_EMAIL to True.
 setenv FLASK_DEBUG False
 setenv SEND_ERROR_EMAIL True
 
 #This variable typically defined by the Apache LDAP module after authentication.
-#This stage of test server doesn't run on Apache, so we define it directly.
+#This stage of test server doesn't run on Apache, so we define it directly as the running user.
 setenv REMOTE_USER $USER
 
-/data/mta4/Script/Python3.11/bin/flask run --no-reload
+#This will source the flask module found in path set by the above ska_envs.csh call.
+flask run --no-reload

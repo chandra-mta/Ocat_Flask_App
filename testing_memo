@@ -2,8 +2,9 @@ The main git directory contains two setup scripts for running the Ocat Flask App
 Running the script on local host will test any application level changes. In effect, this means that anything change you make to a
 python script supporting Usint will be tested by running one of the following local host scripts.
 
-NOTE: This local host test operates by using a web server built into the Flask module. We have an installation of the Flask module
-in the PyUsint environment extension, which is reachable by any physical machine used by MTA on the HEAD network.
+NOTE: This local host test operates by using a Python Flask module native web server. The Python Flask module for these tests is sourced from the ska3-cus-r2d2-v
+environment, which is a copy of the Ska3-flight environment plus a few extra packages. This environment is reachable by any phyiscal machine used by MTA on the HEAD network.
+
 Therefore, a user will not need to install anything in order to start a local host test. Merely cloning this git repo and running
 one of the two local host scripts will automatically start the application viewable on port 5000 of local host.
 Also note that only one process can use a specific numbered port at a time. So for instance, if you were to have a different localhost test
