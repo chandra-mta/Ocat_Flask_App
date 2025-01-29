@@ -82,7 +82,7 @@ def check_hrc_si_status():
             line = line + ent + '\n'
 
         line = line + '\nPlease go to \n'
-        line = line + 'https://cxc.cfa.harvard.edu/mta/CUS/Usint/orupdate.cgi'
+        line = line + 'https://cxc.cfa.harvard.edu/wsgi/cus/usint/orupdate/index'
         line = line + '\n and sign off it as soon as possible.\n'
 
         with open(zspace, 'w') as fo:
