@@ -21,7 +21,7 @@ import time
 rtail  = int(time.time() * random.random())
 zspace = '/tmp/zspace' + str(rtail)
 
-email = 'dpatnaude@cfa.harvard.edu,grant.tremblay@cfa.harvard.edu,pnulsen@cfa.harvard.edu'
+email = 'dpatnaude@cfa.harvard.edu,grant.tremblay@cfa.harvard.edu,gerrit.schellenberger@cfa.harvard.edu,tgauron@cfa.harvard.edu'
 
 #------------------------------------------------------------------------------
 #-- check_hrc_si_status: check hrc si mode sign off status and send out email if it is required
