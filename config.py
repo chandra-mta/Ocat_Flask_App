@@ -1,9 +1,15 @@
 import os
 from datetime import timedelta
 import binascii
+from dotenv import dotenv_values
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
-
-#os.environ should be filled with environment variables in the calling flask app creation script which calls the config object.
+#
+#--- configuration dotfiles settings
+#
+if os.environ.get('FLASK_RUN_FROM_CLI') == 'true':
+    file_config = dotenv_values("/data/mta4/CUS/Data/Env/.localhostenv")
+else:
+    file_config = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
@@ -12,8 +18,8 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
 
     DEBUG      = True
-    SEND_ERROR_EMAIL = os.environ.get('SEND_ERROR_EMAIL') or False
-    HTTP_ADDRESS = os.environ.get('HTTP_ADDRESS')
+    SEND_ERROR_EMAIL = file_config.get('SEND_ERROR_EMAIL') or False
+    HTTP_ADDRESS = file_config.get('HTTP_ADDRESS')
 #
 #--- application directory
 #
@@ -22,12 +28,12 @@ class Config(object):
 #
 #--- database and csrf need secret_key
 #
-    #SECRET_KEY = os.environ.get('SECRET_KEY')
+    #SECRET_KEY = file_config.get('SECRET_KEY')
     SECRET_KEY = binascii.b2a_hex(os.urandom(15)).decode()
 #
 #--- database
 #
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = file_config.get('DATABASE_URL') or \
         'sqlite:////data/mta4/CUS/Data/Users/app.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 #
@@ -38,12 +44,12 @@ class Config(object):
 #
 #--- mail (SMTPHandler future implementation)
 #
-    MAIL_SERVER     = os.environ.get('MAIL_SERVER')
-    MAIL_PORT       = int(os.environ.get('MAIL_PORT') or 25)
-    MAIL_USE_TLS    = os.environ.get('MAIL_USE_TLS') is not None
+    MAIL_SERVER     = file_config.get('MAIL_SERVER')
+    MAIL_PORT       = int(file_config.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS    = file_config.get('MAIL_USE_TLS') is not None
     MAIL_USE_SSL    = True
-    MAIL_USERNAME   = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD   = os.environ.get('MAIL_PASSWORD')
+    MAIL_USERNAME   = file_config.get('MAIL_USERNAME')
+    MAIL_PASSWORD   = file_config.get('MAIL_PASSWORD')
     TEST_MAIL       = False
     ADMINS          = ['william.aaron@cfa.harvard.edu']
 #
@@ -69,7 +75,7 @@ class Config(object):
 
 class ProdConfig(Config):
     DEBUG    = False
-    SEND_ERROR_EMAIL = os.environ.get('SEND_ERROR_EMAIL') or True
+    SEND_ERROR_EMAIL = file_config.get('SEND_ERROR_EMAIL') or True
     DEVELOPMENT = False
 #
 #--- Live Directory Settings
@@ -85,8 +91,8 @@ class ProdConfig(Config):
 class DevConfig(Config):
     ENV         = 'development'
     DEVELOPMENT = True
-    if os.environ.get('TEST_MAIL') is not None:
-        TEST_MAIL = os.environ.get('TEST_MAIL')
+    if file_config.get('TEST_MAIL') is not None:
+        TEST_MAIL = file_config.get('TEST_MAIL')
     SECRET_KEY = 'secret_key_for_test'
     PERMANENT_SESSION_LIFETIME   = timedelta(minutes=60)
 
