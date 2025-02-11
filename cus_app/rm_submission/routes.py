@@ -280,19 +280,25 @@ def update_data_tables(form):
 #--- removing obsidrev from the approved list, and removing the ASIS revision from the updates_table.db
 #
                 file_remove = os.path.join(current_app.config['OCAT_DIR'],'updates',obsidrev)
+                reversal_statement = f"DELETE FROM revisions WHERE obsidrev = {obsidrev}"
+                with open(approve_file,'r') as f:
+                    data = [line.strip() for line in f.readlines()]
+                line = write_approved_file(data, obsidrev)
                 try:
                     os.system(f"rm -rf {file_remove}")
                 except:
                     current_app.logger.error(f"Couldn't remove {file_remove} in rm_sumbission page.")
                     email.send_error_email()
-                reversal_statement = f"DELETE FROM revisions WHERE obsidrev = {obsidrev}"
-                with open(approve_file,'r') as f:
-                    data = [line.strip() for line in f.readlines()]
-                    line = write_approved_file(data, obsidrev)
+                try:
                     with open(approve_file, 'w', encoding='utf-8') as fo:
                         fo.write(line)
+                    send_notification(obsidrev.split('.')[0])
+                except:
+                    current_app.logger.error(f"Couldn't write {approve_file}")
+                    email.send_error_email()
+                
             if reversal_statement:
-                if current_app.config['DEVELOPMENT']:
+                if current_app.config['CONFIGURATION_NAME'] == 'localhost':
                     print(reversal_statement)
 #
 #--- SQL query to database
@@ -336,8 +342,6 @@ def write_approved_file(data, obsidrev):
         if float(os.path.getsize(approve_file)) > 0:
             cmd = 'cp -f ' + approve_file + ' ' + approve_file + '~'
             os.system(cmd)
-
-        send_notification(obsid)
 
     return line
         

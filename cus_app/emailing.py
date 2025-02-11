@@ -39,8 +39,8 @@ def send_email(subject, sender, recipients, text_body, bcc=''):
 #
 #--- if this is a test, say so
 #
-    if current_app.config['DEVELOPMENT']:
-        print(f"App in Development. Interrupting the following email to send to testing user instead.\n\
+    if current_app.config['TEST_NOTIFICATIONS']:
+        print(f"Notifications set to Test. Interrupting the following email to send to testing user instead.\n\
               Subject: {subject}\n\
               Recipients: {recipients}\n\
               BCC: {bcc}\n\
@@ -110,11 +110,8 @@ def send_error_email():
     msg["To"] = ",".join(current_app.config['ADMINS'])
     msg["Subject"] = f"Usint Error-[{datetime.now().strftime('%c')}]"
 
-    if current_app.config['SEND_ERROR_EMAIL']:
-        p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
-        p.communicate(msg.as_bytes())
-    else:
-        print(f"Running localhost test with SEND_ERROR_EMAIL = {current_app.config['SEND_ERROR_EMAIL']}\nTherefore interrupting UsintErrorHandler Email")
+    p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+    p.communicate(msg.as_bytes())
 
 
 #--------------------------------------------------------------
