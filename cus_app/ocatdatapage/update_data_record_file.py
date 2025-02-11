@@ -489,7 +489,7 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
     rev_time = int(os.stat(rev_file).st_mtime)
     add_statement = f'INSERT INTO revisions (obsidrev, general_signoff, acis_signoff, acis_si_mode_signoff, hrc_si_mode_signoff, usint_verification, usint_date, sequence, submitter, rev_time)'
     add_statement += f'VALUES ({obsidrev}, "{general}", "{acis}", "{acis_si}", "{hrc_si}", "{signoff}", {signoff_date},{ct_dict["seq_nbr"][-1]}, "{user}", {rev_time})'.replace('"NULL"','NULL')
-    if current_app.config['DEVELOPMENT']:
+    if current_app.config['CONFIGURATION_NAME'] == 'localhost':
         print(add_statement)
 #
 #--- SQL query to database
