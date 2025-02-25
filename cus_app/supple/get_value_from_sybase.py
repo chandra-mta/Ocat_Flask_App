@@ -31,6 +31,14 @@ from astropy.utils.misc import JsonCustomEncoder
 _SERV = 'ocatsqlsrv'
 _USR = 'mtaops_internal_web'
 _AUTHDIR = "/data/mta4/CUS/authorization"
+#
+# --- Error class for if the database query yields no results
+#
+class NoResultsFoundError(Exception):
+    """Exception raised when database query returns no results."""
+    def __init__(self, database):
+        self.message = f"No results found for the {database} query."
+        super().__init__(self.message)
 
 #------------------------------------------------------------------------------------
 #-- get_value_from_sybase: run sybase command for python3.8                        --
@@ -50,11 +58,9 @@ def get_value_from_sybase(cmd, db='axafocat'):
 #
 #--- fetch data
 #
-    try:
-        row = conn.fetchall(cmd)
-
-    except:
-        return [[]]
+    row = conn.fetchall(cmd)
+    if len(row) == 0: #: This means that the sqsh command was processed correctly, but we are lacking provided obsid's information in the database
+        raise NoResultsFoundError(database=db)
 #
 #--- convert none string data into string
 #

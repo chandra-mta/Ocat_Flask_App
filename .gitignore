@@ -1,6 +1,7 @@
 #MTA standard
 outTest/
-example/
+_outTest/
+_example/
 logs/
 
 #Ignore Pycache Files

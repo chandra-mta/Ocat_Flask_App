@@ -21,6 +21,7 @@ from cus_app.ocatdatapage   import bp
 from cus_app.ocatdatapage.forms import OcatParamForm
 
 import cus_app.supple.ocat_common_functions         as ocf
+import cus_app.supple.get_value_from_sybase         as gvs
 import cus_app.ocatdatapage.create_selection_dict   as csd
 import cus_app.ocatdatapage.check_value_range       as cvr
 import cus_app.ocatdatapage.update_data_record_file as udrf
@@ -90,10 +91,9 @@ def index(obsid=''):
 #
         try:
             ct_dict  = csd.create_selection_dict(obsid)
-        except Exception as create_selection_dict_exc: #use variable e for debugging purposes beyond failure to find Obsid in the database.
+        except gvs.NoResultsFoundError as e:
             session.pop('_flashes', None)
             flash('Obsid is not found in the database!')
-
             return render_template('ocatdatapage/provide_obsid.html', form=form)
 #
 #--- check observation status and, if needed, create a warning header for the page
