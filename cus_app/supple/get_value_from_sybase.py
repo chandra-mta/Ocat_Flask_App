@@ -31,39 +31,75 @@ from astropy.utils.misc import JsonCustomEncoder
 _SERV = 'ocatsqlsrv'
 _USR = 'mtaops_internal_web'
 _AUTHDIR = "/data/mta4/CUS/authorization"
+
+def sybase_cmd(cmd, db='axafocat'):
+    """Run a general sybase command
+
+    :param cmd: sybase command
+    :type cmd: str
+    :param db: database in server, defaults to 'axafocat'
+    :type db: str, optional
+    :return: An astropy table row matching parameters.
+    :rtype: astropy.table.Table
+    """
 #
-# --- Error class for if the database query yields no results
+# --- connect to sybase with Sqsh class
 #
-class NoResultsFoundError(Exception):
-    """Exception raised when database query returns no results."""
-    def __init__(self, database):
-        self.message = f"No results found for the {database} query."
-        super().__init__(self.message)
+    conn = sqsh.Sqsh(dbi='sybase', server=_SERV, database = db, user = _USR, authdir = _AUTHDIR)
+    result = conn.fetchall(cmd)
+    return result
 
 #------------------------------------------------------------------------------------
 #-- get_value_from_sybase: run sybase command for python3.8                        --
 #------------------------------------------------------------------------------------
 
-def get_value_from_sybase(cmd, db='axafocat'):
+def get_value_from_sybase(parameter_list, table, where_conditions, distinct = False, db='axafocat'):
+    """Run Sybase fetch with Sqsh class
+
+    :param parameter_list: list of observation parameters
+    :type parameter_list: list(str)
+    :param table: Database table
+    :type table: str
+    :param where_conditions: Where clause parameters
+    :type where_conditions: dict(str: str, int)
+    :param distinct: Boolean to include the distinct term after the select statement
+    :type distinct: bool
+    :param db: Database to fetch in server, defaults to 'axafocat'
+    :type db: str, optional
+    :return: An astropy table row matching parameters to observation results.
+    :rtype: astropy.table.Table
     """
-    run sybase command for python3.8
-    input:  cmd --- sybase command, fetchin only
-            db  --- database name; default: axafocat
-    output: row --- a json string (of a list of lists)
-    """
+    
 #
-#--- connect to sybase with Sqsh class
+# --- connect to sybase with Sqsh class
 #
     conn = sqsh.Sqsh(dbi='sybase', server=_SERV, database = db, user = _USR, authdir = _AUTHDIR)
 #
-#--- fetch data
+# --- Construct fetching command.
 #
-    row = conn.fetchall(cmd)
-    if len(row) == 0: #: This means that the sqsh command was processed correctly, but we are lacking provided obsid's information in the database
-        raise NoResultsFoundError(database=db)
+    if distinct:
+        cmd = "select distinct "
+    else:
+        cmd = "select "
+    cmd += f"{','.join(parameter_list)} from {table}"
+    clauses = []
+    for key, value in where_conditions.items():
+        if type(value) == str:  # noqa: E721
+            clauses.append(f"{key}='{value}'")
+        else:
+            clauses.append(f"{key}={value}") #: If it's a number, then don't include quotes indicating a string in the command
+    if len(clauses) > 0:
+        cmd += f" where {' and '.join(clauses)}"
+#
+# --- Fetch data
+#
+    print(cmd)
+    result = conn.fetchall(cmd)
+    return result
 #
 #--- convert none string data into string
 #
+    """
     save = []
     for dset in row:
         tsave = []
@@ -94,10 +130,11 @@ def get_value_from_sybase(cmd, db='axafocat'):
 #
 #--- convert a list to a json string so that we can pass back to the main script
 #
-    row = json.dumps(save, cls=JsonCustomEncoder)
+    #row = json.dumps(save, cls=JsonCustomEncoder)
 
     #return row
     return save
+    """
 
 #-------------------------------------------------------------------------------------
 #-- convert_lob_to_string: rerun pybase command for a lob object and convert into a string

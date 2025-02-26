@@ -26,6 +26,16 @@ na_list = []
 for k in range(0,10):
     na_list.append('NA')
 
+#
+# --- Error class for if the database query yields no results
+#
+class NoResultsFoundError(Exception):
+    """Exception raised when database query returns no results."""
+    def __init__(self, database):
+        self.message = f"No results found for the {database} query."
+        super().__init__(self.message)
+
+
 #--------------------------------------------------------------------------
 #-- read_ocat_data: extract parameter values for a given obsid          ---
 #--------------------------------------------------------------------------
@@ -137,28 +147,41 @@ def general_params(obsid):
       'uninterrupt', 'multitelescope', 'observatories', 'tooid', 'constr_in_remarks', \
       'group_id', 'obs_ao_str', 'roll_flag', 'window_flag', 'spwindow_flag', \
       'multitelescope_interval', 'pointing_constraint']
-    plen   = len(p_list)
     p_dict = {}
 
-    cmd    = 'select ' + convert_list_to_line(p_list) +  ' from target where obsid=' + str(obsid)
-    out    = gvs.get_value_from_sybase(cmd)
+    #cmd    = 'select ' + convert_list_to_line(p_list) +  ' from target where obsid=' + str(obsid)
+    out = gvs.get_value_from_sybase(p_list, 'target', {'obsid': int(obsid)})
+#
+# --- Validity checks
+#
+    if len(out) == 0: 
+        raise NoResultsFoundError(database='axafocat')
+#
+# --- Process as a dictionary
+#
+    result = _convert_row_to_dict(out[0])
 
-    for k in range(0, plen):
-        p_dict[p_list[k]] = out[0][k]
+    #for k in range(0, plen):
+    #    p_dict[p_list[k]] = out[0][k]
+    for parameter in p_list:
+        p_dict[parameter] = result[parameter]
+        
 #
 #--- read remarks
 #
-    cmd   = 'select remarks from target where obsid=' + str(obsid)
-    out   = gvs.get_value_from_sybase(cmd)
-    line  = cleanup_remarks(out)
+    #cmd   = 'select remarks from target where obsid=' + str(obsid)
+    out = gvs.get_value_from_sybase(['remarks'], 'target', {'obsid': int(obsid)})
+    #line  = cleanup_remarks(out)
+    line  = _cleanup_remarks(out['remarks'].tolist()[0])
 
     p_dict['remarks'] = line
 #
 #--- read comments
 #
-    cmd   = 'select mp_remarks  from target where obsid=' + str(obsid)
-    out   = gvs.get_value_from_sybase(cmd)
-    line  = cleanup_remarks(out)
+    #cmd   = 'select mp_remarks  from target where obsid=' + str(obsid)
+    out   = gvs.get_value_from_sybase(['mp_remarks'], 'target', {'obsid': int(obsid)})
+    #line  = cleanup_remarks(out)
+    line  = _cleanup_remarks(out['mp_remarks'].tolist()[0])
 
     p_dict['comments'] = line
 
@@ -185,27 +208,31 @@ def monitor_params(obsid, pre_id, group_id):
     else:
         p_dict['monitor_flag'] = 'Y'
 
-    cmd = 'select distinct pre_id from target where pre_id=' + str(obsid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select distinct pre_id from target where pre_id=' + str(obsid)
+    out = gvs.get_value_from_sybase(['pre_id'], 'target', {'pre_id': int(obsid)}, distinct=True)
 
-    if len(out) != 0 and  len(out[0]) > 0:
+    if out.get('pre_id') is not None:
         p_dict['monitor_flag'] = 'Y'
 #
 #--- if group_id is not NULL, monitor_flag is N
 #
-    if not group_id in non_list:
+    if group_id not in non_list:
         p_dict['monitor_flag'] = 'N'
 #
 #--- group_id needs extra "" around it to work with the sybase extraction
 # 
-        cmd = 'select obsid from target where group_id ="' + str(group_id) + '"'
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select obsid from target where group_id ="' + str(group_id) + '"'
+        out = gvs.get_value_from_sybase(['obsid'], 'target', {'group_id': str(group_id)})
         o_list = []
-        try:
-            for ent in out:
-                o_list.append(ent[0])
-        except:
-            pass
+        print(f"out: {out}")
+        for ent in out:
+            o_list.append(ent[0])
+        #try:
+        #    for ent in out:
+        #        o_list.append(ent[0])
+        #except:
+        #    pass
+        print(f"o_list: {o_list}")
         p_dict['group_obsid'] = select_unobserved(o_list)
 
     else:
@@ -240,8 +267,8 @@ def select_unobserved(o_list):
     """
     u_list = []
     for obsid in o_list:
-        cmd    = 'select status from target where obsid=' + str(obsid)
-        out    = gvs.get_value_from_sybase(cmd)
+        #cmd    = 'select status from target where obsid=' + str(obsid)
+        out    = gvs.get_value_from_sybase(['status'], 'target', {'obsid': int(obsid)})
         status = out[0][0]
         if status in ['unobserved', 'scheduled', 'untriggered']:
             u_list.append(obsid)
@@ -274,9 +301,9 @@ def roll_params(obsid):
 #--- check order 1 to 10 in order
 #
     for k in range(1, 10):
-        cmd = 'select ' + convert_list_to_line(p_list) 
-        cmd = cmd + ' from rollreq where ordr = ' + str(k) + ' and obsid=' + str(obsid)
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select ' + convert_list_to_line(p_list) 
+        #cmd = cmd + ' from rollreq where ordr = ' + str(k) + ' and obsid=' + str(obsid)
+        out = gvs.get_value_from_sybase(p_list, 'rollreq', {'ordr': k, 'obsid': int(obsid)})
    
         if len(out) > 0 and len(out[0]) > 0:
             roll_ordr = k
@@ -313,9 +340,9 @@ def time_constraint_params(obsid):
         r_list.append(copy.deepcopy(na_list))
     
     for k in range(1, 10):
-        cmd = 'select ' + convert_list_to_line(p_list) + ' from timereq where ordr =' + str(k)
-        cmd = cmd + ' and obsid=' + str(obsid)    
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select ' + convert_list_to_line(p_list) + ' from timereq where ordr =' + str(k)
+        #cmd = cmd + ' and obsid=' + str(obsid)    
+        out = gvs.get_value_from_sybase(p_list, 'timereq', {'ordr': k, 'obsid': int(obsid)})
      
         if len(out) > 0  and len(out[0]) > 0:
             time_ordr = k
@@ -354,8 +381,8 @@ def too_ddt_params(tooid):
                 p_dict[name]  = ''
 
     else:
-        cmd = 'select '+  convert_list_to_line(p_list) + ' from too where tooid=' + str(tooid)
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select '+  convert_list_to_line(p_list) + ' from too where tooid=' + str(tooid)
+        out = gvs.get_value_from_sybase(p_list, 'too', {'tooid': tooid})
 
         if len(out) > 0  and len(out[0]) > 0:
             for k in range(0, plen):
@@ -364,16 +391,16 @@ def too_ddt_params(tooid):
 #
 #--- read trig (trigger condition) 
 #
-    cmd   = 'select trig from too where tooid=' + str(tooid)
-    out   = gvs.get_value_from_sybase(cmd)
+    #cmd   = 'select trig from too where tooid=' + str(tooid)
+    out   = gvs.get_value_from_sybase(['trig'], 'too', {'tooid': tooid})
     line  = cleanup_remarks(out)
 
     p_dict['too_trig'] = line
 #
 #--- read remarks
 #
-    cmd   = 'select remarks from too where tooid=' + str(tooid)
-    out   = gvs.get_value_from_sybase(cmd)
+    #cmd   = 'select remarks from too where tooid=' + str(tooid)
+    out   = gvs.get_value_from_sybase(['trig'], 'too', {'tooid': tooid})
     line  = cleanup_remarks(out)
 
     p_dict['too_remarks'] = line
@@ -402,8 +429,8 @@ def hrc_params(hrcid):
 #
         p_dict['hrc_si_mode']     = 'NA'
     else:
-        cmd = 'select ' +  convert_list_to_line(p_list) + ' from hrcparam where hrcid=' + str(hrcid) 
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select ' +  convert_list_to_line(p_list) + ' from hrcparam where hrcid=' + str(hrcid) 
+        out = gvs.get_value_from_sybase(p_list, 'hrcparam', {'hrcid': hrcid})
 
         if len(out) > 0 and  len(out[0]) > 0:
             p_dict['hrc_zero_block']  = out[0][0]
@@ -437,9 +464,9 @@ def acis_params(acisid):
             if ent == 'primary_exp_time':
                 p_dict[ent] = 'NA'
     else:
-        cmd   = 'select ' + convert_list_to_line(p_list) 
-        cmd   = cmd  +  ' from acisparam where acisid=' + str(acisid)
-        out   = gvs.get_value_from_sybase(cmd)
+        #cmd   = 'select ' + convert_list_to_line(p_list) 
+        #cmd   = cmd  +  ' from acisparam where acisid=' + str(acisid)
+        out   = gvs.get_value_from_sybase(p_list, 'acisparam', {'acisid':acisid})
 
         for k in range(0, plen):
             p_dict[p_list[k]] = out[0][k]
@@ -495,8 +522,8 @@ def aciswin_params(obsid):
 #
 #--- check whether there is acis window data
 #
-    cmd = 'select ' +  convert_list_to_line(p_list) + ' from aciswin where obsid=' + str(obsid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select ' +  convert_list_to_line(p_list) + ' from aciswin where obsid=' + str(obsid)
+    out = gvs.get_value_from_sybase(p_list, 'aciswin', {'obsid': int(obsid)})
 #
 #--- extracted data are not ordered by rank; sorting data with rank 
 #--- (the first entry of each data list)
@@ -556,8 +583,8 @@ def phase_params(obsid):
     plen   = len(p_list)
     p_dict = {}
 
-    cmd = 'select ' +  convert_list_to_line(p_list) + ' from phasereq where obsid=' + str(obsid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select ' +  convert_list_to_line(p_list) + ' from phasereq where obsid=' + str(obsid)
+    out = gvs.get_value_from_sybase(p_list, 'phasereq', {'obsid': int(obsid)})
 
     if len(out) > 0 and len(out[0]) > 0:
         for k in range(0, plen):
@@ -582,8 +609,8 @@ def dither_params(obsid):
     plen   = len(p_list)
     p_dict = {}
 
-    cmd    = 'select ' + convert_list_to_line(p_list) + ' from dither where obsid=' + str(obsid)
-    out    = gvs.get_value_from_sybase(cmd)
+    #cmd    = 'select ' + convert_list_to_line(p_list) + ' from dither where obsid=' + str(obsid)
+    out    = gvs.get_value_from_sybase(p_list, 'dither', {'obsid': int(obsid)})
 
     if len(out) > 0 and len(out[0]) > 0:
         for k in range(0, plen):
@@ -608,8 +635,8 @@ def sim_params(obsid):
     plen   = len(p_list)
     p_dict = {}
 
-    cmd = 'select trans_offset,focus_offset from sim where obsid=' + str(obsid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select trans_offset,focus_offset from sim where obsid=' + str(obsid)
+    out = gvs.get_value_from_sybase(['trans_offset','focus_offset'], 'sim', {'obsid': int(obsid)})
 
     if len(out) > 0 and len(out[0]) > 0:
         for k in range(0, plen):
@@ -630,9 +657,9 @@ def soe_params(obsid):
     input:  obsid       --- obsid
     output: p_dict      --- a dictionary of <param name> <--> <param value>
     """
-    cmd = 'select soe_roll from soe where obsid=' + str(obsid) 
-    cmd = cmd + " and unscheduled='N'"
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select soe_roll from soe where obsid=' + str(obsid) 
+    #cmd = cmd + " and unscheduled='N'"
+    out = gvs.get_value_from_sybase(['soe_roll'], 'soe', {'obsid': int(obsid), 'unscheduled': "N"})
 
     p_dict = {}
     try:
@@ -654,8 +681,8 @@ def ao_params(ocat_prpid):
     input:  ocat_prpid  --- proposal id
     output: val         --- current ao status; could be ''
     """
-    cmd = 'select ao_str from prop_info where ocat_propid=' + str(ocat_prpid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select ao_str from prop_info where ocat_propid=' + str(ocat_prpid)
+    out = gvs.get_value_from_sybase(['ao_str'], 'pro_info', {'ocat_propid': int(ocat_prpid)})
     val = out[0][0]
 
     return val
@@ -674,8 +701,8 @@ def prop_params(ocat_prpid):
 #
 #--- Proposal Related Data
 #
-    cmd = 'select prop_num,title,joint  from prop_info where ocat_propid=' + str(ocat_prpid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select prop_num,title,joint  from prop_info where ocat_propid=' + str(ocat_prpid)
+    out = gvs.get_value_from_sybase(['prop_num','title','joint'], 'prop_info', {'ocat_propid': int(ocat_prpid)})
 
     p_dict['proposal_number'] = out[0][0]
     p_dict['proposal_title']  = out[0][1]
@@ -703,12 +730,12 @@ def prop_params(ocat_prpid):
 #
 #--- Proposer's Info
 #
-    cmd = 'select last  from view_pi where ocat_propid=' + str(ocat_prpid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select last  from view_pi where ocat_propid=' + str(ocat_prpid)
+    out = gvs.get_value_from_sybase(['last'], 'view_pi', {'ocat_propid': int(ocat_prpid)})
     p_dict['pi_name'] = out[0][0]
 
-    cmd = 'select last from view_coi where ocat_propid=' + str(ocat_prpid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select last from view_coi where ocat_propid=' + str(ocat_prpid)
+    out = gvs.get_value_from_sybase(['last'], 'view_coi', {'ocat_propid': int(ocat_prpid)})
     try:
         p_dict['observer'] = out[0][0]
 #
@@ -752,8 +779,8 @@ def series_rev(obsid):
     """
     a_list = []
 
-    cmd = 'select pre_id from target where obsid =' + str(obsid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select pre_id from target where obsid =' + str(obsid)
+    out = gvs.get_value_from_sybase(['pre_id'], 'target', {'obsid': int(obsid)})
     try:
         val = out[0][0]
     except:
@@ -761,8 +788,8 @@ def series_rev(obsid):
 
     while not val in non_list:
         a_list.append(str(val))
-        cmd = 'select pre_id from target where obsid =' + str(val)
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select pre_id from target where obsid =' + str(val)
+        out = gvs.get_value_from_sybase(['pre_id'], 'target', {'obsid': int(val)})
         try:
             val = out[0][0] 
         except:
@@ -784,8 +811,8 @@ def series_fwd(obsid):
     """
     a_list = []
 
-    cmd = 'select obsid from target where pre_id =' + str(obsid)
-    out = gvs.get_value_from_sybase(cmd)
+    #cmd = 'select obsid from target where pre_id =' + str(obsid)
+    out = gvs.get_value_from_sybase(['obsid'], 'target', {'pre_id': int(obsid)})
     try:
         val = out[0][0]
     except:
@@ -793,8 +820,8 @@ def series_fwd(obsid):
 
     while not val in non_list:
         a_list.append(str(val))
-        cmd = 'select obsid from target where pre_id =' + str(val)
-        out = gvs.get_value_from_sybase(cmd)
+        #cmd = 'select obsid from target where pre_id =' + str(val)
+        out = gvs.get_value_from_sybase(['obsid'], 'target', {'pre_id': int(val)})
         try:
             val = out[0][0]
         except:
@@ -828,6 +855,34 @@ def cleanup_remarks(out):
     if line in non_list:
         line = ''
 
+    return line
+
+def _convert_row_to_dict(row):
+    """convert a database query result astropy table row into data formats expected by the application
+
+    :param row: Sybase Fetched astropy table row.
+    :type row: Astropy.table.row.Row
+    :returns: Formatted python dictionary
+    :rtype: dict
+    """
+    row_dict = {col: row[col].tolist() for col in row.colnames}
+    return row_dict
+
+def _cleanup_remarks(line):
+    if line in non_list:
+        return ''
+    try:
+        if type(line) == 'bytes':
+            line = line.decode('UTF-8')
+    except:
+        return ''
+    line  = line.replace("bytearray(b'", '')
+    line  = line.replace('bytearray(b"', '')
+    line  = line.replace("')", "")
+    line  = line.replace('")', "")
+    line  = line.replace('\\n', ' ' )
+    line  = line.replace('\'', '\"')
+    line  = line.replace('\\"', "'")
     return line
 
 #--------------------------------------------------------------------------
