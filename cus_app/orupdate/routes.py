@@ -717,8 +717,8 @@ def update_data(obsidrev, column_signoff):
                         curr_signoff = res.fetchone()
                         discard_execute = f'UPDATE revisions SET general_signoff = "{curr_signoff[0]}", acis_signoff = "{curr_signoff[1]}", acis_si_mode_signoff = "{curr_signoff[2]}", hrc_si_mode_signoff = "{curr_signoff[3]}", usint_verification = "{current_user.username}", usint_date = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
                         discard_execute = discard_execute.replace('NA','N/A').replace('"None"','NULL')
-                        sql_record += f"SQL Update DIscard: {discard_execute}\n"
-                        if current_app.config['DEVELOPMENT']:
+                        sql_record += f"SQL Update Discard: {discard_execute}\n"
+                        if current_app.config['CONFIGURATION_NAME'] == 'localhost':
                             print(sql_record)
                         cur.execute(discard_execute)
                     else:
@@ -728,7 +728,7 @@ def update_data(obsidrev, column_signoff):
                         date_col = column_signoff.replace("_signoff","_date").replace("_verification","_date")
                         update_execute = f'UPDATE revisions SET {column_signoff} = "{current_user.username}", {date_col} = "{TODAY_STRING}" WHERE obsidrev = {obsidrev}'
                         sql_record += f"SQL Update: {update_execute}\n"
-                        if current_app.config['DEVELOPMENT']:
+                        if current_app.config['CONFIGURATION_NAME'] == 'localhost':
                             print(sql_record)
                         cur.execute(update_execute)
         return False
