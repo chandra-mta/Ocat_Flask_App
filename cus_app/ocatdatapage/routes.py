@@ -11,6 +11,7 @@ import os
 import re
 import Chandra.Time
 import numpy
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from flask              import render_template, flash
 from flask              import session, request, current_app
@@ -90,8 +91,9 @@ def index(obsid=''):
 #
         try:
             ct_dict  = csd.create_selection_dict(obsid)
-        except Exception as create_selection_dict_exc: #use variable e for debugging purposes beyond failure to find Obsid in the database.
-            session.pop('_flashes', None)
+        except (NoResultFound, MultipleResultsFound):
+        #except Exception as create_selection_dict_exc: #use variable e for debugging purposes beyond failure to find Obsid in the database.
+        #    session.pop('_flashes', None)
             flash('Obsid is not found in the database!')
 
             return render_template('ocatdatapage/provide_obsid.html', form=form)

@@ -29,7 +29,7 @@ from cus_app.models         import User, register_user
 from cus_app.orupdate       import bp
 
 import cus_app.supple.ocat_common_functions         as ocf
-import cus_app.supple.get_value_from_sybase         as gvfs
+import cus_app.supple.read_ocat_data                as rod
 import cus_app.ocatdatapage.create_selection_dict   as csd
 import cus_app.ocatdatapage.update_data_record_file as udrf
 import cus_app.emailing                             as email
@@ -790,10 +790,10 @@ def check_too_ddt(obsidrev, colname, odata, poc=''):
     atemp   = re.split('\.', obsidrev)
     obsid   = atemp[0]
 
-    cmd     = "select type, instrument from target where obsid=" + obsid
-    out     = gvfs.get_value_from_sybase(cmd, 'axafocat')
-    otype   = out[0][0]
-    inst    = out[0][1]
+    cmd = f"select type, instrument from target where obsid={obsid}"
+    too_result = rod.get_value_from_sybase(cmd)
+    otype   = too_result['type'][0].tolist()
+    inst    = too_result['instrument'][0].tolist()
 #
 #--- if the type is TOO or DDT, send out a notification
 #
