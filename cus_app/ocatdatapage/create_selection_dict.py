@@ -74,6 +74,16 @@ _NON_EDIT_GEN_PARAM_LABEL ={
     'lts_lt_plan':'LTS Date',
     'soe_roll':'Roll Observed',
 }
+_INPUT_EDIT_GEN_PARAM_LABEL = {
+    'targname':'Target Name',
+    'y_det_offset':'Offset: Y',
+    'z_det_offset':'Offset: Z',
+    'trans_offset':'Z-Sim',
+    'focus_offset':'Sim-Focus',
+    'vmagnitude':'V Mag',
+    'est_cnt_rate':'Count Rate',
+    'forder_cnt_rate':'1st Order Rate',
+}
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
 #-----------------------------------------------------------------------------------------------
@@ -114,28 +124,54 @@ def create_selection_dict(obsid):
     for k,v in _NON_EDIT_GEN_PARAM_LABEL.items():
         #: Fill out informational parameters with no change option (part of non, editable group)
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
-        p_dict[k] = [v, None, 'n', 'gen', ct_dict.get(k), ct_dict.get(k)]
+        val = ct_dict.get(k)
+        p_dict[k] = [v, None, 'n', 'gen', val, val]
 
 #
-#--- Special case non editable parameters not listed in the ocat
+#--- Special case non editable general parameters not listed in the ocat
 #
-    p_id         = 'planned_roll'
-    label        = 'Planned Roll'
+    val         = find_planned_roll(obsid)
+    p_dict['planned_roll'] = ['Planned Roll', None, 'n', 'gen', val, val]
+
+#
+#--- general parameters; input text entries
+#
+    for k,v in _INPUT_EDIT_GEN_PARAM_LABEL.items():
+        #: Fill out informational parameters with input text boxes
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        val = ct_dict.get(k)
+        p_dict[k] = [v, None, 'v', 'gen', val, val]
+#
+#--- Special case input editable entries not listed in the ocat
+#
+    tra, tdec    = ocf.convert_ra_dec_format(ra, dec) #: TODO adust to operate on full values
+
+    p_id         = 'dra'
+    label        = 'RA (HMS)'
     choices      = ''
-    lind         = 'n'
+    lind         = 'v'
     group        = 'gen'
-    vals         = find_planned_roll(obsid)
+    vals         = tra
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
+
+    p_id         = 'ddec'
+    label        = 'Dec (DMS)'
+    choices      = ''
+    lind         = 'v'
+    group        = 'gen'
+    vals         = tdec
+    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+
 #
-#--- general parameter; editable entries
+#--- general parameter; choice editable entries
 #
     p_id         = 'instrument'
     label        = 'Instrument'
     choice       = ('ACIS-I', 'ACIS-S', 'HRC-I', 'HRC-S')
     choices      = [(x, x) for x in choice]
+    vals         = ct_dict[p_id]
     lind         = 'l'
     group        = 'gen'
-    vals         = ct_dict[p_id]
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
 
     p_id         = 'grating'
@@ -154,108 +190,6 @@ def create_selection_dict(obsid):
     lind         = 'l'
     group        = 'gen'
     vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'targname'
-    label        = 'Target Name'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ra'
-    label        = 'RA'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    try:
-        vals     = '%3.6f' % float(round(vals,6))
-    except:
-        vals     = '0.0'
-    ra           = vals
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'dec'
-    label        = 'Dec'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    try:
-        vals     = '%3.6f' % float(round(vals, 6))
-    except:
-        vals     = '0.0'
-    dec          = vals
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-#
-#--- converting ra/dec display format
-#
-    tra, tdec    = ocf.convert_ra_dec_format(ra, dec)
-
-    p_id         = 'dra'
-    label        = 'RA (HMS)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = tra
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ddec'
-    label        = 'Dec (DMS)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = tdec
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'y_det_offset'
-    label        = 'Offset: Y'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'z_det_offset'
-    label        = 'Offset: Z'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'trans_offset'
-    label        = 'Z-Sim'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'focus_offset'
-    label        = 'Sim-Focus'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'raster_scan'
-    label        = 'Raster Scan'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'defocus'
-    label        = 'Focus'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ''
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
 
     p_id         = 'uninterrupt'
@@ -302,29 +236,6 @@ def create_selection_dict(obsid):
     vals         = ct_dict[p_id]
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
 
-    p_id         = 'vmagnitude'
-    label        = 'V Mag'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'est_cnt_rate'
-    label        = 'Count Rate'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'forder_cnt_rate'
-    label        = '1st Order Rate'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
 #
 #---  Dither Parameters
 #
