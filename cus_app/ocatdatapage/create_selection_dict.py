@@ -1,13 +1,10 @@
-#################################################################################################
-#                                                                                               #
-#   create_selection_dict.py: create a dict of p_id <--> [<p_id information>]                   #
-#                                                                                               #
-#               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
-#                                                                                               #
-#               last update Sep 13, 2021                                                        #
-#                                                                                               #
-#################################################################################################
+"""
+**create_selection_dict.py**: Create a dict of p_id <--> [<p_id information>]
 
+:Author: W. Aaron (william.aaron@cfa.harvard.edu)
+:Last Updated: Mar 10, 2025
+
+"""
 import sys
 import os
 import re
@@ -52,6 +49,31 @@ awin_list = ['chip',  'start_row', 'start_column',\
 
 rank_list = time_list + roll_list + awin_list
 
+_NON_EDIT_GEN_PARAM_LABEL ={
+    'seq_nbr':'Sequence Number',
+    'targid':'Target ID',
+    'status':'Status',
+    'obsid':'Obsid',
+    'proposal_number':'Proposal Number',
+    'proposal_title':'Proposal Title',
+    'obs_ao_str':'Obs AO Status',
+    'si_mode':'SI Mode',
+    'aca_mode':'ACA Mode',
+    'pi_name':'PI Name',
+    'observer':'Observer',
+    'approved_exposure_time':'Exposure Time',
+    'rem_exp_time':'Remaining Exposure Time',
+    'proposal_joint':'Joint Proposal',
+    'proposal_hst':'HST Approved Time',
+    'proposal_noao':'NOAO Approved Time',
+    'proposal_xmm':'XMM Approved Time',
+    'proposal_rxte':'RXTE Approved Time',
+    'proposal_vla':'VLA Approved Time',
+    'proposal_vlba':'VLBA Approved Time',
+    'soe_st_sched_date':'Scheduled Date',
+    'lts_lt_plan':'LTS Date',
+    'soe_roll':'Roll Observed',
+}
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
 #-----------------------------------------------------------------------------------------------
@@ -84,204 +106,19 @@ def create_selection_dict(obsid):
 #
 #--- get the values from the database
 #
-    ct_dict = rod.read_ocat_data(obsid)
-    p_dict  = {}
+    ct_dict = rod.read_ocat_data(obsid) #: Dictionary of current ocat values.
+    p_dict  = {} #: Dictionary storing revision information.
 #
 #---  general parameters; non editable entries
 #
-    p_id         = 'seq_nbr'
-    label        = 'Sequence Number'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    for k,v in _NON_EDIT_GEN_PARAM_LABEL.items():
+        #: Fill out informational parameters with no change option (part of non, editable group)
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        p_dict[k] = [v, None, 'n', 'gen', ct_dict.get(k), ct_dict.get(k)]
 
-    p_id         = 'targid' 
-    label        = 'Target ID'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'status'
-    label        = 'Status'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'obsid'
-    label        = 'Obsid'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_number'
-    label        = 'Proposal Number'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_title'
-    label        = 'Proposal Title'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'obs_ao_str'
-    label        = 'Obs AO Status' 
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'si_mode'
-    label        = 'SI Mode'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'aca_mode'
-    label        = 'ACA Mode'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'pi_name'
-    label        = 'PI Name'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'observer'
-    label        = 'Observer'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'approved_exposure_time'
-    label        = 'Exposure Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    vals         = adjust_dicimal(vals, dic=1)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'rem_exp_time'
-    label        = 'Remaining Exposure Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = float(ct_dict[p_id])
-    if vals < 0:
-        vals     = '0.0'
-    else:
-        vals     = adjust_dicimal(vals, dic=1)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_joint'
-    label        = 'Joint Proposal'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_hst'
-    label        = 'HST Approved Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_noao'
-    label        = 'NOAO Approved Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_xmm'
-    label        = 'XMM Approved Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_rxte'
-    label        = 'RXTE Approved Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_vla'
-    label        = 'VLA Approved Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'proposal_vlba'
-    label        = 'VLBA Approved Time'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'soe_st_sched_date'
-    label        = 'Scheduled Date'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    vals         = time_format_convert_lts(vals)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'lts_lt_plan'
-    label        = 'LTS Date'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    vals         = time_format_convert_lts(vals)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'soe_roll'
-    label        = 'Roll Observed'
-    choices      = ''
-    lind         = 'n'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    if ocf.is_neumeric(vals):
-        vals         = '%3.2f' % float(ct_dict[p_id])
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
+#
+#--- Special case non editable parameters not listed in the ocat
+#
     p_id         = 'planned_roll'
     label        = 'Planned Roll'
     choices      = ''
