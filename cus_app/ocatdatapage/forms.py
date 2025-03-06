@@ -94,9 +94,6 @@ class OcatParamForm(FlaskForm):
     label        = 'focus_offset'
     focus_offset = pr_chr_field(label)
 
-    label        = 'defocus'
-    defocus      = pr_chr_field(label)
-
     label        = 'uninterrupt'
     uninterrupt  = SelectField(label=label,  choices = choice_npy,)
 
