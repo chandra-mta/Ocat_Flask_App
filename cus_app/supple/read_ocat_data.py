@@ -266,7 +266,12 @@ def find_monitoring_series(obsid):
     #
     rev = _reverse(obsid)
     fwd = _forward(obsid)
-    series = astropy.table.vstack([rev,fwd])
+    if len(rev) == 0:
+        series = fwd
+    elif len(fwd) == 0:
+        series = rev
+    else:
+        series = astropy.table.vstack([rev,fwd])
     sel = np.isin(series['status'], ['unobserved', 'scheduled', 'untriggered'])
     return sorted(series[sel]['obsid'].tolist())
 
