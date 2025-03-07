@@ -212,10 +212,10 @@ def ra_dec_range_check(ct_dict, warning_list):
     """
     ora       = ct_dict['dra'][-2]
     odec      = ct_dict['ddec'][-2]
-    ora, odec = ocf.convert_ra_dec_format(ora, odec)
+    ora, odec = ocf.convert_ra_dec_format(ora, odec, oformat='dd')
     dra       = ct_dict['dra'][-1]
     ddec      = ct_dict['ddec'][-1]
-    ra, dec   = ocf.convert_ra_dec_format(dra, ddec)
+    ra, dec   = ocf.convert_ra_dec_format(dra, ddec, oformat='dd')
     ora       = float(ora)
     odec      = float(odec)
     ra        = float(ra)

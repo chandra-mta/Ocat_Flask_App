@@ -167,23 +167,9 @@ def create_selection_dict(obsid):
     val         = find_planned_roll(obsid)
     p_dict['planned_roll'] = ['Planned Roll', None, 'n', 'gen', val, val]
 
-    tra, tdec    = ocf.convert_ra_dec_format(ra, dec) #: TODO adust to operate on full values
-
-    p_id         = 'dra'
-    label        = 'RA (HMS)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = tra
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ddec'
-    label        = 'Dec (DMS)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'gen'
-    vals         = tdec
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    tra, tdec    = ocf.convert_ra_dec_format(ct_dict.get('ra'), ct_dict.get('dec'), oformat="hmsdms")
+    p_dict['dra'] = ['RA (HMS)', None, 'v', 'gen', tra, tra]
+    p_dict['ddec'] = ['Dec (DMS)', None, 'v', 'gen', tdec, tdec]
 #
 #--- Dither Parameters; non editable entries
 #

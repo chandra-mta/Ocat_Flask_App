@@ -800,7 +800,7 @@ def radec_conversion(ct_dict):
     dra  = ct_dict['dra'][-1]
     ddec = ct_dict['ddec'][-1]
 
-    ra, dec = ocf.convert_ra_dec_format(dra, ddec)
+    ra, dec = ocf.convert_ra_dec_format(dra, ddec, oformat='dd')
 
     ct_dict['ra'][-1]   = ra
     ct_dict['dec'][-1]  = dec

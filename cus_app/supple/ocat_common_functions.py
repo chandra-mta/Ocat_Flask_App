@@ -665,54 +665,37 @@ def find_file_modification_time(ifile):
 
     return stime
 
-#-----------------------------------------------------------------------------------------------
-#-- convert_ra_dec_format: convert ra/dec fromat between <dd>:<mm>:<ss> or <dd.ddddd> format  --
-#-----------------------------------------------------------------------------------------------
-
-def convert_ra_dec_format(dra, ddec, format='switch'):
+def convert_ra_dec_format(dra, ddec, oformat):
     """
     convert ra/dec format
     input:  dra     --- either <hh>:<mm>:<ss> or <dd.ddddd> format
             ddec    --- either <dd>:<mm>:<ss> or <ddd.ddddd> format
-            format --- specify output format as either 'switch', 'dd', or 'hmsdms'
+            oformat --- specify output format as either 'dd', or 'hmsdms'
 
     output: tra     --- either <hh>:<mm>:<ss> or <dd.ddddd> format
             tdec    --- either <dd>:<mm>:<ss> or <ddd.ddddd> format
     """
     #
-    #--- Define output format
+    #--- Define input format
     #
-    dra = str(dra).strip()
-    ddec = str(ddec).strip()
-    dra  = dra.replace(';', ':')
-    ddec = ddec.replace(';', ':')
-    try:
-        tmp = float(dra)
-        tmp = float(ddec)
-        iformat = 'dd'
-    except:
+    if ":" in str(ddec):
         iformat = 'hmsdms'
-    
-    if format != 'switch':
-        if format == iformat:
-            return dra, ddec
+    else:
+        iformat = 'dd'
     #
     #--- Switch formats
     #
-    if iformat == 'dd':
+    if iformat == 'dd' and oformat == 'hmsdms':
         angle_ra = Angle(f"{dra} degrees")
         tra = angle_ra.to_string(sep=":",pad=True,precision=4,unit='hourangle')
         angle_dec = Angle(f"{ddec} degrees")
         tdec = angle_dec.to_string(sep=":",pad=True,precision=4,alwayssign=True,unit='degree')
-    
-    elif iformat == 'hmsdms':
+    elif iformat == 'hmsdms' and oformat == 'dd':
         angle_ra = Angle(f"{dra} hours")
-        tra = angle_ra.to_string(decimal=True,precision=6,unit='degree')
+        tra = float(angle_ra.to_string(decimal=True,precision=6,unit='degree'))
         angle_dec = Angle(f"{ddec} degrees")
-        tdec = angle_dec.to_string(decimal=True,precision=6,unit='degree')
+        tdec = float(angle_dec.to_string(decimal=True,precision=6,unit='degree'))
+    else:
+        return dra, ddec
     
     return tra,tdec
-
-
-
-
