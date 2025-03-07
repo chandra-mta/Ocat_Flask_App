@@ -22,11 +22,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 #
 #---- choices of pulldown fields. 
 #
-choice_npy  = (('NA', 'NA'), ('N', 'NO'), ('P','PREFERENCE'), ('Y','YES'),)
-choice_ny   = (('N','NO'), ('Y','YES'),)
-choice_nny  = (('NA', 'NA'), ('N', 'NO'), ('Y', 'YES'),)
-choice_cp   = (('Y','CONSTRAINT'),('P','PREFERENCE'),)
-choice_nncp = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
+_CHOICE_NNPY = (('NA', 'NA'), ('N', 'NO'), ('P','PREFERENCE'), ('Y','YES'),)
+_CHOICE_NY   = (('N','NO'), ('Y','YES'),)
+_CHOICE_NNY  = (('NA', 'NA'), ('N', 'NO'), ('Y', 'YES'),)
+_CHOICE_CP   = (('Y','CONSTRAINT'),('P','PREFERENCE'),)
+_CHOICE_NNCP = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
 
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 #
@@ -49,7 +49,7 @@ awin_list = ['chip',  'start_row', 'start_column',\
 
 rank_list = time_list + roll_list + awin_list
 
-_NON_EDIT_GEN_PARAM_LABEL ={
+_NON_EDIT_GEN_PARAM ={
     'seq_nbr':'Sequence Number',
     'targid':'Target ID',
     'status':'Status',
@@ -74,7 +74,7 @@ _NON_EDIT_GEN_PARAM_LABEL ={
     'lts_lt_plan':'LTS Date',
     'soe_roll':'Roll Observed',
 }
-_INPUT_EDIT_GEN_PARAM_LABEL = {
+_INPUT_EDIT_GEN_PARAM = {
     'targname':'Target Name',
     'y_det_offset':'Offset: Y',
     'z_det_offset':'Offset: Z',
@@ -84,6 +84,18 @@ _INPUT_EDIT_GEN_PARAM_LABEL = {
     'est_cnt_rate':'Count Rate',
     'forder_cnt_rate':'1st Order Rate',
 }
+# ruff: noqa
+_CHOICE_EDIT_GEN_PARAM = {
+    'instrument':{'label':'Instrument', 'select':[(x, x) for x in ('ACIS-I', 'ACIS-S', 'HRC-I', 'HRC-S')]},
+    'grating':{'label':'Grating', 'select':[(x, x) for x in ('NONE', 'LETG', 'HETG')]},
+    'type':{'label':'Type', 'select':[(x, x) for x in ('GO', 'TOO', 'GTO', 'CAL', 'DDT', 'CAL_ER', 'ARCHIVE', 'CDFS', 'CLP')]},
+    'uninterrupt':{'label':'Uninterrupted Obs', 'select':_CHOICE_NNPY},
+    'extended_src':{'label':'Extended SRC', 'select':_CHOICE_NY},
+    'obj_flag':{'label':'Solar System Object', 'select':[(x, x) for x in ('NO', 'MT', 'SS')]},
+    'object':{'label':'Object', 'select':[(x, x) for x in ('NONE', 'NEW','ASTEROID', 'COMET', 'EARTH', 'JUPITER', 'MARS','MOON', 'NEPTUNE', 'PLUTO', 'SATURN', 'URANUS', 'VENUS')]},
+    'photometry_flag':{'label':'Photometry', 'select':_CHOICE_NNY},
+}
+# ruff: noqa
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
 #-----------------------------------------------------------------------------------------------
@@ -121,7 +133,7 @@ def create_selection_dict(obsid):
 #
 #---  general parameters; non editable entries
 #
-    for k,v in _NON_EDIT_GEN_PARAM_LABEL.items():
+    for k,v in _NON_EDIT_GEN_PARAM.items():
         #: Fill out informational parameters with no change option (part of non, editable group)
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
@@ -136,7 +148,7 @@ def create_selection_dict(obsid):
 #
 #--- general parameters; input text entries
 #
-    for k,v in _INPUT_EDIT_GEN_PARAM_LABEL.items():
+    for k,v in _INPUT_EDIT_GEN_PARAM.items():
         #: Fill out informational parameters with input text boxes
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
@@ -165,76 +177,11 @@ def create_selection_dict(obsid):
 #
 #--- general parameter; choice editable entries
 #
-    p_id         = 'instrument'
-    label        = 'Instrument'
-    choice       = ('ACIS-I', 'ACIS-S', 'HRC-I', 'HRC-S')
-    choices      = [(x, x) for x in choice]
-    vals         = ct_dict[p_id]
-    lind         = 'l'
-    group        = 'gen'
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'grating'
-    label        = 'Grating'
-    choice       = ('NONE', 'LETG', 'HETG')
-    choices      = [(x, x) for x in choice]
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'type'
-    label        = 'Type'
-    choice       = ('GO', 'TOO', 'GTO', 'CAL', 'DDT', 'CAL_ER', 'ARCHIVE', 'CDFS', 'CLP')
-    choices      = [(x, x) for x in choice]
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'uninterrupt'
-    label        = 'Uninterrupted Obs'
-    choices      = choice_npy
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'extended_src'
-    label        = 'Extended SRC'
-    choices      = choice_ny
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'obj_flag'
-    label        = 'Solar System Object'
-    choice       = ('NO', 'MT', 'SS')
-    choices      = [(x, x) for x in choice]
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'object'
-    label        = 'Object'
-    group        = 'gen'
-    choice       = ('NONE', 'NEW', 'COMET', 'EARTH', 'JUPITER', 'MARS',\
-                    'MOON', 'NEPTUNE', 'PLUTO', 'SATURN', 'URANUS', 'VENUS')
-    choices      = [(x, x) for x in choice]
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'photometry_flag'
-    label        = 'Photometry'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'gen'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    for k,v in _CHOICE_EDIT_GEN_PARAM.items():
+        #: Fill out informational parameters with input text boxes
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        val = ct_dict.get(k)
+        p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
 
 #
 #---  Dither Parameters
