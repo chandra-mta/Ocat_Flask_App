@@ -11,6 +11,9 @@ import re
 import time
 import copy
 import Chandra.Time
+from cxotime import CxoTime
+from datetime import datetime
+import calendar
 from flask import current_app
 
 import cus_app.supple.ocat_common_functions     as ocf
@@ -27,6 +30,13 @@ _CHOICE_NY   = (('N','NO'), ('Y','YES'),)
 _CHOICE_NNY  = (('NA', 'NA'), ('N', 'NO'), ('Y', 'YES'),)
 _CHOICE_CP   = (('Y','CONSTRAINT'),('P','PREFERENCE'),)
 _CHOICE_NNCP = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
+
+_YEAR_LIST = ['NA'] + [str(x + datetime().now().year) for x in range(-1,5)]
+_YEAR_CHOICE = [(x,x) for x in _YEAR_LIST]
+_MONTH_LIST = ['NA'] + calendar.month_abbr[1:]
+_MONTH_CHOICE = [(x,x) for x in _MONTH_LIST]
+_DAY_LIST = ['NA'] + [f"{x:02}" for x in range(1,32)]
+_DAY_CHOICE = [(x,x) for x in _DAY_LIST]
 
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 #
@@ -223,131 +233,70 @@ def create_selection_dict(obsid):
 #
     p_id         = 'dither_flag'
     val         = ct_dict.get(p_id)
-    p_dict[p_id] = ['Dither', _CHOICE_NNY, 'l', 'dt', val, val]
-
-
+    p_dict[p_id] = ['Dither', _CHOICE_NY, 'l', 'dt', val, val]
 #
-#--- Time Constraints
-
+#--- Time Constraints; choice editable entries
+#
     p_id         = 'window_flag'
-    label        = 'Window Flag'
-    choices      = choice_ny
-    lind         = 'l'
-    group        = 'tc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'time_ordr'
-    label        = 'Time Order' 
-    choices      = ''
-    lind         = 'v'
-    group        = 'tc'
-    vals         = ct_dict[p_id]
-    time_ordr    = vals
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-#
-#--- set lists of yeas, month, and date for pulldown menus
-#
-    year         = ['NA'] + ocf.set_year_list(chk=1)
-    month        = ('NA',  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',\
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
-    date         = ['NA']
-    for i in range(1, 32):
-        date.append(ocf.add_leading_zero(i, 2))
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Window Flag', _CHOICE_NY, 't', 'tc', val, val]
 
     p_id         = 'window_constraint'
-    label        = 'Window Constraint'
-    choices      = choice_nncp
-    lind         = 'l'
-    group        = 'tc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Window Constraint', _CHOICE_NNCP, 'l', 'tc', val, val]
 
     p_id         = 'tstart'
-    label        = 'Tstart'
-    choices      = [(x, x) for x in month]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = ct_dict[p_id]
-    tstart       = vals
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Tstart', None, 'l', 'tc', val, copy.deepcopy(val)] #: None choices since this is not edited directly
 
-    start_list   = separate_time_to_rank(tstart)
+    start_list   = separate_time_to_rank(ct_dict.get('tstart'))
 
     p_id         = 'tstop'
-    label        = 'Tstop'
-    choices      = [(x, x) for x in date]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = ct_dict[p_id]
-    tstop        = vals
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Tstop', None, 'l', 'tc', val, copy.deepcopy(val)] #: None choices since this is not edited directly
 
-    stop_list    = separate_time_to_rank(tstop)
+    stop_list    = separate_time_to_rank(ct_dict.get('tstop'))
+#
+#--- Time Constraints; Separate Date Selector
+#
+    p_id         = 'tstart_year'
+    val         = start_list[0]
+    p_dict[p_id] = ['Start Year', _YEAR_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
 
     p_id         = 'tstart_month'
-    label        = 'Start Month'
-    choices      = [(x, x) for x in month]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = start_list[1]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = start_list[1]
+    p_dict[p_id] = ['Start Month', _MONTH_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
 
     p_id         = 'tstart_date'
-    label        = 'Start Date'
-    choices      = [(x, x) for x in date]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = start_list[2]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'tstart_year'
-    label        = 'Start Year'
-    choices      = [(x, x) for x in year]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = start_list[0]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'tstart_time'
-    label        = 'Start Time'
-    choices      = ''
-    lind         = 'v'
-    group        = 'tc'
-    vals         = start_list[3]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'tstop_month'
-    label        = 'Stop Month'
-    choices      = [(x, x) for x in month]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = stop_list[1] 
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'tstop_date'
-    label        = 'Stop Date'
-    choices      = [(x, x) for x in date]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = stop_list[2] 
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = start_list[2]
+    p_dict[p_id] = ['Start Date', _DAY_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
 
     p_id         = 'tstop_year'
-    label        = 'Stop Year'
-    choices      = [(x, x) for x in year]
-    lind         = 'l'
-    group        = 'tc'
-    vals         = stop_list[0]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = stop_list[0]
+    p_dict[p_id] = ['Stop Year', _YEAR_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
+
+    p_id         = 'tstop_month'
+    val         = stop_list[1] 
+    p_dict[p_id] = ['Stop Month', _MONTH_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
+
+    p_id         = 'tstop_date'
+    val         = stop_list[2] 
+    p_dict[p_id] = ['Stop Date', _DAY_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
+
+#
+#--- Time Constraints; input text entries
+#
+    p_id         = 'time_ordr'
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Time Order', None, 'v', 'tc', val, val]
+
+    p_id         = 'tstart_time'
+    val         = start_list[3]
+    p_dict[p_id] = ['Start Time', None, 'v', 'tc', val, copy.deepcopy(val)]
 
     p_id         = 'tstop_time'
-    label        = 'Stop Time'
-    choices      = ''
-    lind         = 'v'
-    group        = 'tc'
-    vals         = stop_list[3] 
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = stop_list[3] 
+    p_dict[p_id] = ['Stop Time', None, 'v', 'tc', val, copy.deepcopy(val)]
 #
 #--- Roll Constraints
 #
@@ -1235,36 +1184,6 @@ def convert_from_arcsec(val):
 
     return  val
 
-#-----------------------------------------------------------------------------------------------
-#-- adjust_dicimal: adjust to dicial to 'dic'                                                 --
-#-----------------------------------------------------------------------------------------------
-
-def adjust_dicimal(val, dic=4):
-    """
-    adjust to dicial to 'dic'
-    input:  val --- numeric value
-            dic --- diciaml point; default: 4
-    output: val --- adjusted val
-    """
-    if ocf.is_neumeric(val):
-        ichk = 0
-        try:
-            chk = val/3.0           #--- testing the input value is in float/int
-        except:
-            val  = float(val)
-            ichk = 1
-
-        fmt = '%3.' + str(dic) + 'f'
-        val = fmt % (round(val, dic))
-        if ichk == 1:
-            val = str(val)
-
-    return val
-
-#-----------------------------------------------------------------------------------------------
-#-- separate_time_to_rank: separeate ranked time input into lists of year, month and date     --
-#-----------------------------------------------------------------------------------------------
-
 def separate_time_to_rank(time_list):
     """
     separeate ranked time input into lists of year, month and date
@@ -1278,22 +1197,14 @@ def separate_time_to_rank(time_list):
     m_list = []
     d_list = []
     t_list = []
-    for k in range(0, 10):
+    for k in range(len(time_list)):
         tout = time_list[k]
-        if ocf.is_neumeric(tout):
-            out = ocf.convert_chandra_time_to_display(stime)
-            y_list.append(out[0])
-            m_list.append(ocf.change_month_format(out[1]))
-            d_list.append(out[2])
-            t_list.append(out[3])
-
-        elif not  tout in null_list:
-            atemp = re.split('T', tout)
-            btemp = re.split('-', atemp[0])
-            y_list.append(btemp[0])
-            m_list.append(ocf.change_month_format(btemp[1]))
-            d_list.append(btemp[2])
-            t_list.append(atemp[1])
+        if tout not in null_list:
+            atemp = tout.split()
+            m_list.append(atemp[0])
+            d_list.append(f"{int(atemp[1]):02}")
+            y_list.append(atemp[2])
+            t_list.append(datetime.strptime(atemp[3], '%I:%M%p').strftime('%H:%M:%S'))
 
         else:
             y_list.append('NA')
@@ -1302,7 +1213,6 @@ def separate_time_to_rank(time_list):
             t_list.append('00:00:00')
 
     return [y_list, m_list, d_list, t_list]
-
 #-----------------------------------------------------------------------------------------------
 #-- find_planned_roll: read planned roll for a given obsid                                    --
 #-----------------------------------------------------------------------------------------------
