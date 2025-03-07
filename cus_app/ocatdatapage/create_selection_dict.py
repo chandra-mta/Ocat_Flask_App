@@ -131,31 +131,32 @@ def create_selection_dict(obsid):
     ct_dict = rod.read_ocat_data(obsid) #: Dictionary of current ocat values.
     p_dict  = {} #: Dictionary storing revision information.
 #
-#---  general parameters; non editable entries
+#--- General Parameters; non editable entries
 #
     for k,v in _NON_EDIT_GEN_PARAM.items():
-        #: Fill out informational parameters with no change option (part of non, editable group)
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
         p_dict[k] = [v, None, 'n', 'gen', val, val]
-
 #
-#--- Special case non editable general parameters not listed in the ocat
-#
-    val         = find_planned_roll(obsid)
-    p_dict['planned_roll'] = ['Planned Roll', None, 'n', 'gen', val, val]
-
-#
-#--- general parameters; input text entries
+#--- General Parameters; input text entries
 #
     for k,v in _INPUT_EDIT_GEN_PARAM.items():
-        #: Fill out informational parameters with input text boxes
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
         p_dict[k] = [v, None, 'v', 'gen', val, val]
 #
-#--- Special case input editable entries not listed in the ocat
+#--- General Parameter; choice editable entries
 #
+    for k,v in _CHOICE_EDIT_GEN_PARAM.items():
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        val = ct_dict.get(k)
+        p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
+#
+#--- General Parameters; special case
+#
+    val         = find_planned_roll(obsid)
+    p_dict['planned_roll'] = ['Planned Roll', None, 'n', 'gen', val, val]
+
     tra, tdec    = ocf.convert_ra_dec_format(ra, dec) #: TODO adust to operate on full values
 
     p_id         = 'dra'
@@ -173,110 +174,58 @@ def create_selection_dict(obsid):
     group        = 'gen'
     vals         = tdec
     p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
 #
-#--- general parameter; choice editable entries
+#--- Dither Parameters; non editable entries
 #
-    for k,v in _CHOICE_EDIT_GEN_PARAM.items():
-        #: Fill out informational parameters with input text boxes
-        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
-        val = ct_dict.get(k)
-        p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
-
-#
-#---  Dither Parameters
-#
-    p_id         = 'dither_flag'
-    label        = 'Dither'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'dt'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
     p_id         = 'y_amp'
-    label        = 'Y_Amp (in degrees)'
-    choices      = ''
-    lind         = 'n'
-    group        = 'dt'
-    y_amp        = ct_dict[p_id]
-    vals         = adjust_dicimal(y_amp)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'y_amp_asec'
-    label        = 'Y_Amp (in arcsec)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'dt'
-    vals         = convert_to_arcsec(y_amp)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Y_Amp (in degrees)', None, 'n', 'dt', val, val]
 
     p_id         = 'y_freq'
-    label        = 'Y_Freq (in degrees/sec)'
-    choices      = ''
-    lind         = 'n'
-    group        = 'dt'
-    y_freq       = ct_dict[p_id]
-    vals         = adjust_dicimal(y_freq)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'y_freq_asec'
-    label        = 'Y_Freq (in arcsec/sec)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'dt'
-    vals         = convert_to_arcsec(y_freq)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'y_phase'
-    label        = 'Y_Phase'
-    choices      = ''
-    lind         = 'v'
-    group        = 'dt'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Y_Freq (in degrees/sec)', None, 'n', 'dt', val, val]
 
     p_id         = 'z_amp'
-    label        = 'Z_Amp (in degrees)'
-    choices      = ''
-    lind         = 'n'
-    group        = 'dt'
-    z_amp        = ct_dict[p_id]
-    vals         = adjust_dicimal(z_amp)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'z_amp_asec'
-    label        = 'Z_Amp (in arcsec)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'dt'
-    vals         = convert_to_arcsec(z_amp)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Z_Amp (in degrees)', None, 'n', 'dt', val, val]
 
     p_id         = 'z_freq'
-    label        = 'Z_Freq (in degrees/sec)'
-    choices      = ''
-    lind         = 'n'
-    group        = 'dt'
-    z_freq       = ct_dict[p_id]
-    vals         = adjust_dicimal(z_freq)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Z_Freq (in degrees/sec)', None, 'n', 'dt', val, val]
+#
+#--- Dither Parameters; input text entries
+#
+    p_id         = 'y_amp_asec'
+    val         = convert_to_arcsec(ct_dict.get('y_amp'))
+    p_dict[p_id] = ['Y_Amp (in arcsec)', None, 'v', 'dt', val, val]
+
+    p_id         = 'y_freq_asec'
+    val         = convert_to_arcsec(ct_dict.get('y_freq'))
+    p_dict[p_id] = ['Y_Freq (in arcsec/sec)', None, 'v', 'dt', val, val]
+
+    p_id         = 'y_phase'
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Y_Phase', None, 'v', 'dt', val, val]
+
+    p_id         = 'z_amp_asec'
+    val         = convert_to_arcsec(ct_dict.get('z_amp'))
+    p_dict[p_id] = ['Z_Amp (in arcsec)', None, 'v', 'dt', val, val]
 
     p_id         = 'z_freq_asec'
-    label        = 'Z_Freq (in arcsec/sec)'
-    choices      = ''
-    lind         = 'v'
-    group        = 'dt'
-    vals         = convert_to_arcsec(z_freq)
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = convert_to_arcsec(ct_dict.get('z_freq'))
+    p_dict[p_id] = ['Z_Freq (in arcsec/sec)', None, 'v', 'dt', val, val]
 
     p_id         = 'z_phase'
-    label        = 'Z_Phase'
-    choices      = ''
-    lind         = 'v'
-    group        = 'dt'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val = ct_dict.get(p_id)
+    p_dict[p_id] = ['Z_Phase', None, 'v', 'dt', val, val]
+#
+#--- Dither Parameters; choice editable entries
+#
+    p_id         = 'dither_flag'
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Dither', _CHOICE_NNY, 'l', 'dt', val, val]
+
+
 #
 #--- Time Constraints
 
