@@ -42,6 +42,8 @@ _DAY_CHOICE = [(x,x) for x in _DAY_LIST]
 #
 _CHOICE_CHIP    =  (('NA', 'NA'), ('N','NO'), ('Y','YES'), ('O1','OPT1'),\
                     ('O2','OPT2'), ('O3', 'OPT3'), ('O4','OPT4'), ('O5','OPT5'),)
+_CHOICE_WINDOW = [(x, x) for x in ('NA','I0', 'I1',  'I2', 'I3', 'S0', 'S1', 'S2', 'S3', 'S4', 'S5')]
+
 
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 #
@@ -158,6 +160,17 @@ _INPUT_EDIT_ACIS_PARAM = {
     'eventfilter_higher':'Energy Range',
     'spectra_max_count':'Spectra Max Count',
 }
+_INPUT_EDIT_ACISWIN_PARAM = {
+    'aciswin_no':'ACIS Window #',
+    'ordr':'Ordr',
+    'start_row':'Start Row',
+    'start_column':'Start Column',
+    'height':'Height',
+    'width':'Width',
+    'lower_threshold':'Lower Energy',
+    'pha_range':'Energy Range',
+    'sample':'Sample Rate'
+}
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
 #-----------------------------------------------------------------------------------------------
@@ -198,21 +211,30 @@ def create_selection_dict(obsid):
     for k,v in _NON_EDIT_GEN_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        p_dict[k] = [v, None, 'n', 'gen', val, val]
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'n', 'gen', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'n', 'gen', val, val]
 #
 #--- General Parameters; input text entries
 #
     for k,v in _INPUT_EDIT_GEN_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        p_dict[k] = [v, None, 'v', 'gen', val, val]
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'v', 'gen', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'v', 'gen', val, val]
 #
 #--- General Parameter; choice editable entries
 #
     for k,v in _CHOICE_EDIT_GEN_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
+        if isinstance(val, list):
+            p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
 #
 #--- General Parameters; special case
 #
@@ -372,7 +394,7 @@ def create_selection_dict(obsid):
 
     p_id         = 'monitor_series'
     vals     = ct_dict.get(p_id)
-    p_dict[p_id] = ['Monitoring Series', None, 'n', 'oc', val, val]
+    p_dict[p_id] = ['Monitoring Series', None, 'n', 'oc', val, copy.deepcopy(val)]
 #
 #--- Other Constraints; choice editable entries
 #
@@ -396,9 +418,12 @@ def create_selection_dict(obsid):
 #
     for k,v in _INPUT_EDIT_OTHER_PARAM.items():
         val = ct_dict.get(k)
-        p_dict[k] = [v, None, 'v', 'oc', val, val]
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'v', 'oc', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'v', 'oc', val, val]
 #
-#--- HRC Parameters; choice editable entires
+#--- HRC Parameters; choice editable entries
 #
     p_id         = 'hrc_timing_mode'
     val         = ct_dict.get(p_id)
@@ -408,131 +433,44 @@ def create_selection_dict(obsid):
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['Zero Block', _CHOICE_NY, 'l', 'hrc', val, val]
 #
-#--- HRC Parameters; input text entires
+#--- HRC Parameters; input text entries
 #
     p_id         = 'hrc_si_mode'
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['SI Mode', None, 'l', 'hrc', val, val]
 #
-#--- ACIS Parameters; choice editable entires
+#--- ACIS Parameters; choice editable entries
 #
     p_id         = 'dropped_chip_count'
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['Dropped Chip Count', None, 'n', 'acis', val, val]
 #
-#--- ACIS Parameters; choice editable entires
+#--- ACIS Parameters; choice editable entries
 #
     for k,v in _CHOICE_EDIT_ACIS_PARAM.items():
         val = ct_dict.get(k)
         p_dict[k] = [v.get('label'), v.get('select'), 'l', 'acis', val, val]
 #
-#--- ACIS Parameters; input text entires
+#--- ACIS Parameters; input text entries
 #
     for k, v in _INPUT_EDIT_ACIS_PARAM.items():
         val = ct_dict.get(k)
         p_dict[k] = [v, None, 'v', 'acis', val, val]
 #
-#--- ACIS Window Constraints
+#--- ACIS Window Constraints; choice editable entries
 #
-    choice       =  ('NA','I0', 'I1',  'I2', 'I3', 'S0', 'S1', 'S2', 'S3', 'S4', 'S5')
-    a_choices    = [(x, x) for x in choice]
-
-    p_id         = 'aciswin_no'
-    label        = 'ACIS Window #'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ordr'
-    label        = 'Ordr'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-#    p_id         = 'aciswin_id'
-#    label        = 'ACIS Window ID'
-#    choices      = ''
-#    lind         = 'l'
-#    group        = 'awin'
-#    vals         = ct_dict[p_id]
-#    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-#    p_id         = 'include_flag'
-#    label        = 'ACIS Window Flag'
-#    choices      = ''
-#    lind         = 'n'
-#    group        = 'awin'
-#    vals         = ct_dict[p_id]
-#    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
     p_id         = 'chip'
-    label        = 'Chip'
-    choices      = a_choices
-    lind         = 'l'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'start_row'
-    label        = 'Start Row'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'start_column'
-    label        = 'Start Column'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    group        = 'awin'
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'height'
-    label        = 'Height'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'width'
-    label        = 'Width'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'lower_threshold'
-    label        = 'Lower Energy'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-
-    p_id         = 'pha_range'
-    label        = 'Energy Range'
-    choices      = ''
-    lind         = 'v'
-    group        = 'awin'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-
-    p_id         = 'sample'
-    label        = 'Sample Rate'
-    choices      = ''
-    lind         = 'v'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Chip', _CHOICE_WINDOW, 'l', 'awin', val, copy.deepcopy(val)]
+#
+#--- ACIS Window Constraints; input text entries
+#
+    for k,v in _INPUT_EDIT_ACISWIN_PARAM.items():
+        val = ct_dict.get(k)
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'v', 'awin', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'v', 'awin', val, val]
 #
 #--- TOO
 #
