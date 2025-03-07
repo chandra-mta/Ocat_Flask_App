@@ -37,6 +37,12 @@ _MONTH_CHOICE = [(x,x) for x in _MONTH_LIST]
 _DAY_LIST = ['NA'] + [f"{x:02}" for x in range(1,32)]
 _DAY_CHOICE = [(x,x) for x in _DAY_LIST]
 
+#
+#--- set chip selection list
+#
+_CHOICE_CHIP    =  (('NA', 'NA'), ('N','NO'), ('Y','YES'), ('O1','OPT1'),\
+                    ('O2','OPT2'), ('O3', 'OPT3'), ('O4','OPT4'), ('O5','OPT5'),)
+
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 #
 #--- current chandra time
@@ -117,6 +123,40 @@ _INPUT_EDIT_OTHER_PARAM = {
     'pre_max_lead':'Follows Obs Max Int',
     'observatories':'Observatories',
     'multitelescope_interval':'Max Coordination Offset',
+}
+# ruff: noqa
+_CHOICE_EDIT_ACIS_PARAM = {
+    'exp_mode':{'label':'ACIS Exposure Mode', 'select':[(x, x) for x in ('NA', 'TE', 'CC')]},
+    'bep_pack':{'label':'Event TM Format', 'select':[(x, x) for x in ('NA', 'F', 'VF', 'F+B', 'G')]},
+    'most_efficient':{'label':'Most Efficient', 'select':_CHOICE_NNY},
+    'ccdi0_on':{'label':'I0', 'select':_CHOICE_CHIP},
+    'ccdi1_on':{'label':'I1', 'select':_CHOICE_CHIP},
+    'ccdi2_on':{'label':'I2', 'select':_CHOICE_CHIP},
+    'ccdi3_on':{'label':'I3', 'select':_CHOICE_CHIP},
+    'ccds0_on':{'label':'S0', 'select':_CHOICE_CHIP},
+    'ccds1_on':{'label':'S1', 'select':_CHOICE_CHIP},
+    'ccds2_on':{'label':'S2', 'select':_CHOICE_CHIP},
+    'ccds3_on':{'label':'S3', 'select':_CHOICE_CHIP},
+    'ccds4_on':{'label':'S4', 'select':_CHOICE_CHIP},
+    'ccds5_on':{'label':'S5', 'select':_CHOICE_CHIP},
+    'subarray':{'label':'Use Subaray', 'select':[('NONE', 'NONE'), ('N', 'NO'), ('CUSTOM', 'YES')]},
+    'duty_cycle':{'label':'Duty Cycle', 'select':_CHOICE_NNY},
+    'onchip_sum':{'label':'Onchip Summing', 'select':_CHOICE_NNY},
+    'eventfilter':{'label':'Energy Filter', 'select':_CHOICE_NNY},
+    'multiple_spectral_lines':{'label':'Multi Spectral Lines', 'select':_CHOICE_NNY},
+}
+# ruff: noqa
+_INPUT_EDIT_ACIS_PARAM = {
+    'frame_time':'Frame Time',
+    'subarray_start_row':'Start',
+    'subarray_row_count':'Rows',
+    'secondary_exp_count':'Number',
+    'primary_exp_time':'Tprimary',
+    'onchip_row_count':'Onchip Rows',
+    'onchip_column_count':'Onchip Columns',
+    'eventfilter_lower':'Lowest Energy',
+    'eventfilter_higher':'Energy Range',
+    'spectra_max_count':'Spectra Max Count',
 }
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
@@ -372,259 +412,25 @@ def create_selection_dict(obsid):
 #
     p_id         = 'hrc_si_mode'
     val         = ct_dict.get(p_id)
-    p_dict[p_id] = ['SI Mode', choices, 'l', 'hrc', val, val]
-
+    p_dict[p_id] = ['SI Mode', None, 'l', 'hrc', val, val]
 #
-#--- ACIS Parameters
+#--- ACIS Parameters; choice editable entires
 #
-    p_id         = 'exp_mode'
-    label        = 'ACIS Exposure Mode'
-    choice       =  ('NA', 'TE', 'CC')
-    choices      = [(x, x) for x in choice]
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-#    p_id         = 'fep'
-#    label        = 'Fep'
-#    choice       =  ('NA', 'TE', 'CC')
-#    choices      = ''
-#    lind         = 'n'
-#    group        = 'acis'
-#    vals         = ct_dict[p_id]
-#    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
     p_id         = 'dropped_chip_count'
-    label        = 'Dropped Chip Count'
-    choice       =  ('NA', 'TE', 'CC')
-    choices      = ''
-    lind         = 'n'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'bep_pack'
-    label        = 'Event TM Format'
-    choice       =  ('NA', 'F', 'VF', 'F+B', 'G')
-    choices      = [(x, x) for x in choice]
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'frame_time'
-    label        = 'Frame Time'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'most_efficient'
-    label        = 'Most Efficient'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Dropped Chip Count', None, 'n', 'acis', val, val]
 #
-#--- set chip selection list
+#--- ACIS Parameters; choice editable entires
 #
-    c_choices    =  (('NA', 'NA'), ('N','NO'), ('Y','YES'), ('O1','OPT1'),\
-                     ('O2','OPT2'), ('O3', 'OPT3'), ('O4','OPT4'), ('O5','OPT5'),)
-
-    p_id         = 'ccdi0_on'
-    label        = 'I0'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccdi1_on'
-    label        = 'I1'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccdi2_on'
-    label        = 'I2'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccdi3_on'
-    label        = 'I3'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccds0_on'
-    label        = 'S0'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccds1_on'
-    label        = 'S1'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccds2_on'
-    label        = 'S2'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccds3_on'
-    label        = 'S3'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccds4_on'
-    label        = 'S4'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ccds5_on'
-    label        = 'S5'
-    choices      = c_choices
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'subarray'
-    label        = 'Use Subarray'
-    choices      = (('NONE', 'NONE'), ('N', 'NO'), ('CUSTOM', 'YES'),)
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'subarray_start_row'
-    label        = 'Start'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'subarray_row_count'
-    label        = 'Rows'  
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'duty_cycle'
-    label        = 'Duty Cycle'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'secondary_exp_count'
-    label        = 'Number'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'primary_exp_time'
-    label        = 'Tprimary'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'onchip_sum'
-    label        = 'Onchip Summing'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'onchip_row_count'
-    label        = 'Onchip Rows'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'onchip_column_count'
-    label        = 'Onchip Columns'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'eventfilter'
-    label        = 'Energy Filter'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'eventfilter_lower'
-    label        = 'Lowest Energy'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'eventfilter_higher'
-    label        = 'Energy Range'
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'multiple_spectral_lines'
-    label        = 'Multi Spectral Lines'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'spectra_max_count'
-    label        = 'Spectra Max Count'  
-    choices      = ''
-    lind         = 'v'
-    group        = 'acis'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    for k,v in _CHOICE_EDIT_ACIS_PARAM.items():
+        val = ct_dict.get(k)
+        p_dict[k] = [v.get('label'), v.get('select'), 'l', 'acis', val, val]
+#
+#--- ACIS Parameters; input text entires
+#
+    for k, v in _INPUT_EDIT_ACIS_PARAM.items():
+        val = ct_dict.get(k)
+        p_dict[k] = [v, None, 'v', 'acis', val, val]
 #
 #--- ACIS Window Constraints
 #
@@ -1048,20 +854,24 @@ def separate_time_to_rank(time_list):
     m_list = []
     d_list = []
     t_list = []
-    for k in range(len(time_list)):
-        tout = time_list[k]
-        if tout not in null_list:
-            atemp = tout.split()
-            m_list.append(atemp[0])
-            d_list.append(f"{int(atemp[1]):02}")
-            y_list.append(atemp[2])
-            t_list.append(datetime.strptime(atemp[3], '%I:%M%p').strftime('%H:%M:%S'))
+    if time_list == None:
+        real = 0
+        placeholder = 10
+    else:
+        real = len(time_list)
+        placeholder = 10 - real
+    for k in range(real):
+        atemp = time_list[k].split()
+        m_list.append(atemp[0])
+        d_list.append(f"{int(atemp[1]):02}")
+        y_list.append(atemp[2])
+        t_list.append(datetime.strptime(atemp[3], '%I:%M%p').strftime('%H:%M:%S'))
 
-        else:
-            y_list.append('NA')
-            m_list.append('NA')
-            d_list.append('NA')
-            t_list.append('00:00:00')
+    for k in range(real,placeholder):
+        y_list.append('NA')
+        m_list.append('NA')
+        d_list.append('NA')
+        t_list.append('00:00:00')
 
     return [y_list, m_list, d_list, t_list]
 #-----------------------------------------------------------------------------------------------
