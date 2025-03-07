@@ -10,7 +10,6 @@ import os
 import re
 import time
 import copy
-import Chandra.Time
 from cxotime import CxoTime
 from datetime import datetime
 import calendar
@@ -29,9 +28,9 @@ _CHOICE_NNPY = (('NA', 'NA'), ('N', 'NO'), ('P','PREFERENCE'), ('Y','YES'),)
 _CHOICE_NY   = (('N','NO'), ('Y','YES'),)
 _CHOICE_NNY  = (('NA', 'NA'), ('N', 'NO'), ('Y', 'YES'),)
 _CHOICE_CP   = (('Y','CONSTRAINT'),('P','PREFERENCE'),)
-_CHOICE_NNCP = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
+_CHOICE_NNPC = (('NA','NA'),('N','NO'), ('P','PREFERENCE'), ('Y', 'CONSTRAINT'),)
 
-_YEAR_LIST = ['NA'] + [str(x + datetime().now().year) for x in range(-1,5)]
+_YEAR_LIST = ['NA'] + [str(x + datetime.now().year) for x in range(-1,5)]
 _YEAR_CHOICE = [(x,x) for x in _YEAR_LIST]
 _MONTH_LIST = ['NA'] + calendar.month_abbr[1:]
 _MONTH_CHOICE = [(x,x) for x in _MONTH_LIST]
@@ -42,7 +41,7 @@ null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'Non
 #
 #--- current chandra time
 #
-now    = Chandra.Time.DateTime().secs
+now    = CxoTime().secs
 #
 #--- define several data lists
 #
@@ -229,7 +228,7 @@ def create_selection_dict(obsid):
 
     p_id         = 'window_constraint'
     val = ct_dict.get(p_id)
-    p_dict[p_id] = ['Window Constraint', _CHOICE_NNCP, 'l', 'tc', val, val]
+    p_dict[p_id] = ['Window Constraint', _CHOICE_NNPC, 'l', 'tc', val, val]
 
     p_id         = 'tstart'
     val         = ct_dict.get(p_id)
@@ -284,55 +283,33 @@ def create_selection_dict(obsid):
     val         = stop_list[3] 
     p_dict[p_id] = ['Stop Time', None, 'v', 'tc', val, copy.deepcopy(val)]
 #
-#--- Roll Constraints
+#--- Roll Constraints; choice editable entries
 #
     p_id         = 'roll_flag'
-    label        = 'Roll Flag'
-    choices      = choice_ny
-    lind         = 'l'
-    group        = 'rc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'roll_ordr'
-    label        = 'Roll Order'
-    choices      = ''
-    lind         = 'v'
-    group        = 'rc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Roll Flag', _CHOICE_NNPY, 'l', 'rc', val, val]
 
     p_id         = 'roll_constraint'
-    label        = 'Roll Angle Constraints'
-    choices      = choice_nncp
-    lind         = 'l'
-    group        = 'rc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
-    
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Roll Angle Constraints', _CHOICE_NNPC, 'l', 'rc', val, copy.deepcopy(val)]
+
     p_id         = 'roll_180'
-    label        = 'Roll_180'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'rc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    vals         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Roll_180', _CHOICE_NNY, 'l', 'rc', val, copy.deepcopy(val)]
+#
+#--- Roll Constraints; input text entries
+#
+    p_id         = 'roll_ordr'
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Roll Order', None, 'v', 'rc', val, copy.deepcopy(val)]
 
     p_id         = 'roll'
-    label        = 'Roll'
-    choices      = ''
-    lind         = 'v'
-    group        = 'rc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Roll', None, 'v', 'rc', val, copy.deepcopy(val)]
 
     p_id         = 'roll_tolerance'
-    label        = 'Roll Tolerance'
-    choices      = ''
-    lind         = 'v'
-    group        = 'rc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, copy.deepcopy(vals)]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Roll Tolerance', None, 'v', 'rc', val, copy.deepcopy(val)]
 #
 #--- Other Constraints
 #
@@ -1271,7 +1248,7 @@ def create_warning_line(obsid):
 
     if not obs_date in null_list:
         ltime     = time.strftime('%Y:%j:%H:%M:%S', time.strptime(obs_date, '%Y-%m-%dT%H:%M:%S'))
-        stime     = Chandra.Time.DateTime(ltime).secs
+        stime     = CxoTime(ltime).secs
         time_diff = stime - now
 
     inday = int(time_diff / 86400)
