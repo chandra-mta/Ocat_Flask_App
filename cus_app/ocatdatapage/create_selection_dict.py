@@ -105,6 +105,19 @@ _CHOICE_EDIT_GEN_PARAM = {
     'photometry_flag':{'label':'Photometry', 'select':_CHOICE_NNY},
 }
 # ruff: noqa
+_INPUT_EDIT_OTHER_PARAM = {
+    'phase_epoch':'Phase Epoch',
+    'phase_period':'Phase Period',
+    'phase_start':'Phase Min',
+    'phase_start_margin':'Phase Min Error',
+    'phase_end':'Phase Max',
+    'phase_end_margin':'Phase Max Error',
+    'pre_id':'Follows ObsID#',
+    'pre_min_lead':'Follows Obs Min Int',
+    'pre_max_lead':'Follows Obs Max Int',
+    'observatories':'Observatories',
+    'multitelescope_interval':'Max Coordination Offset',
+}
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
 #-----------------------------------------------------------------------------------------------
@@ -311,147 +324,39 @@ def create_selection_dict(obsid):
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['Roll Tolerance', None, 'v', 'rc', val, copy.deepcopy(val)]
 #
-#--- Other Constraints
+#--- Other Constraints; non editable entries
 #
-    p_id         = 'constr_in_remarks'
-    label        = 'Constraints in Remarks?'
-    choices      = choice_npy
-    lind         = 'l'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
     p_id         = 'phase_constraint_flag'
-    label        = 'Phase Constraint'
-    choices      = choice_nncp
-    lind         = 'n'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'phase_epoch'
-    label        = 'Phase Epoch'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'phase_period'
-    label        = 'Phase Period'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'phase_start'
-    label        = 'Phase Min'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'phase_start_margin'
-    label        = 'Phase Min Error'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'phase_end'
-    label        = 'Phase Max'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'phase_end_margin'
-    label        = 'Phase Max Error'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'monitor_flag'
-    label        = 'Monitoring Observation'
-    choices      = choice_ny
-    lind         = 'l'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Phase Constraint', None, 'n', 'oc', val, val]
 
     p_id         = 'monitor_series'
-    label        = 'Monitoring Series'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    try:
-        vals     = ct_dict[p_id][0][0]
-    except:
-        vals     = []
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    vals     = ct_dict.get(p_id)
+    p_dict[p_id] = ['Monitoring Series', None, 'n', 'oc', val, val]
+#
+#--- Other Constraints; choice editable entries
+#
+    p_id         = 'constr_in_remarks'
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Constraints in Remarks?', _CHOICE_NNPY, 'l', 'oc', val, val]
 
-    p_id         = 'pre_id'
-    label        = 'Follows ObsID#'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'pre_min_lead'
-    label        = 'Follows Obs Min Int'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'pre_max_lead'
-    label        = 'Follows Obs Max Int'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    p_id         = 'monitor_flag'
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Monitoring Observation', _CHOICE_NY, 'l', 'oc', val, val]
 
     p_id         = 'multitelescope'
-    label        = 'Coordinated Observation'
-    choices      = choice_npy
-    lind         = 'l'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'observatories'
-    label        = 'Observatories'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'multitelescope_interval'
-    label        = 'Max Coordination Offset'
-    choices      = ''
-    lind         = 'v'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Coordinated Observation', _CHOICE_NNPY, 'l', 'oc', val, val]
 
     p_id         = 'pointing_constraint'
-    label        = 'Pointing Update'
-    choices      = choice_nny
-    lind         = 'l'
-    group        = 'oc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Pointing Update', _CHOICE_NNY, 'l', 'oc', val, val]
+#
+#--- Other Constraints; input text entries
+#
+    for k,v in _INPUT_EDIT_OTHER_PARAM.items():
+        val = ct_dict.get(k)
+        p_dict[k] = [v, None, 'v', 'oc', val, val]
 #
 #--- HRC Parameters
 #
