@@ -269,10 +269,6 @@ class OcatParamForm(FlaskForm):
     label           = 'hrc_si_mode'
     hrc_si_mode     = pr_chr_field(label)
 
-    label           = 'hrc_si_select'
-    hchoice         = [('no', 'no'), ('yes', 'yes')]
-    hrc_si_select   = SelectField(choices=hchoice)
-
 #--- ACIS Parameters       ---------------------------------------------------------------------
 
     label        = 'exp_mode'

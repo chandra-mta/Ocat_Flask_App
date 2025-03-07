@@ -358,39 +358,22 @@ def create_selection_dict(obsid):
         val = ct_dict.get(k)
         p_dict[k] = [v, None, 'v', 'oc', val, val]
 #
-#--- HRC Parameters
+#--- HRC Parameters; choice editable entires
 #
     p_id         = 'hrc_timing_mode'
-    label        = 'HRC Timing Mode'
-    choices      = choice_ny
-    lind         = 'l'
-    group        = 'hrc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['HRC Timing Mode', _CHOICE_NY, 'l', 'hrc', val, val]
 
-    p_id            = 'hrc_zero_block'
-    label        = 'Zero Block'
-    choices      = choice_ny
-    lind         = 'l'
-    group        = 'hrc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
+    p_id         = 'hrc_zero_block'
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Zero Block', _CHOICE_NY, 'l', 'hrc', val, val]
+#
+#--- HRC Parameters; input text entires
+#
     p_id         = 'hrc_si_mode'
-    label        = 'SI Mode'
-    choices      = ''
-    lind         = 'v'
-    group        = 'hrc'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['SI Mode', choices, 'l', 'hrc', val, val]
 
-    p_id         = 'hrc_si_select'
-    label        = 'HRC SI SELECT'
-    choices      = [('n', 'NO'), ('y', 'YES')]
-    lind         = 'l'
-    group        = 'hrc'
-    vals         = ''
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
 #
 #--- ACIS Parameters
 #
