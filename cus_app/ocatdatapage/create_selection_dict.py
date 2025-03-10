@@ -687,25 +687,15 @@ def separate_time_to_rank(time_list):
     d_list = []
     t_list = []
     if time_list == None:
-        real = 0
-        placeholder = 10
-    else:
-        real = len(time_list)
-        placeholder = 10 - real
-    for k in range(real):
+        return [None, None, None, None]
+    for k in range(len(time_list)):
         atemp = time_list[k].split()
         m_list.append(atemp[0])
         d_list.append(f"{int(atemp[1]):02}")
         y_list.append(atemp[2])
         t_list.append(datetime.strptime(atemp[3], '%I:%M%p').strftime('%H:%M:%S'))
-
-    for k in range(real,placeholder):
-        y_list.append('NA')
-        m_list.append('NA')
-        d_list.append('NA')
-        t_list.append('00:00:00')
-
     return [y_list, m_list, d_list, t_list]
+
 #-----------------------------------------------------------------------------------------------
 #-- find_planned_roll: read planned roll for a given obsid                                    --
 #-----------------------------------------------------------------------------------------------
