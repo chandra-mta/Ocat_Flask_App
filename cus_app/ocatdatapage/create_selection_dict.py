@@ -171,6 +171,38 @@ _INPUT_EDIT_ACISWIN_PARAM = {
     'pha_range':'Energy Range',
     'sample':'Sample Rate'
 }
+_NON_EDIT_TOO_PARAM = {
+    'tooid':'TOO ID',
+    'too_trig':'TOO Trigger',
+    'too_type':'TOO Type',
+    'too_start':'TOO Start',
+    'too_stop':'TOO Stop',
+    'too_followup':'# of Follow-up Observations',
+    'too_remarks':'Too Remarks',
+}
+_NON_EDIT_OTHERS_PARAM = {
+    'description':'Description',
+    'total_fld_cnt_rate':'Total Fld Cnt Rate',
+    'group_id':'Group ID',
+    'group_obsid':'Group Obsids',
+    'monitor_series':'Monitor Series',
+}
+_NON_EDIT_OTHERS_PARAM = {
+    'description':'Description',
+    'total_fld_cnt_rate':'Total Fld Cnt Rate',
+    'group_id':'Group ID',
+    'group_obsid':'Group Obsids',
+    'monitor_series':'Monitor Series',
+}
+_NON_EDIT_UNUSED_PARAM = {
+    'seg_max_num':'Seg Max Number',
+    'ocat_propid':'Ocat Proposal ID',
+    'acisid':'ACIS ID',
+    'hrcid':'HRC ID',
+    'mpcat_star_fidlight_file':'Fid Light File',
+    'data_rights':'Data Rights',
+    
+}
 #-----------------------------------------------------------------------------------------------
 #-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
 #-----------------------------------------------------------------------------------------------
@@ -472,188 +504,53 @@ def create_selection_dict(obsid):
         else:
             p_dict[k] = [v, None, 'v', 'awin', val, val]
 #
-#--- TOO
+#--- TOO Parameters; non editable entries
 #
-    p_id         = 'tooid'
-    label        = 'TOO ID'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'too_trig'
-    label        = 'TOO Trigger'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'too_type'
-    label        = 'TOO Type'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'too_start'
-    label        = 'TOO Start'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'too_stop'
-    label        = 'TOO Stop'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'too_followup'
-    label        = '# of Follow-up Observations'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'too_remarks'
-    label        = 'Too Remarks'
-    choices      = ''
-    lind         = 'n'
-    group        = 'too'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'spwindow_flag'
-    label        = 'Window Filter'
-    group        = 'too'
-    choices      = choice_nny
-    lind         = 'l'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    for k,v in _NON_EDIT_TOO_PARAM.items():
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        val = ct_dict.get(k)
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'n', 'too', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'n', 'too', val, val]
 #
-#--- Others 
+#--- Others; non editable entries
 #
-    p_id         = 'description'
-    label        = 'Description'
-    choices      = ''
-    lind         = 'n'
-    group        = 'rest'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'total_fld_cnt_rate'
-    label        = 'Total Fld Cnt Rate'
-    choices      = ''
-    lind         = 'n'
-    group        = 'rest'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'group_id'
-    label        = 'Group ID'
-    choices      = ''
-    lind         = 'n'
-    group        = 'rest'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'group_obsid'
-    label        = 'Group Obsids'
-    choices      = ''
-    lind         = 'n'
-    group        = 'rest'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
+    for k,v in _NON_EDIT_OTHERS_PARAM.items():
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        val = ct_dict.get(k)
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'n', 'rest', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'n', 'rest', val, val]
+#
+#--- Others; input text entries
+#
     p_id         = 'remarks' 
-    label        = 'Remarks'
-    choices      = ''
-    lind         = 'v'
-    group        = 'remarks'
-    vals         = ct_dict[p_id].replace('\"', '\'')
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    if isinstance(val,str):
+        val = val.replace('\"', '\'')
+    p_dict[p_id] = ['Remarks', None, 'v', 'remarks', val, val]
 
     p_id         = 'comments'
-    label        = 'Comments'
-    choices      = ''
-    lind         = 'v'
-    group        = 'remarks'
-    vals         = ct_dict[p_id].replace('\"', '\'')
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'monitor_series'
-    label        = 'Monitor Series'
-    choices      = ''
-    lind         = 'n'
-    group        = 'rest'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    val         = ct_dict.get(p_id)
+    if isinstance(val,str):
+        val = val.replace('\"', '\'')
+    p_dict[p_id] = ['Comments', None, 'v', 'remarks', val, val]
 #
 #-- Not Used in Ocat Data Page
 #
-    p_id         = 'seg_max_num'
-    label        = 'Seg Max Number'
-    choices      = ''
-    lind         = 'n'
-    group        = 'nu'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'ocat_propid'
-    label        = 'Ocat Proposal ID'
-    choices      = ''
-    lind         = 'n'
-    group        = 'nu'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'acisid'
-    label        = 'ACIS ID'
-    choices      = ''
-    lind         = 'n'
-    group        = 'nu'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'hrcid'
-    label        = 'HRC ID'
-    choices      = ''
-    lind         = 'n'
-    group        = 'nu'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'mpcat_star_fidlight_file'
-    label        = 'Fid Light File'
-    choices      = ''
-    lind         = 'n'
-    group        = 'nu'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
-
-    p_id         = 'data_rights'
-    label        = 'Data Rights'
-    choices      = ''
-    lind         = 'n'
-    group        = 'nu'
-    vals         = ct_dict[p_id]
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    for k,v in _NON_EDIT_UNUSED_PARAM.items():
+        #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
+        val = ct_dict.get(k)
+        if isinstance(val, list):
+            p_dict[k] = [v, None, 'n', 'nu', val, copy.deepcopy(val)]
+        else:
+            p_dict[k] = [v, None, 'n', 'nu', val, val]
 #
 #--- add obsids_list; keeps a list of obsids for the case of multi obsid submission
 #
-    p_id         = 'obsids_list'
-    label        = 'ObsIDs List'
-    choices      = ''
-    lind         = 'n'
-    vals         = ''
-    p_dict[p_id] = [label, choices, lind, group, vals, vals]
+    p_dict['obsids_list'] = ['ObsIDs List', None, 'n', 'nu', '', '']
 #
 #--- creating image link data
 #
