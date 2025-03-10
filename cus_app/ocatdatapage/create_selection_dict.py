@@ -203,16 +203,13 @@ _NON_EDIT_UNUSED_PARAM = {
     'data_rights':'Data Rights',
     
 }
-#-----------------------------------------------------------------------------------------------
-#-- create_selection_dict: create a dict of p_id <--> [<label>, <selection>, <selectiontye>...]
-#-----------------------------------------------------------------------------------------------
 
 def create_selection_dict(obsid):
     """
     input:  obsid
     output: p_dict --- a dictionary of <p_id> 
                             <--> [<label>, <selection>, <selection type>,<group>, <org value>, <value>]
-                        label           a discriptive name of the parameter
+                        label           a descriptive name of the parameter
                         selection:      blank space, or a list of [(param, display name),...]
                         selection type: n       --- non-editable/not to display
                                         v       --- open value 
@@ -554,61 +551,61 @@ def create_selection_dict(obsid):
 #
 #--- creating image link data
 #
-    part = 'https://cxc.harvard.edu/targets/'  + str(ct_dict['seq_nbr']) + '/'
-    part = part + str(ct_dict['seq_nbr'])      + '.' + str(ct_dict['obsid'])   + '.'
+    link_part = f"https://cxc.harvard.edu/targets/{ct_dict.get('seq_nbr')}/{ct_dict.get('seq_nbr')}.{ct_dict.get('obsid')}."
 
     rass = "NoImage"
     rosat = "NoImage"
     dss = "NoImage"
     if os.path.isdir(f"/data/targets/{str(ct_dict['seq_nbr'])}"):
-        test = ''.join([each for each in os.listdir(f"/data/targets/{str(ct_dict['seq_nbr'])}") if each.endswith('.gif')])
+        gif_check = ''.join([each for each in os.listdir(f"/data/targets/{str(ct_dict['seq_nbr'])}") if each.endswith('.gif')])
         
-        if 'soe.rass.gif' in test:
-            rass  = part + 'soe.rass.gif'
-        elif 'rass.gif' in test:
-            rass  = part + 'rass.gif'
+        if 'soe.rass.gif' in gif_check:
+            rass  = f"{link_part}soe.rass.gif"
+        elif 'rass.gif' in gif_check:
+            rass  = f"{link_part}rass.gif"
 
-        if 'soe.pspc.gif' in test:
-            rosat  = part + 'soe.pspc.gif'
-        elif 'pspc.gif' in test:
-            rosat  = part + 'pspc.gif'
+        if 'soe.pspc.gif' in gif_check:
+            rosat  = f"{link_part}soe.pspc.gif"
+        elif 'pspc.gif' in gif_check:
+            rosat  = f"{link_part}pspc.gif"
 
-        if 'soe.dss.gif' in test:
-            dss   = part + 'soe.dss.gif'
-        elif 'dss.gif' in test:
-            dss   = part + 'dss.gif'
+        if 'soe.dss.gif' in gif_check:
+            dss   = f"{link_part}soe.dss.gif"
+        elif 'dss.gif' in gif_check:
+            dss   = f"{link_part}dss.gif"
 
-    p_dict['rass']  = ['RASS',  '', 'n', rass,  rass]
-    p_dict['rosat'] = ['ROSAT', '', 'n', rosat, rosat]
-    p_dict['dss']   = ['DSS',   '', 'n', dss,   dss]
+    p_dict['rass']  = ['RASS',  None, 'n', rass,  rass]
+    p_dict['rosat'] = ['ROSAT', None, 'n', rosat, rosat]
+    p_dict['dss']   = ['DSS',   None, 'n', dss,   dss]
 #
 #--- creating acis/hrc section open indicators
 #
     inst = ct_dict['instrument']
     if inst in ['HRC-I', 'HRC-S']:
-        p_dict['hrc_open']  = ['HRC',  '', 'n', 'open',  'open']
-        p_dict['acis_open'] = ['ACIS', '', 'n', 'close', 'close']
+        p_dict['hrc_open']  = ['HRC',  None, 'n', 'open',  'open']
+        p_dict['acis_open'] = ['ACIS', None, 'n', 'close', 'close']
     else:
-        p_dict['hrc_open']  = ['HRC',  '', 'n', 'close', 'close']
-        p_dict['acis_open'] = ['ACIS', '', 'n', 'open',  'open']
+        p_dict['hrc_open']  = ['HRC',  None, 'n', 'close', 'close']
+        p_dict['acis_open'] = ['ACIS', None, 'n', 'open',  'open']
 
 #
 #--- check whether obsid is in approved list
 #
     obsid = int(p_dict['obsid'][-1])
     ifile = os.path.join(current_app.config['OCAT_DIR'], 'approved')
-    data  = ocf.read_data_file(ifile)
+    with open(ifile) as f:
+        data = [line.strip() for line in f.readlines]
 
     chk   = 0
     data.reverse()
     for ent in data:
-        atemp = re.split('\s+', ent)
+        atemp = re.split(r'\s+', ent)
         cobsid = int(float(atemp[0]))
         if obsid == cobsid:
             chk = 1
             break
 
-    p_dict['approved'] = ['Approved', '', 'n', chk, chk]
+    p_dict['approved'] = ['Approved', None, 'n', chk, chk]
 
 
     return p_dict  
