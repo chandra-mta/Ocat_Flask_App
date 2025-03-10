@@ -734,7 +734,12 @@
         <th>Remarks:</th>
         <td>
             <textarea id="remarks" name="remarks" rows="10" 
-                      cols="60">{{ ct_dict.get('remarks')[-1] }}</textarea>
+            {% if ct_dict.get('remarks')[-1] == None %}
+                cols="60"></textarea>
+            {% else %}
+                cols="60">{{ ct_dict.get('remarks')[-1] }}</textarea>
+            {% endif %}
+                      
         </td>
         </tr>
     </table>
@@ -752,7 +757,11 @@
         <tr>
         <th>Comments</th>
         <td><textarea id="comments"  name="comments" rows="5" 
-                    cols="60">{{ ct_dict.get('comments')[-1] }} </textarea>
+        {% if ct_dict.get('comments')[-1] == None %}
+            cols="60"></textarea>
+        {% else %}
+            cols="60">{{ ct_dict.get('comments')[-1] }}</textarea>
+        {% endif %}
         </td>
         </tr>
     </table>

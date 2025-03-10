@@ -79,7 +79,6 @@ _NON_EDIT_GEN_PARAM ={
     'pi_name':'PI Name',
     'observer':'Observer',
     'approved_exposure_time':'Exposure Time',
-    'rem_exp_time':'Remaining Exposure Time',
     'proposal_joint':'Joint Proposal',
     'proposal_hst':'HST Approved Time',
     'proposal_noao':'NOAO Approved Time',
@@ -89,7 +88,10 @@ _NON_EDIT_GEN_PARAM ={
     'proposal_vlba':'VLBA Approved Time',
     'soe_st_sched_date':'Scheduled Date',
     'lts_lt_plan':'LTS Date',
+    'ra':'RA',
+    'dec':'Dec',
     'soe_roll':'Roll Observed',
+    'raster_scan':'Raster Scan'
 }
 _INPUT_EDIT_GEN_PARAM = {
     'targname':'Target Name',
@@ -141,7 +143,7 @@ _CHOICE_EDIT_ACIS_PARAM = {
     'ccds3_on':{'label':'S3', 'select':_CHOICE_CHIP},
     'ccds4_on':{'label':'S4', 'select':_CHOICE_CHIP},
     'ccds5_on':{'label':'S5', 'select':_CHOICE_CHIP},
-    'subarray':{'label':'Use Subaray', 'select':[('NONE', 'NONE'), ('N', 'NO'), ('CUSTOM', 'YES')]},
+    'subarray':{'label':'Use Subarray', 'select':[('NONE', 'NONE'), ('N', 'NO'), ('CUSTOM', 'YES')]},
     'duty_cycle':{'label':'Duty Cycle', 'select':_CHOICE_NNY},
     'onchip_sum':{'label':'Onchip Summing', 'select':_CHOICE_NNY},
     'eventfilter':{'label':'Energy Filter', 'select':_CHOICE_NNY},
@@ -244,6 +246,12 @@ def create_selection_dict(obsid):
             p_dict[k] = [v, None, 'n', 'gen', val, copy.deepcopy(val)]
         else:
             p_dict[k] = [v, None, 'n', 'gen', val, val]
+
+    p_id = 'rem_exp_time'
+    val = ct_dict.get(p_id)
+    if val < 0:
+        val = 0
+    p_dict[p_id] = ['Remaining Exposure Time', None, 'n', 'gen', val, val]
 #
 #--- General Parameters; input text entries
 #
@@ -419,7 +427,7 @@ def create_selection_dict(obsid):
 #
     p_id         = 'phase_constraint_flag'
     val         = ct_dict.get(p_id)
-    p_dict[p_id] = ['Phase Constraint', None, 'n', 'oc', val, val]
+    p_dict[p_id] = ['Phase Constraint', _CHOICE_NNPC, 'n', 'oc', val, val]
 
     p_id         = 'monitor_series'
     vals     = ct_dict.get(p_id)
@@ -491,7 +499,7 @@ def create_selection_dict(obsid):
     p_id         = 'spwindow_flag'
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['Window Filter', _CHOICE_NNY, 'l', 'awin', val, val]
-    
+
     p_id         = 'chip'
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['Chip', _CHOICE_WINDOW, 'l', 'awin', val, copy.deepcopy(val)]
