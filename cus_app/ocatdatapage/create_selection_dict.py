@@ -488,9 +488,14 @@ def create_selection_dict(obsid):
 #
 #--- ACIS Window Constraints; choice editable entries
 #
+    p_id         = 'spwindow_flag'
+    val         = ct_dict.get(p_id)
+    p_dict[p_id] = ['Window Filter', _CHOICE_NNY, 'l', 'awin', val, val]
+    
     p_id         = 'chip'
     val         = ct_dict.get(p_id)
     p_dict[p_id] = ['Chip', _CHOICE_WINDOW, 'l', 'awin', val, copy.deepcopy(val)]
+
 #
 #--- ACIS Window Constraints; input text entries
 #
