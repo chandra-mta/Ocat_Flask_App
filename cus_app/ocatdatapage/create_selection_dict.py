@@ -10,7 +10,6 @@ import os
 import re
 import time
 import copy
-from cxotime import CxoTime
 from datetime import datetime
 import calendar
 from flask import current_app
@@ -47,9 +46,10 @@ _CHOICE_WINDOW = [(x, x) for x in ('NA','I0', 'I1',  'I2', 'I3', 'S0', 'S1', 'S2
 
 null_list   = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
 #
-#--- current chandra time
+#--- current time
 #
-now    = CxoTime().secs
+_NOW = datetime.now()
+_MP_OCAT_TIME_FORMAT = "%b %d %Y %I:%M%p"
 #
 #--- define several data lists
 #
@@ -594,7 +594,7 @@ def create_selection_dict(obsid):
     obsid = int(p_dict['obsid'][-1])
     ifile = os.path.join(current_app.config['OCAT_DIR'], 'approved')
     with open(ifile) as f:
-        data = [line.strip() for line in f.readlines]
+        data = [line.strip() for line in f.readlines()]
 
     chk   = 0
     data.reverse()
@@ -609,37 +609,6 @@ def create_selection_dict(obsid):
 
 
     return p_dict  
-
-#-----------------------------------------------------------------------------------------------
-#-- time_format_convert_lts: change time format                                               --
-#-----------------------------------------------------------------------------------------------
-
-def time_format_convert_lts(ltime):
-    """
-    change time format from <yyyy-<mm>-<dd>T<hh>:<mm>:<ss> to <Mmm> <dd> <yyyy> <hh>:<mm><AM/PM>
-    input:  time in <yyyy-<mm>-<dd>T<hh>:<mm>:<ss>
-    output: time in <Mmm> <dd> <yyyy> <hh>:<mm><AM/PM>
-    """
-    if ltime in ['', None, 'None', 'NA']:
-        return ltime
-
-    mc    = re.search('T', ltime)
-    if mc is not None:
-        atemp = re.split('T', ltime)
-        btemp = re.split('-', atemp[0])
-        ctemp = re.split(':', atemp[1])
-    
-        lmon  = ocf.change_month_format(btemp[1])
-    
-        ltime = lmon + ' ' + str(int(btemp[2])) + ' ' + btemp[0] 
-        if float(ctemp[0]) < 12:
-            ltime = ltime + ', ' + ctemp[0] + ':' + ctemp[1] +  'AM'
-        else:
-            hh    = float(ctemp[0]) - 12
-            tpart = ocf.add_leading_zero(hh, 2) + ':' + ctemp[1] 
-            ltime = ltime + ', ' + tpart + 'PM'
-
-    return ltime
 
 #-----------------------------------------------------------------------------------------------
 #-- convert_to_arcsec: convert degree value into arcsec                                       --
@@ -741,45 +710,44 @@ def create_warning_line(obsid):
     """
     check the observation status and create warning
     input:  obsid   --- obsid
-    output: line    --- if there is a possible porlem, a warning text. oterwise <blank>
+    output: line    --- if there is a possible prolem, a warning text. otherwise <blank>
     """
     line    = ''
     ct_dict = rod.read_ocat_data(obsid)
 #
 #--- observation status; if not unobserved or schedule, a warning is flashed
 #
-    if ct_dict['status'] in ['unobserved', 'scheduled', 'untriggered']:
+    if ct_dict.get('status') in ['unobserved', 'scheduled', 'untriggered']:
         pass
-    elif ct_dict['status'] in ['observed', 'archived', 'triggered']:
-        line = 'This observation was already '+ ct_dict['status'].upper() + '.'
+    elif ct_dict.get('status') in ['observed', 'archived', 'triggered']:
+        line = f"This observation was already {ct_dict.get('status').upper()}."
     else:
-        line = 'This observation was '+ ct_dict['status'].upper() + '.'
+        line = f"This observation was {ct_dict.get('status').upper()}."
 
         return line
 #
-#--- check lts/scheduled obseration date
+#--- check lts/scheduled observation date
 #
     time_diff = 1e8
     lts_chk   = 0
-    obs_date = ct_dict['soe_st_sched_date']
+    obs_date = ct_dict.get('soe_st_sched_date')
     if obs_date in null_list:
-        obs_date = ct_dict['lts_lt_plan']
+        obs_date = ct_dict.get('lts_lt_plan')
         lts_chk = 1
 
     if not obs_date in null_list:
-        ltime     = time.strftime('%Y:%j:%H:%M:%S', time.strptime(obs_date, '%Y-%m-%dT%H:%M:%S'))
-        stime     = CxoTime(ltime).secs
-        time_diff = stime - now
+        time_diff = (datetime.strptime(obs_date, _MP_OCAT_TIME_FORMAT) - _NOW).total_seconds()
 
     inday = int(time_diff / 86400)
 #
 #--- check whether this observation is on OR list
 #
     ifile = os.path.join(current_app.config['OBS_SS'], 'scheduled_obs_list')
-    mp_list = ocf.read_data_file(ifile)
+    with open(ifile) as f:
+        mp_list = [line.strip() for line in f.readlines()]
     mp_chk  = 0
     for ent in mp_list:
-        atemp = re.split('\s+', ent)
+        atemp = re.split(r'\s+', ent)
         if atemp[0] == obsid:
             mp_chk = 1
             break
@@ -802,40 +770,30 @@ def create_warning_line(obsid):
             if inday < 0:
                 inday = 0
 
-            if ct_dict['status'][-1] == 'scheduled':
-                line = str(inday) 
-                line = line  + 'days left to the scheduled date. You must get a permission '
-                line = line  + 'from MP to modify entries '
-                line = line  + ' (Scheduled on: ' + time_format_convert_lts(obs_date) + '.)'
+            if ct_dict.get('status') == 'scheduled':
+                line = f"{inday} days left to the scheduled date. You must get a permission from MP to modify entries (Scheduled on: {obs_date}.)"
             else:
-                line = 'This observation is currently under review in an active OR list. ' 
-                line = line + 'You must get a permission from MP to modify entries.'
-                line = line + ' (LTS Date: '     + time_format_convert_lts(obs_date) + '.)'
+                line = f"This observation is currently under review in an active OR list. You must get a permission from MP to modify entries (LTS Date: {obs_date}.)"
 #
 #--- if the observation is not on the OR list yet
 #
         else:
             if inday < 0:
                 inday = 0
-            if lts_chk > 0 and ct_dict['status'][-1] == 'unobserved':
-                line = str(inday) + ' (LTS) days left, '
-                line = line  + ' but the observation is not scheduled yet. '
-                line = line  + ' You may want to check whether this is '
-                line = line  + 'still a possible observaiton date with MP.'
+            if lts_chk > 0 and ct_dict.get('status') == 'unobserved':
+                line = f"{inday}  (LTS) days left, but the observation is not scheduled yet. You may want to check whether this is still a possible observation date with MP."
             else:
                 if ct_dict['status'][-1] in ['unobserved', 'scheduled', 'untriggered']:
-                    line = line  + 'This observation is scheduled on ' 
-                    line = line  + time_format_convert_lts(obs_date) + '.'
+                    line = f"This observation is scheduled on {obs_date}."
 #
 #--- if the observation is on OR list, but more than 10 days away
 #
     elif mp_chk > 0:
-        line = 'This observation is currently under review in an active OR list. ' 
-        line = line + 'You must get a permission from MP to modify entries'
+        line = 'This observation is currently under review in an active OR list. You must get a permission from MP to modify entries' 
         if lts_chk == 1:
-            line = line + ' (LTS Date: '     + time_format_convert_lts(obs_date) + '.)'
+            line += f" (LTS Date: {obs_date}.)"
         else:
-            line = line + ' (Scheduled on: ' + time_format_convert_lts(obs_date) + '.)'
+            line += f" (Scheduled on: {obs_date}.)"
 
     return line
 
