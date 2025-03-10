@@ -22,7 +22,7 @@
 {% block main_title %}Ocat Data Page{% endblock %}
 {% block app_content %}
 
-{% set sobsid = ct_dict['obsid'][-1] | string %}
+{% set sobsid = ct_dict.get('obsid')[-1] | string %}
 {% set hlink  = cda_http + sobsid %}
 <!-- -->
 <!-- if there are any warnings, display here -->
@@ -30,7 +30,7 @@
     {% if warning != '' %}
         <h3 style='color:#db1709;'>{{ warning }}</h3>
     {% else %}
-        {% if ct_dict['status'][-1] in ['unobserved', 'scheduled', 'untriggered'] and ct_dict['approved'][-1] == 1 %}
+        {% if ct_dict.get('status')[-1] in ['unobserved', 'scheduled', 'untriggered'] and ct_dict.get('approved')[-1] == 1 %}
             <h3 style='color:#db1709;'>This Observation Is Already On the Approved List</h3>
         {% endif %}
     {% endif %}
@@ -96,7 +96,7 @@
         <th>Sequence Number:    </th>
         <td>
             <a href="javascript:WindowOpener('{{ hlink }}','seq_nbr')">
-                {{ ct_dict['seq_nbr'][-1] }}
+                {{ ct_dict.get('seq_nbr')[-1] }}
             </a>
         </td>
         {{ create_entry('status',           ct_dict) }}
@@ -238,7 +238,7 @@
     <h2>Dither
     {{ help_popup_page('../static/ocatdatapage/user_help.html#dither_flag', ' (Help)', 55) }}
     </h2>
-    {% if ct_dict['dither_flag'][-1] in null_list %}
+    {% if ct_dict.get('dither_flag')[-1] in null_list %}
         <input type='submit' name='dither_edit' value='Open to Edit'>
 
     {% else %}
@@ -284,7 +284,7 @@
     </h2>
     <p>{{ help_popup_page('../static/ocatdatapage/ranked_entries.html', 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints')}}</p>
 
-    {% if ct_dict['window_flag'][-1] in null_list %}
+    {% if ct_dict.get('window_flag')[-1] in null_list %}
             <input type='submit' name='window_edit' value='Open to Edit'>
 
     {% else %}
@@ -306,7 +306,7 @@
             </tr>
             {% set order = namespace(value=0) %}
             {% for k in range(0, 10) %}
-                {% if ct_dict['window_constraint'][-1][k] != 'NA' %}
+                {% if ct_dict.get('window_constraint')[-1][k] != 'NA' %}
                     {% set order.value = order.value + 1%}
                     {% set rank = order.value| string %}
                     <tr>
@@ -337,7 +337,7 @@
     {{ hidden_input('time_ordr',   ct_dict) }}
     {% for tparam in ['window_constraint', 'tstart_month', 'tstart_date', 'tstart_year', 
                       'tstart_time', 'tstop_month', 'tstop_date', 'tstop_year', 'tstop_time'] %}
-        {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict['time_ordr'][-1]) }}
+        {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict.get('time_ordr')[-1]) }}
     {% endfor %}
 
     <hr>
@@ -350,7 +350,7 @@
     </h2>
     <p>{{ help_popup_page('../static/ocatdatapage/ranked_entries.html', 'How To Change The Same Parameter Values In Multiple ObsIDs: Ranked Entries for Constraints')}}</p>
 
-    {% if ct_dict['roll_flag'][-1] in null_list %}
+    {% if ct_dict.get('roll_flag')[-1] in null_list %}
             <input type='submit' name='roll_edit' value='Open to Edit'>
 
     {% else %}
@@ -373,7 +373,7 @@
             </tr>
             {% set order = namespace(value=0) %}
             {% for k in range(0, 10) %}
-                {% if ct_dict['roll_constraint'][-1][k] != 'NA' %}
+                {% if ct_dict.get('roll_constraint')[-1][k] != 'NA' %}
                     {% set order.value = order.value + 1%}
                     {% set rank = order.value| string %}
                     <tr>
@@ -392,7 +392,7 @@
     {{ hidden_input('roll_flag', ct_dict) }}
     {{ hidden_input('roll_ordr', ct_dict) }}
     {% for tparam in ['roll_constraint', 'roll_180', 'roll', 'roll_tolerance'] %}
-        {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict['roll_ordr'][-1]) }}
+        {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict.get('roll_ordr')[-1]) }}
     {% endfor %}
 
     <hr>
@@ -407,7 +407,7 @@
     <table border=0>
         <tr>{{ create_entry('constr_in_remarks',        ct_dict) }}</tr>
         <tr>{{ create_entry('pointing_constraint',      ct_dict) }}</tr>
-        {% if ct_dict['phase_constraint_flag'][-1] in ['Y', 'P'] %}
+        {% if ct_dict.get('phase_constraint_flag')[-1] in ['Y', 'P'] %}
             <tr>
             {{ create_entry('phase_constraint_flag',    ct_dict) }}
             <table bordr =0>
@@ -436,11 +436,11 @@
             {{ create_entry('monitor_flag',             ct_dict) }}
         </tr>
         <tr>
-        {% if not ct_dict['group_id'][-1] in null_list %}
+        {% if not ct_dict.get('group_id')[-1] in null_list %}
             <th>Remaining Observations in the Group: </th>
             <td colspan=3>
-                {% if ct_dict['group_obsid'][-1]|length > 0 %}
-                    {% for ent in ct_dict['group_obsid'][-1] %}
+                {% if ct_dict.get('group_obsid')[-1]|length > 0 %}
+                    {% for ent in ct_dict.get('group_obsid')[-1] %}
                         <span style='padding-left:5px;'></span>
                         <a href='../ocatdatapage/{{ ent }} '>{{ ent }}</a> 
                     {% endfor %}
@@ -448,11 +448,11 @@
                     <i style='padding-left:10px;'>NA</i>
                 {% endif %}
             </td>
-        {% elif ct_dict['monitor_flag'][-1] == 'Y' %}
+        {% elif ct_dict.get('monitor_flag')[-1] == 'Y' %}
             <th>Remaining Observation in the Monitoring: </th>
             <td colspan=3>
-                {% if ct_dict['monitor_series'][-1]|length > 0 %}
-                    {% for ent in ct_dict['monitor_series'][-1] %}
+                {% if ct_dict.get('monitor_series')[-1]|length > 0 %}
+                    {% for ent in ct_dict.get('monitor_series')[-1] %}
                         <span style='padding-left:5px;'></span>
                         <a href='../ocatdatapage/{{ ent }} '>{{ ent }}</a> 
                     {% endfor %}
@@ -490,9 +490,9 @@
     <h2>HRC Parameters
     {{ help_popup_page('../static/ocatdatapage/user_help.html#hrc_parameters', ' (Help)', 55) }}
 
-    {% if not ct_dict['instrument'][-1] in ['HRC-I', 'HRC-S'] %}
+    {% if not ct_dict.get('instrument')[-1] in ['HRC-I', 'HRC-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an HRC observation. Instrument {{ct_dict['instrument'][-1]}} is selected.
+            ObsID {{ct_dict.get('obsid')[-1] }} is not an HRC observation. Instrument {{ct_dict.get('instrument')[-1]}} is selected.
         </h3>
     {% else %}
     </h2>
@@ -503,7 +503,7 @@
         {{ create_entry('hrc_si_mode',        ct_dict) }}
     </table>
     {% endif %}
-    <input type='hidden', name='hrc_open', value='{{ ct_dict['hrc_open'][-1] }}'>
+    <input type='hidden', name='hrc_open', value='{{ ct_dict.get('hrc_open')[-1] }}'>
 
     <hr>
 <!-- -->
@@ -512,9 +512,9 @@
     <h2>ACIS Parameters
     {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_parameters', ' (Help)', 55) }}
     </h2>
-    {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
+    {% if not ct_dict.get('instrument')[-1] in ['ACIS-I', 'ACIS-S'] %}
         <h3>
-            ObsID {{ct_dict['obsid'][-1] }} is not an ACIS observation. Instrument {{ct_dict['instrument'][-1]}} is selected.
+            ObsID {{ct_dict.get('obsid')[-1] }} is not an ACIS observation. Instrument {{ct_dict.get('instrument')[-1]}} is selected.
         </h3>
     {% else %}
         <table>
@@ -598,7 +598,7 @@
         </table>
     {% endif %}
 
-    <input type='hidden', name='acis_open', value='{{ ct_dict["acis_open"][-1] }}'>
+    <input type='hidden', name='acis_open', value='{{ ct_dict.get("acis_open")[-1] }}'>
 
     <hr>
 <!-- -->
@@ -607,10 +607,10 @@
     <h2>ACIS Window Constraints
     {{ help_popup_page('../static/ocatdatapage/user_help.html#acis_window', ' (Help)', 55) }}
     </h2>
-    {% if not ct_dict['instrument'][-1] in ['ACIS-I', 'ACIS-S'] %}
-        <h3>ObsID {{ct_dict['obsid'][-1] }} is not an ACIS Observation. Instrument {{ct_dict['instrument'][-1]}} is selected.</h3>
+    {% if not ct_dict.get('instrument')[-1] in ['ACIS-I', 'ACIS-S'] %}
+        <h3>ObsID {{ct_dict.get('obsid')[-1] }} is not an ACIS Observation. Instrument {{ct_dict.get('instrument')[-1]}} is selected.</h3>
 
-    {% elif ct_dict['spwindow_flag'][-1] in null_list %}
+    {% elif ct_dict.get('spwindow_flag')[-1] in null_list %}
         <input type='submit' name='awin_edit' value = 'Open to Edit'>
 
     {% else %}
@@ -647,7 +647,7 @@
         <th>Sample Rate</th>
         {% set order = namespace(value=0) %}
         {% for k in range(0, 10) %}
-            {% if ct_dict['chip'][-1][k] != 'NA' %}
+            {% if ct_dict.get('chip')[-1][k] != 'NA' %}
                 {% set order.value = order.value + 1%}
                 {% set oval = order.value| string %}
                 <tr>
@@ -670,7 +670,7 @@
     {{ hidden_input('aciswin_no',    ct_dict) }}
     {% for tparam in ['chip', 'start_row', 'start_column', 'height', 
                       'width', 'lower_threshold', 'pha_range', 'sample'] %}
-        {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict['aciswin_no'][-1]) }}
+        {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict.get('aciswin_no')[-1]) }}
     {% endfor %}
 
     <hr>
@@ -680,8 +680,8 @@
     <h2>TOO Parameters
     {{ help_popup_page('../static/ocatdatapage/user_help.html#too_parameters', ' (Help)', 55) }}
     </h2>
-    {% if ct_dict['tooid'][-1] in null_list %}
-        <h3>ObsID: {{ ct_dict['obsid'][-1]}} is not a DDT/TOO observation.</h3>
+    {% if ct_dict.get('tooid')[-1] in null_list %}
+        <h3>ObsID: {{ ct_dict.get('obsid')[-1]}} is not a DDT/TOO observation.</h3>
     {% else %}
         <table>
             <tr>
@@ -734,7 +734,7 @@
         <th>Remarks:</th>
         <td>
             <textarea id="remarks" name="remarks" rows="10" 
-                      cols="60">{{ ct_dict['remarks'][-1] }}</textarea>
+                      cols="60">{{ ct_dict.get('remarks')[-1] }}</textarea>
         </td>
         </tr>
     </table>
@@ -752,7 +752,7 @@
         <tr>
         <th>Comments</th>
         <td><textarea id="comments"  name="comments" rows="5" 
-                    cols="60">{{ ct_dict['comments'][-1] }} </textarea>
+                    cols="60">{{ ct_dict.get('comments')[-1] }} </textarea>
         </td>
         </tr>
     </table>
@@ -762,7 +762,7 @@
 <!-- Options -->
 <!-- -->
     <h2>Options</h2>
-    {% if ct_dict['status'][-1] in ['unobserved', 'scheduled', 'untriggered'] %}
+    {% if ct_dict.get('status')[-1] in ['unobserved', 'scheduled', 'untriggered'] %}
         <table>
             <tr>
             <th>Normal Change</th>
@@ -805,7 +805,7 @@
             </a>
             for more details.
         </p>
-        <input type='text' name='obsids_list', value='{{ ct_dict["obsids_list"][-1] }}' size=80>
+        <input type='text' name='obsids_list', value='{{ ct_dict.get("obsids_list")[-1] }}' size=80>
     
         <div style='padding-top:30px;'></div>
     
@@ -818,13 +818,13 @@
 
         <p style='padding-bottom:20px;'>
             <strong style='font-size:130%;'>
-            {% if ct_dict['status'][-1] in ['observed', 'archived', 'triggered'] %}
+            {% if ct_dict.get('status')[-1] in ['observed', 'archived', 'triggered'] %}
                 This observation was already
             {% else %}
                 This observation was 
             {% endif %}
 
-            <span style='color:red;'>{{ ct_dict['status'][-1].upper() }}</span>,
+            <span style='color:red;'>{{ ct_dict.get('status')[-1].upper() }}</span>,
             and you cannot update its parameter values anymore.
             </strong>
         </p>
@@ -841,7 +841,7 @@
     </a>
     <br>
 
-    <a href="{{ cdo_http }}/review_report/disp_report.cgi?{{ ct_dict['proposal_number'][-1] }}">Peer Review Report And Proposal</a>
+    <a href="{{ cdo_http }}/review_report/disp_report.cgi?{{ ct_dict.get('proposal_number')[-1] }}">Peer Review Report And Proposal</a>
     <br>
 
     <a href="{{ hlink }}">

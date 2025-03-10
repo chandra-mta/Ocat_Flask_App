@@ -13,18 +13,18 @@
 <!-- -->
 <!-- for the case that the value is a single entry -->
 <!-- -->
-    {% if ct_dict[param][2] == 'v'%}
+    {% if ct_dict.get(param)[2] == 'v'%}
         {% if rank == '' %}
-            <input type='text' id={{ param }} name={{ param }} value="{{ ct_dict[param][-1] }}" size= {{ len }}>
+            <input type='text' id={{ param }} name={{ param }} value="{{ ct_dict.get(param)[-1] }}" size= {{ len }}>
         {% else %}
             {% set srank = rank|string %}
             {% set rname = param + '_' + srank %}
-            <input type='text' id={{ param }} name={{ rname }} value="{{ ct_dict[param][-1][rank] }}" size= {{ len }}>
+            <input type='text' id={{ param }} name={{ rname }} value="{{ ct_dict.get(param)[-1][rank] }}" size= {{ len }}>
         {% endif %}
 <!-- -->
 <!-- for the case that the value is a selection list -->
 <!-- -->
-    {% elif ct_dict[param][2] == 'l' %}
+    {% elif ct_dict.get(param)[2] == 'l' %}
         {% if rank == '' %}
             {% set rname = param %}
         {% else %}
@@ -35,12 +35,12 @@
         <select id = {{ rname }} name = {{ rname }}>
 
         {% if rank == '' %}
-            {% set pval = ct_dict[param][-1] %}
+            {% set pval = ct_dict.get(param)[-1] %}
         {% else %}
-            {% set pval = ct_dict[param][-1][rank] %}
+            {% set pval = ct_dict.get(param)[-1][rank] %}
         {% endif %}
 
-        {% for ent in ct_dict[param][1] %}
+        {% for ent in ct_dict.get(param)[1] %}
             {% if ent[0] == pval  %}
                 <option value={{ ent[0] }} selected>{{ ent[1] }} </option>
             {% else %}
@@ -53,15 +53,15 @@
 <!-- for the case that it displays a value but not as an input -->
 <!-- -->
     {% else %}
-        {% if ct_dict[param][1] != '' %}
-            {% for ent in ct_dict[param][1] %}
-                {% if ct_dict[param][-1] == ent[0] %}
+        {% if ct_dict.get(param)[1] != None %}
+            {% for ent in ct_dict.get(param)[1] %}
+                {% if ct_dict.get(param)[-1] == ent[0] %}
                     {% set val = ent[1] %}
                     {{ ent[1] }}
                 {% endif %}
             {% endfor %}
         {% else %}
-            {{ ct_dict[param][-1] }}
+            {{ ct_dict.get(param)[-1] }}
         {% endif %}
     {% endif %}
         
@@ -76,7 +76,7 @@
     {% for k in range(nrank, 10) %}
         {%set sk = k |string %}
         {%set name = param + '_' + sk %}
-        <input type='hidden' id={{ name }} name={{ name }} value="{{ ct_dict[param][-1][k] }}">
+        <input type='hidden' id={{ name }} name={{ name }} value="{{ ct_dict.get(param)[-1][k] }}">
     {% endfor %}
 {% endmacro %}
 
@@ -85,7 +85,7 @@
 ##
 
 {% macro create_entry(param, ct_dict, len=10) %}
-    <th style='padding-left:5px;'> {{ ct_dict[param][0] }}: </th>
+    <th style='padding-left:5px;'> {{ ct_dict.get(param)[0] }}: </th>
     <td> {{ val_disp(param, ct_dict, len) }} </td>
 {% endmacro %}
 
@@ -95,10 +95,10 @@
 
 {% macro map_image_opener(sat, color, ct_dict) %}    
     {% set usat = sat.upper() %}
-    {% if ct_dict[sat][-1] ==  'NoImage'%}
+    {% if ct_dict.get(sat)[-1] ==  'NoImage'%}
         <span style='color:{{ color }};'>No {{ usat }} Link</span>
     {% else %}
-        {% set link = ct_dict[sat][-1] %}
+        {% set link = ct_dict.get(sat)[-1] %}
         <a href="javascript:ImageOpener('{{ link }}')">
         <span style='color:{{ color }};'>{{ usat }}</span>
         </a>
@@ -150,7 +150,7 @@
 
 {% macro hidden_input(param, ct_dict, value='') %}
     {% if value == '' %}
-        <input type='hidden' id={{ param }} name={{ param }} value="{{ ct_dict[param][-1] }}" > 
+        <input type='hidden' id={{ param }} name={{ param }} value="{{ ct_dict.get(param)[-1] }}" > 
     {% else %}
         <input type='hidden' id={{ param }} name={{ param }} value="{{ value }}" > 
     {% endif %}
@@ -167,13 +167,13 @@
 {% macro  compare_param_values(param, ct_dict, ind_dict) %}
 
     {% if ind_dict[param]== 1 %}
-        <th>{{ ct_dict[param][0] }} </th>
-        <td>{{ ct_dict[param][-2] }}</td>
+        <th>{{ ct_dict.get(param)[0] }} </th>
+        <td>{{ ct_dict.get(param)[-2] }}</td>
         <td>No Change</td>
     {% else %}
-        <th><span  style='color:red;'>{{ ct_dict[param][0]  }}</span></th>
-        <td><span  style='color:red;'>{{ ct_dict[param][-2] }}</span></td>
-        <td><span  style='color:red;'>{{ ct_dict[param][-1] }}</span></td>
+        <th><span  style='color:red;'>{{ ct_dict.get(param)[0]  }}</span></th>
+        <td><span  style='color:red;'>{{ ct_dict.get(param)[-2] }}</span></td>
+        <td><span  style='color:red;'>{{ ct_dict.get(param)[-1] }}</span></td>
     {% endif %}
 {% endmacro %}
         
@@ -182,14 +182,14 @@
 ##
 
 {% macro rank_compare_param_values(rname, ct_dict, p_list, ind_dict) %}
-    {% set top  = ct_dict[rname][-1] |int %}
-    {% set otop = ct_dict[rname][-2] |int %}
+    {% set top  = ct_dict.get(rname)[-1] |int %}
+    {% set otop = ct_dict.get(rname)[-2] |int %}
     {% if otop > top %}
         {%set top = otop %}
     {% endif %}
     {% for k in range(0, top) %}
         {% set rank = (k + 1) |string %}
-        {% if ct_dict[p_list[0]][-1][k] == 'NA' %}
+        {% if ct_dict.get(p_list[0])[-1][k] == 'NA' %}
             <tr><th colspan=7 style='background-color:rgb(255,0,0, 0.2);'>
                     Order = {{ rank }} (Deleted)
             </th></tr>
@@ -205,14 +205,14 @@
             {% endif %}
 
             {% if ind_dict[param][k] == 1 %}
-                <th>{{ ct_dict[param][0] }} </th>
-                <td>{{ ct_dict[param][-2][k] }}</td>
+                <th>{{ ct_dict.get(param)[0] }} </th>
+                <td>{{ ct_dict.get(param)[-2][k] }}</td>
                 <td>No Change</td>
 
             {% else %}
-                <th><span style='color:red;'>{{ ct_dict[param][0] }}    </span></th>
-                <td><span style='color:red;'>{{ ct_dict[param][-2][k] }}</span></td>
-                <td><span style='color:red;'>{{ ct_dict[param][-1][k] }}</span></td>
+                <th><span style='color:red;'>{{ ct_dict.get(param)[0] }}    </span></th>
+                <td><span style='color:red;'>{{ ct_dict.get(param)[-2][k] }}</span></td>
+                <td><span style='color:red;'>{{ ct_dict.get(param)[-1][k] }}</span></td>
             {% endif %}
 
             {% if count.value % 2 == 0 %}
@@ -239,7 +239,7 @@
         {% for k in range(0, 10) %}
             {% set lk = k|string %}
             {% set pname = param + '_' + lk  %}
-            <input type='hidden' name='{{ pname }}'[] value='{{ ct_dict[param][-1][k] }}'>
+            <input type='hidden' name='{{ pname }}'[] value='{{ ct_dict.get(param)[-1][k] }}'>
         {% endfor %}
     {% endfor %}
 {% endmacro %}
@@ -253,12 +253,12 @@
     <h4 style='text-decoration: underline;'>Original</h4>
     {% autoescape false %}
     <p>
-    {% if ct_dict[param][-2].strip() == '' %}
+    {% if ct_dict.get(param)[-2].strip() == '' %}
         <span style='padding-left:50px;font-style:italic;'>NA</span>
     {% else %}
         <p style='padding-left:20px;'>
         {% autoescape false %}
-            {{ ct_dict[param][-2] | replace('\n', '<br/>') }}
+            {{ ct_dict.get(param)[-2] | replace('\n', '<br/>') }}
         {% endautoescape %}
         </p>
     {% endif %}
@@ -275,12 +275,12 @@
         {% set color='red' %}
     {% endif %}
     
-    {% if ct_dict[param][-1].strip() == '' %}
+    {% if ct_dict.get(param)[-1].strip() == '' %}
         <span style='padding-left:50px;color:{{ color }};font-style:italic'>NA</span>
     {% else %}
         <p style='padding-left:20px;color:{{ color }};'>
         {% autoescape false %}
-            {{ ct_dict[param][-1] | replace('\n', '<br/>') }}
+            {{ ct_dict.get(param)[-1] | replace('\n', '<br/>') }}
         {% endautoescape %}
         </p>
     {% endif %}
