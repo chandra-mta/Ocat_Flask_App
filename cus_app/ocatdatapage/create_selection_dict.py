@@ -341,16 +341,18 @@ def create_selection_dict(obsid):
     p_id         = 'window_constraint'
     val = ct_dict.get(p_id)
     p_dict[p_id] = ['Window Constraint', _CHOICE_NNPC, 'l', 'tc', val, val]
-
+#
+# --- Time Constraints; non directly edited entries
+#
     p_id         = 'tstart'
     val         = ct_dict.get(p_id)
-    p_dict[p_id] = ['Tstart', None, 'l', 'tc', val, copy.deepcopy(val)] #: None choices since this is not edited directly
+    p_dict[p_id] = ['Tstart', None, 'n', 'tc', val, copy.deepcopy(val)]
 
     start_list   = separate_time_to_rank(ct_dict.get('tstart'))
 
     p_id         = 'tstop'
     val         = ct_dict.get(p_id)
-    p_dict[p_id] = ['Tstop', None, 'l', 'tc', val, copy.deepcopy(val)] #: None choices since this is not edited directly
+    p_dict[p_id] = ['Tstop', None, 'n', 'tc', val, copy.deepcopy(val)]
 
     stop_list    = separate_time_to_rank(ct_dict.get('tstop'))
 #
@@ -358,6 +360,9 @@ def create_selection_dict(obsid):
 #
     p_id         = 'tstart_year'
     val         = start_list[0]
+    for year in sorted(set(val), reverse=True): #: Edit _YEAR_CHOICE in case it doesn't include the year of this listed time constraint.
+        if (year, year) not in _YEAR_CHOICE:
+            _YEAR_CHOICE.insert(1,(year,year))
     p_dict[p_id] = ['Start Year', _YEAR_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
 
     p_id         = 'tstart_month'
@@ -370,6 +375,9 @@ def create_selection_dict(obsid):
 
     p_id         = 'tstop_year'
     val         = stop_list[0]
+    for year in sorted(set(val), reverse=True): #: Edit _YEAR_CHOICE in case it doesn't include the year of this listed time constraint.
+        if (year, year) not in _YEAR_CHOICE:
+            _YEAR_CHOICE.insert(1,(year,year))
     p_dict[p_id] = ['Stop Year', _YEAR_CHOICE, 'l', 'tc', val, copy.deepcopy(val)]
 
     p_id         = 'tstop_month'
@@ -474,7 +482,7 @@ def create_selection_dict(obsid):
 #
     p_id         = 'hrc_si_mode'
     val         = ct_dict.get(p_id)
-    p_dict[p_id] = ['SI Mode', None, 'l', 'hrc', val, val]
+    p_dict[p_id] = ['SI Mode', None, 'v', 'hrc', val, val]
 #
 #--- ACIS Parameters; choice editable entries
 #
