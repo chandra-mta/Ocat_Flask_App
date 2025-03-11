@@ -72,7 +72,9 @@
 ##
 
 {% macro fill_hidden_ranks(param, ct_dict, nrank) %}
-
+    {% if nrank == None %}
+        {% set nrank = 0 %}
+    {% endif %}
     {% for k in range(nrank, 10) %}
         {%set sk = k |string %}
         {%set name = param + '_' + sk %}

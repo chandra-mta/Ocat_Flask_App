@@ -335,12 +335,10 @@
     {% endif %}
     {{ hidden_input('window_flag', ct_dict) }}
     {{ hidden_input('time_ordr',   ct_dict) }}
-    {#
     {% for tparam in ['window_constraint', 'tstart_month', 'tstart_date', 'tstart_year', 
                       'tstart_time', 'tstop_month', 'tstop_date', 'tstop_year', 'tstop_time'] %}
         {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict.get('time_ordr')[-1]) }}
     {% endfor %}
-    #}
 
     <hr>
 <!-- -->
@@ -393,11 +391,9 @@
     {% endif %}
     {{ hidden_input('roll_flag', ct_dict) }}
     {{ hidden_input('roll_ordr', ct_dict) }}
-    {#
     {% for tparam in ['roll_constraint', 'roll_180', 'roll', 'roll_tolerance'] %}
         {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict.get('roll_ordr')[-1]) }}
     {% endfor %}
-    #}
 
     <hr>
 <!-- -->
@@ -672,12 +668,10 @@
     {% endif %}
     {{ hidden_input('spwindow_flag', ct_dict) }}
     {{ hidden_input('aciswin_no',    ct_dict) }}
-    {#
     {% for tparam in ['chip', 'start_row', 'start_column', 'height', 
                       'width', 'lower_threshold', 'pha_range', 'sample'] %}
         {{ fill_hidden_ranks(tparam, ct_dict,  ct_dict.get('aciswin_no')[-1]) }}
     {% endfor %}
-    #}
 
     <hr>
 <!-- -->

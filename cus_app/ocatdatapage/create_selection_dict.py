@@ -163,8 +163,6 @@ _INPUT_EDIT_ACIS_PARAM = {
     'spectra_max_count':'Spectra Max Count',
 }
 _INPUT_EDIT_ACISWIN_PARAM = {
-    'aciswin_no':'ACIS Window #',
-    'ordr':'Ordr',
     'start_row':'Start Row',
     'start_column':'Start Column',
     'height':'Height',
@@ -189,13 +187,6 @@ _NON_EDIT_OTHERS_PARAM = {
     'group_obsid':'Group Obsids',
     'monitor_series':'Monitor Series',
 }
-_NON_EDIT_OTHERS_PARAM = {
-    'description':'Description',
-    'total_fld_cnt_rate':'Total Fld Cnt Rate',
-    'group_id':'Group ID',
-    'group_obsid':'Group Obsids',
-    'monitor_series':'Monitor Series',
-}
 _NON_EDIT_UNUSED_PARAM = {
     'seg_max_num':'Seg Max Number',
     'ocat_propid':'Ocat Proposal ID',
@@ -203,7 +194,6 @@ _NON_EDIT_UNUSED_PARAM = {
     'hrcid':'HRC ID',
     'mpcat_star_fidlight_file':'Fid Light File',
     'data_rights':'Data Rights',
-    
 }
 
 def create_selection_dict(obsid):
@@ -242,10 +232,7 @@ def create_selection_dict(obsid):
     for k,v in _NON_EDIT_GEN_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        if isinstance(val, list):
-            p_dict[k] = [v, None, 'n', 'gen', val, copy.deepcopy(val)]
-        else:
-            p_dict[k] = [v, None, 'n', 'gen', val, val]
+        p_dict[k] = [v, None, 'n', 'gen', val, val]
 
     p_id = 'rem_exp_time'
     val = ct_dict.get(p_id)
@@ -258,20 +245,14 @@ def create_selection_dict(obsid):
     for k,v in _INPUT_EDIT_GEN_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        if isinstance(val, list):
-            p_dict[k] = [v, None, 'v', 'gen', val, copy.deepcopy(val)]
-        else:
-            p_dict[k] = [v, None, 'v', 'gen', val, val]
+        p_dict[k] = [v, None, 'v', 'gen', val, val]
 #
 #--- General Parameter; choice editable entries
 #
     for k,v in _CHOICE_EDIT_GEN_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        if isinstance(val, list):
-            p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, copy.deepcopy(val)]
-        else:
-            p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
+        p_dict[k] = [v.get('label'), v.get('select'), 'l', 'gen', val, val]
 #
 #--- General Parameters; special case
 #
@@ -340,18 +321,21 @@ def create_selection_dict(obsid):
 
     p_id         = 'window_constraint'
     val = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Window Constraint', _CHOICE_NNPC, 'l', 'tc', val, val]
 #
 # --- Time Constraints; non directly edited entries
 #
     p_id         = 'tstart'
     val         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Tstart', None, 'n', 'tc', val, copy.deepcopy(val)]
 
     start_list   = separate_time_to_rank(ct_dict.get('tstart'))
 
     p_id         = 'tstop'
     val         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Tstop', None, 'n', 'tc', val, copy.deepcopy(val)]
 
     stop_list    = separate_time_to_rank(ct_dict.get('tstop'))
@@ -393,6 +377,8 @@ def create_selection_dict(obsid):
 #
     p_id         = 'time_ordr'
     val = ct_dict.get(p_id)
+    if val is None:
+        val = 0
     p_dict[p_id] = ['Time Order', None, 'v', 'tc', val, val]
 
     p_id         = 'tstart_time'
@@ -411,24 +397,30 @@ def create_selection_dict(obsid):
 
     p_id         = 'roll_constraint'
     val         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Roll Angle Constraints', _CHOICE_NNPC, 'l', 'rc', val, copy.deepcopy(val)]
 
     p_id         = 'roll_180'
     vals         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Roll_180', _CHOICE_NNY, 'l', 'rc', val, copy.deepcopy(val)]
 #
 #--- Roll Constraints; input text entries
 #
     p_id         = 'roll_ordr'
     val         = ct_dict.get(p_id)
+    if val is None:
+        val = 0
     p_dict[p_id] = ['Roll Order', None, 'v', 'rc', val, copy.deepcopy(val)]
 
     p_id         = 'roll'
     val         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Roll', None, 'v', 'rc', val, copy.deepcopy(val)]
 
     p_id         = 'roll_tolerance'
     val         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Roll Tolerance', None, 'v', 'rc', val, copy.deepcopy(val)]
 #
 #--- Other Constraints; non editable entries
@@ -463,10 +455,7 @@ def create_selection_dict(obsid):
 #
     for k,v in _INPUT_EDIT_OTHER_PARAM.items():
         val = ct_dict.get(k)
-        if isinstance(val, list):
-            p_dict[k] = [v, None, 'v', 'oc', val, copy.deepcopy(val)]
-        else:
-            p_dict[k] = [v, None, 'v', 'oc', val, val]
+        p_dict[k] = [v, None, 'v', 'oc', val, val]
 #
 #--- HRC Parameters; choice editable entries
 #
@@ -510,14 +499,28 @@ def create_selection_dict(obsid):
 
     p_id         = 'chip'
     val         = ct_dict.get(p_id)
+    val = _input_placeholders(val, placeholder='NA')
     p_dict[p_id] = ['Chip', _CHOICE_WINDOW, 'l', 'awin', val, copy.deepcopy(val)]
 
 #
 #--- ACIS Window Constraints; input text entries
 #
+    p_id         = 'aciswin_no'
+    val = ct_dict.get(p_id)
+    if val is None:
+        val = 0
+    p_dict[p_id] = ['ACIS Window #', None, 'v', 'awin', val, val]
+
+    p_id         = 'ordr'
+    val = ct_dict.get(p_id)
+    if val is None:
+        val = 0
+    p_dict[p_id] = ['Ordr', None, 'v', 'awin', val, val]
+
     for k,v in _INPUT_EDIT_ACISWIN_PARAM.items():
         val = ct_dict.get(k)
-        if isinstance(val, list):
+        if k in awin_list:
+            val = _input_placeholders(val, placeholder='NA')
             p_dict[k] = [v, None, 'v', 'awin', val, copy.deepcopy(val)]
         else:
             p_dict[k] = [v, None, 'v', 'awin', val, val]
@@ -527,10 +530,7 @@ def create_selection_dict(obsid):
     for k,v in _NON_EDIT_TOO_PARAM.items():
         #: p_dict[p_id] = [label, selection, selection type, group, original value, update value (starts as original)]
         val = ct_dict.get(k)
-        if isinstance(val, list):
-            p_dict[k] = [v, None, 'n', 'too', val, copy.deepcopy(val)]
-        else:
-            p_dict[k] = [v, None, 'n', 'too', val, val]
+        p_dict[k] = [v, None, 'n', 'too', val, val]
 #
 #--- Others; non editable entries
 #
@@ -548,12 +548,16 @@ def create_selection_dict(obsid):
     val         = ct_dict.get(p_id)
     if isinstance(val,str):
         val = val.replace('\"', '\'')
+    elif val is None:
+        val = ''
     p_dict[p_id] = ['Remarks', None, 'v', 'remarks', val, val]
 
     p_id         = 'comments'
     val         = ct_dict.get(p_id)
     if isinstance(val,str):
         val = val.replace('\"', '\'')
+    elif val is None:
+        val = ''
     p_dict[p_id] = ['Comments', None, 'v', 'remarks', val, val]
 #
 #-- Not Used in Ocat Data Page
@@ -631,6 +635,21 @@ def create_selection_dict(obsid):
 
     return p_dict  
 
+def _input_placeholders(old_list, placeholder=None):
+    """Intake a list of rank values from the Ocat and include placeholder space for convenience
+
+    :param old_list: list of true values from the ocat
+    :type old_list: list
+    :param placeholder: placeholder value, defaults to None
+    :type placeholder: any, optional
+    :return: the same data list with placeholders for up to ten entires
+    :rtype: list
+    """
+    if old_list is None:
+        return [placeholder] * 10
+    else:
+        return old_list + ([placeholder] * (10 - len(old_list)))
+
 #-----------------------------------------------------------------------------------------------
 #-- convert_to_arcsec: convert degree value into arcsec                                       --
 #-----------------------------------------------------------------------------------------------
@@ -684,7 +703,11 @@ def separate_time_to_rank(time_list):
         d_list.append(f"{int(atemp[1]):02}")
         y_list.append(atemp[2])
         t_list.append(datetime.strptime(atemp[3], '%I:%M%p').strftime('%H:%M:%S'))
-    return [y_list, m_list, d_list, t_list]
+    #: Include placeholders into the input lists
+    return [_input_placeholders(y_list, placeholder='NA'),
+            _input_placeholders(m_list, placeholder='NA'),
+            _input_placeholders(d_list, placeholder='NA'),
+            _input_placeholders(t_list, placeholder='00:00:00')]
 
 #-----------------------------------------------------------------------------------------------
 #-- find_planned_roll: read planned roll for a given obsid                                    --
