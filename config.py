@@ -35,6 +35,10 @@ class BaseConfig(object):
 
 class LocalHostConfig(BaseConfig):
     CONFIGURATION_NAME = "localhost"
+    OBS_SS = "/data/mta4/CUS/test-database/obs_ss"
+    REV_VERSION = "test_database"
+    OCAT_DIR = "/data/mta4/CUS/test-database/ocat/"
+    INFO_DIR = "/data/mta4/CUS/test-database/too_contact_info/"
 
 
 class R2D2Config(BaseConfig):
