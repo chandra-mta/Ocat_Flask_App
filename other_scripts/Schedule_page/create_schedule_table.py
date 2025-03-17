@@ -1,43 +1,27 @@
 #!/proj/sot/ska3/flight/bin/python
 
-#################################################################################################
-#                                                                                               #
-#   create_schedule_table.py: create a html page from a given schedule                          #
-#                                                                                               #
-#               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
-#                                                                                               #
-#               last update: Jun 14, 2024                                                       #
-#                                                                                               #
-#################################################################################################
-import sys
-sys.path.append("/data/mta4/Script/Python3.11/lib/python3.11/site-packages")
+"""
+**create_schedule_table.py**: create a html page from a given schedule
 
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Last Updated: Mar 17, 2025
+
+"""
 import os
 import time
-import Chandra.Time
-from dotenv import dotenv_values
+from cxotime import CxoTime
 import argparse
 import getpass
 import re
-
-#
-#--- Load the running application version's configuration
-#--- Note that loading a different .env file (such as .localhostenv
-#--- or .env) allows for test version of the web applicaiton to function
-#--- more easily.
-#
-CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
-#
-#--- For Bookkeeping, these are the default variables
-#
-#LIVE_DIR = "/proj/web-cxc/wsgi-scripts/cus"
-#USINT_DIR = "/data/mta4/CUS/www/Usint"
+from calendar import month_name
+from email.mime.text    import MIMEText
+from subprocess     	import Popen, PIPE
 
 #
 #--- Define Directory Pathing
 #
-USINT_DIR = CONFIG['USINT_DIR']
-LIVE_DIR = CONFIG['LIVE_DIR']
+USINT_DIR = "/data/mta4/CUS/www/Usint"
+LIVE_DIR = "/proj/web-cxc/wsgi-scripts/cus"
 TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
 HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 TOO_POC_DIR = "/home/mta"
@@ -52,7 +36,7 @@ ADMIN     = ['bwargelin@cfa.harvard.edu']
 #
 THREE_MON = 86400 * 30 * 3
 SEVEN_DAY = 86400 * 7
-
+TESTMAIL = False
 
 #---------------------------------------------------------------------------------------
 #--- create_schedule_table: update schedule html page                                 --
@@ -67,8 +51,7 @@ def create_schedule_table():
 #
 #--- find today's date
 #
-    ltime = time.strftime('%Y:%j:%H:%M:%S', time.gmtime())
-    stime = int(Chandra.Time.DateTime(ltime).secs)
+    stime = CxoTime().secs
 #
 #--- read poc info
 #
@@ -98,7 +81,7 @@ def create_schedule_table():
             [ophone, cphone, hphone, email]  = poc_dict[name]
 
         start = dtime_to_ctime(start)
-        stop  = dtime_to_ctime(stop)
+        stop  = dtime_to_ctime(stop) + 86400 #: Function returns the start of the day, so add one day to make the range inclusive of the final day in schedule
 
         if (stime >= start) and (stime < stop):
             line = line + '<tr style="color:blue; background-color:lime">'
@@ -138,7 +121,7 @@ def create_schedule_table():
 #
 #--- update this week's poc list
 #
-    update_this_week_poc(k_list, d_dict, poc_dict, stime)
+    update_this_week_poc(k_list, d_dict, stime)
 
 #---------------------------------------------------------------------------------------
 #-- read_schedule: read the schedule data table                                       --
@@ -158,7 +141,7 @@ def read_schedule():
     d_dict = {}
     k_list = []
     for ent in data:
-        atemp = re.split('\t+', ent)
+        atemp = re.split(r'\t+', ent)
         name  = atemp[0]
         smon  = atemp[1]
         sday  = atemp[2]
@@ -168,13 +151,13 @@ def read_schedule():
         eyear = atemp[6]
         try:
             poc   = atemp[7]
-        except:
+        except IndexError:
             poc = 'TBD'
         key = f"{syear}{smon:>02}{sday:>02}"
         etime = f"{syear}{emon:>02}{eday:>02}"
-        lsmon = change_to_letter_month(smon)
+        lsmon = month_name[int(smon)]
         start = lsmon + ' ' + sday
-        lemon = change_to_letter_month(emon)
+        lemon = month_name[int(emon)]
         stop  = lemon + ' '   + eday
         period= start + ' - ' + stop
 
@@ -182,25 +165,6 @@ def read_schedule():
         d_dict[key] = [poc, name, period, key, etime]
 
     return[k_list, d_dict]
-
-#---------------------------------------------------------------------------------------
-#-- change_to_letter_month: convert month format between digit and letter month       --
-#---------------------------------------------------------------------------------------
-
-def change_to_letter_month(month):
-    """
-    convert month format between digit and letter month
-    input:  month   --- digit month 
-    oupupt: either digit month or letter month
-    """
-    m_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July',\
-              'August', 'September', 'October', 'November', 'December']
-
-    var = int(float(month))
-    if (var < 1) or (var > 12):
-        return 'NA'
-    else:
-        return m_list[var-1]
 
 #---------------------------------------------------------------------------------------
 #-- read_poc_info: read poc information                                               --
@@ -236,7 +200,7 @@ def schedule_notification(k_list, d_dict, poc_dict, stime):
     sending out various notifications
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
+            poc_dict    --- a dictionary of poc information, key: name
             stime       --- today's time in seconds in 1998.1.1
     output: email sent
     """
@@ -266,7 +230,7 @@ def check_schedule_fill(k_list, stime):
     check whether the poc schedule is running out in about 3 months and if so send out email
     input:  k_list  --- a list of poc schedule starting time in <yyyy><mm><dd>
             stime   --- today's time in seconds in 1998.1.1
-            it also read: <house_keeping>/Schedule/add_scehdule_log (the last logged time)
+            it also read: <house_keeping>/Schedule/add_schedule_log (the last logged time)
                           <house_keeping>/Schedule/add_schedule (template)
     output: email sent
     """
@@ -328,7 +292,7 @@ def check_next_week_filled(k_list, d_dict, stime):
 #
 #--- find whether the slot is actually signed up
 #
-    if pos == None or pos >= len(k_list):
+    if pos is None or pos >= len(k_list):
         poc = 'TBD' #Could not find entry two slots after the current time
     else:
         poc = d_dict[k_list[pos]][1]
@@ -392,7 +356,7 @@ def second_notification(k_list, d_dict, poc_dict, stime):
     send second notification to POC
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
+            poc_dict    --- a dictionary of poc information, key: name
             stime       --- today's time in seconds in 1998.1.1
                   <house_keeping>/Schedule/second_notification (template)
     output: email sent
@@ -427,41 +391,42 @@ def second_notification(k_list, d_dict, poc_dict, stime):
 #-- send_mail: sending email                                                          --
 #---------------------------------------------------------------------------------------
 
-def send_mail(subject, text, address_dict):
-    """
-    sending email
-    input:  subject      --- subject line
-            test         --- text or template file of text
-            address_dict --- email address dictionary
-    output: email sent
-    """
-    message = ''
-    message += f"TO:{','.join(address_dict['TO'])}\n"
-    if 'CC' in address_dict.keys():
-        message += f"CC:{','.join(address_dict['CC'])}\n"
-    if 'BCC' in address_dict.keys():
-        message += f"BCC:{','.join(address_dict['BCC'])}\n"
+def send_mail(subject, content, address_dict):
+    """Send Emails
 
-    message += f"Subject:{subject}\n"
-    
-    if os.path.isfile(text):
-        with open(text) as f:
-            message += f.read()
+    :param subject: Subject line
+    :type subject: str
+    :param content: Text File of content or string of content
+    :type content: str, filepath
+    :param address_dict: Dictionary or recipients
+    :type address_dict: dict
+    """
+    if os.path.isfile(content):
+            with open(content) as f:
+                msg = MIMEText(f.read())
     else:
-        message += f"{text}"
-
-    os.system(f"echo '{message}' | /sbin/sendmail -t")
+        msg = MIMEText(content)
+    msg['Subject'] = subject
+    for k,v in address_dict.items():
+        if isinstance(v,list):
+            msg[k] = ','.join(v)
+        else:
+            msg[k] = v
+    if TESTMAIL:
+        print(msg)
+    else:
+        p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+        p.communicate(msg.as_bytes())
 
 #---------------------------------------------------------------------------------------
 #-- update_this_week_poc: update this_week_person_in_charge table                      -
 #---------------------------------------------------------------------------------------
 
-def update_this_week_poc(k_list, d_dict, poc_dict, stime):
+def update_this_week_poc(k_list, d_dict, stime):
     """
     update this_week_person_in_charge table
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
             stime       --- today's time in seconds in 1998.1.1
                 <too_contact_dir>/this_week_person_in_charge
     output: updated: <too_contact_dir>/this_week_person_in_charge
@@ -516,7 +481,7 @@ def dtime_to_ctime(dtime):
     output: stime   --- time in seconds from 1998.1.1
     """
     ltime = time.strftime('%Y:%j:%H:%M:%S', time.strptime(dtime, '%Y%m%d'))
-    stime = int(Chandra.Time.DateTime(ltime).secs)
+    stime = int(CxoTime(ltime).secs)
     
     return stime
 
@@ -526,18 +491,15 @@ def dtime_to_ctime(dtime):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
-    parser.add_argument("-e", '--email', nargs = '*', required = False, help = "List of emails to recieve notifications")
     args = parser.parse_args()
 
     if args.mode == 'test':
 #
-#--- Change pathing to test case. Considering the amoutn of intermediary files,
+#--- Change pathing to test case. Considering the amount of intermediary files,
 #--- copying test version of these files manually is the most direct testing method
 #
-        CONFIG = {'USINT_DIR': f"{os.getcwd()}/test/outTest",
-                  'LIVE_DIR': f"{os.getcwd()}"}
-        USINT_DIR = CONFIG['USINT_DIR']
-        LIVE_DIR = CONFIG['LIVE_DIR']
+        USINT_DIR = f"{os.getcwd()}/test/_outTest"
+        LIVE_DIR = f"{os.getcwd()}"
         OLD = TOO_CONTACT_DIR
         TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
         os.makedirs(TOO_CONTACT_DIR, exist_ok = True)
@@ -550,16 +512,7 @@ if __name__ == "__main__":
         TOO_POC_DIR = f"{USINT_DIR}"
         HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
 
-        if args.email != None:
-            ADMIN = args.email
-            CUS = ADMIN
-        else:
-            options = [x for x in os.popen(f"getent aliases | grep {getpass.getuser()}").read().split("\n") if x != '']
-            for entry in options:
-                if entry.startswith(f"{getpass.getuser()}:"):
-                        ADMIN = [entry.split(":")[1].strip()]
-                        break
-            CUS = ADMIN
+        TESTMAIL = True
         create_schedule_table()
 
     elif args.mode == 'flight':
