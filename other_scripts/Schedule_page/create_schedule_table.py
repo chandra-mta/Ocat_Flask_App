@@ -1,43 +1,24 @@
 #!/proj/sot/ska3/flight/bin/python
 
-#################################################################################################
-#                                                                                               #
-#   create_schedule_table.py: create a html page from a given schedule                          #
-#                                                                                               #
-#               author: t. isobe (tisobe@cfa.harvard.edu)                                       #
-#                                                                                               #
-#               last update: Jun 14, 2024                                                       #
-#                                                                                               #
-#################################################################################################
-import sys
-sys.path.append("/data/mta4/Script/Python3.11/lib/python3.11/site-packages")
+"""
+**create_schedule_table.py**: create a html page from a given schedule
 
+:Author: t. isobe (tisobe@cfa.harvard.edu)
+:Last Updated: Mar 17, 2025
+
+"""
 import os
 import time
-import Chandra.Time
-from dotenv import dotenv_values
+from cxotime import CxoTime
 import argparse
 import getpass
 import re
 
 #
-#--- Load the running application version's configuration
-#--- Note that loading a different .env file (such as .localhostenv
-#--- or .env) allows for test version of the web applicaiton to function
-#--- more easily.
-#
-CONFIG = dotenv_values("/data/mta4/CUS/Data/Env/.cxcweb-env")
-#
-#--- For Bookkeeping, these are the default variables
-#
-#LIVE_DIR = "/proj/web-cxc/wsgi-scripts/cus"
-#USINT_DIR = "/data/mta4/CUS/www/Usint"
-
-#
 #--- Define Directory Pathing
 #
-USINT_DIR = CONFIG['USINT_DIR']
-LIVE_DIR = CONFIG['LIVE_DIR']
+USINT_DIR = "/data/mta4/CUS/www/Usint"
+LIVE_DIR = "/proj/web-cxc/wsgi-scripts/cus"
 TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
 HOUSE_KEEPING = f"{LIVE_DIR}/other_scripts/house_keeping"
 TOO_POC_DIR = "/home/mta"
@@ -68,7 +49,7 @@ def create_schedule_table():
 #--- find today's date
 #
     ltime = time.strftime('%Y:%j:%H:%M:%S', time.gmtime())
-    stime = int(Chandra.Time.DateTime(ltime).secs)
+    stime = int(CxoTime(ltime).secs)
 #
 #--- read poc info
 #
@@ -158,7 +139,7 @@ def read_schedule():
     d_dict = {}
     k_list = []
     for ent in data:
-        atemp = re.split('\t+', ent)
+        atemp = re.split(r'\t+', ent)
         name  = atemp[0]
         smon  = atemp[1]
         sday  = atemp[2]
@@ -328,7 +309,7 @@ def check_next_week_filled(k_list, d_dict, stime):
 #
 #--- find whether the slot is actually signed up
 #
-    if pos == None or pos >= len(k_list):
+    if pos is None or pos >= len(k_list):
         poc = 'TBD' #Could not find entry two slots after the current time
     else:
         poc = d_dict[k_list[pos]][1]
@@ -516,7 +497,7 @@ def dtime_to_ctime(dtime):
     output: stime   --- time in seconds from 1998.1.1
     """
     ltime = time.strftime('%Y:%j:%H:%M:%S', time.strptime(dtime, '%Y%m%d'))
-    stime = int(Chandra.Time.DateTime(ltime).secs)
+    stime = int(CxoTime(ltime).secs)
     
     return stime
 
@@ -534,10 +515,8 @@ if __name__ == "__main__":
 #--- Change pathing to test case. Considering the amoutn of intermediary files,
 #--- copying test version of these files manually is the most direct testing method
 #
-        CONFIG = {'USINT_DIR': f"{os.getcwd()}/test/outTest",
-                  'LIVE_DIR': f"{os.getcwd()}"}
-        USINT_DIR = CONFIG['USINT_DIR']
-        LIVE_DIR = CONFIG['LIVE_DIR']
+        USINT_DIR = f"{os.getcwd()}/test/outTest"
+        LIVE_DIR = f"{os.getcwd()}"
         OLD = TOO_CONTACT_DIR
         TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
         os.makedirs(TOO_CONTACT_DIR, exist_ok = True)
@@ -550,7 +529,7 @@ if __name__ == "__main__":
         TOO_POC_DIR = f"{USINT_DIR}"
         HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
 
-        if args.email != None:
+        if args.email is not None:
             ADMIN = args.email
             CUS = ADMIN
         else:
