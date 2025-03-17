@@ -13,7 +13,9 @@ from cxotime import CxoTime
 import argparse
 import getpass
 import re
-from calendar import month_abbr
+from calendar import month_name
+from email.mime.text    import MIMEText
+from subprocess     	import Popen, PIPE
 
 #
 #--- Define Directory Pathing
@@ -34,7 +36,7 @@ ADMIN     = ['bwargelin@cfa.harvard.edu']
 #
 THREE_MON = 86400 * 30 * 3
 SEVEN_DAY = 86400 * 7
-
+TESTMAIL = False
 
 #---------------------------------------------------------------------------------------
 #--- create_schedule_table: update schedule html page                                 --
@@ -153,9 +155,9 @@ def read_schedule():
             poc = 'TBD'
         key = f"{syear}{smon:>02}{sday:>02}"
         etime = f"{syear}{emon:>02}{eday:>02}"
-        lsmon = month_abbr[int(smon)]
+        lsmon = month_name[int(smon)]
         start = lsmon + ' ' + sday
-        lemon = month_abbr[int(emon)]
+        lemon = month_name[int(emon)]
         stop  = lemon + ' '   + eday
         period= start + ' - ' + stop
 
@@ -389,30 +391,32 @@ def second_notification(k_list, d_dict, poc_dict, stime):
 #-- send_mail: sending email                                                          --
 #---------------------------------------------------------------------------------------
 
-def send_mail(subject, text, address_dict):
-    """
-    sending email
-    input:  subject      --- subject line
-            test         --- text or template file of text
-            address_dict --- email address dictionary
-    output: email sent
-    """
-    message = ''
-    message += f"TO:{','.join(address_dict['TO'])}\n"
-    if 'CC' in address_dict.keys():
-        message += f"CC:{','.join(address_dict['CC'])}\n"
-    if 'BCC' in address_dict.keys():
-        message += f"BCC:{','.join(address_dict['BCC'])}\n"
+def send_mail(subject, content, address_dict):
+    """Send Emails
 
-    message += f"Subject:{subject}\n"
-    
-    if os.path.isfile(text):
-        with open(text) as f:
-            message += f.read()
+    :param subject: Subject line
+    :type subject: str
+    :param content: Text File of content or string of content
+    :type content: str, filepath
+    :param address_dict: Dictionary or recipients
+    :type address_dict: dict
+    """
+    if os.path.isfile(content):
+            with open(content) as f:
+                msg = MIMEText(f.read())
     else:
-        message += f"{text}"
-
-    os.system(f"echo '{message}' | /sbin/sendmail -t")
+        msg = MIMEText(content)
+    msg['Subject'] = subject
+    for k,v in address_dict.items():
+        if isinstance(v,list):
+            msg[k] = ','.join(v)
+        else:
+            msg[k] = v
+    if TESTMAIL:
+        print(msg)
+    else:
+        p = Popen(["/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+        p.communicate(msg.as_bytes())
 
 #---------------------------------------------------------------------------------------
 #-- update_this_week_poc: update this_week_person_in_charge table                      -
@@ -487,7 +491,6 @@ def dtime_to_ctime(dtime):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
-    parser.add_argument("-e", '--email', nargs = '*', required = False, help = "List of emails to receive notifications")
     args = parser.parse_args()
 
     if args.mode == 'test':
@@ -495,7 +498,7 @@ if __name__ == "__main__":
 #--- Change pathing to test case. Considering the amount of intermediary files,
 #--- copying test version of these files manually is the most direct testing method
 #
-        USINT_DIR = f"{os.getcwd()}/test/outTest"
+        USINT_DIR = f"{os.getcwd()}/test/_outTest"
         LIVE_DIR = f"{os.getcwd()}"
         OLD = TOO_CONTACT_DIR
         TOO_CONTACT_DIR = f"{USINT_DIR}/ocat/Info_save/too_contact_info"
@@ -509,16 +512,7 @@ if __name__ == "__main__":
         TOO_POC_DIR = f"{USINT_DIR}"
         HOUSE_KEEPING = f"{LIVE_DIR}/house_keeping"
 
-        if args.email is not None:
-            ADMIN = args.email
-            CUS = ADMIN
-        else:
-            options = [x for x in os.popen(f"getent aliases | grep {getpass.getuser()}").read().split("\n") if x != '']
-            for entry in options:
-                if entry.startswith(f"{getpass.getuser()}:"):
-                        ADMIN = [entry.split(":")[1].strip()]
-                        break
-            CUS = ADMIN
+        TESTMAIL = True
         create_schedule_table()
 
     elif args.mode == 'flight':
