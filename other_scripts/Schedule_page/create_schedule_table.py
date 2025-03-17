@@ -13,6 +13,7 @@ from cxotime import CxoTime
 import argparse
 import getpass
 import re
+from calendar import month_abbr
 
 #
 #--- Define Directory Pathing
@@ -153,9 +154,9 @@ def read_schedule():
             poc = 'TBD'
         key = f"{syear}{smon:>02}{sday:>02}"
         etime = f"{syear}{emon:>02}{eday:>02}"
-        lsmon = change_to_letter_month(smon)
+        lsmon = month_abbr[int(smon)]
         start = lsmon + ' ' + sday
-        lemon = change_to_letter_month(emon)
+        lemon = month_abbr[int(emon)]
         stop  = lemon + ' '   + eday
         period= start + ' - ' + stop
 
@@ -163,25 +164,6 @@ def read_schedule():
         d_dict[key] = [poc, name, period, key, etime]
 
     return[k_list, d_dict]
-
-#---------------------------------------------------------------------------------------
-#-- change_to_letter_month: convert month format between digit and letter month       --
-#---------------------------------------------------------------------------------------
-
-def change_to_letter_month(month):
-    """
-    convert month format between digit and letter month
-    input:  month   --- digit month 
-    oupupt: either digit month or letter month
-    """
-    m_list = ['January', 'February', 'March', 'April', 'May', 'June', 'July',\
-              'August', 'September', 'October', 'November', 'December']
-
-    var = int(float(month))
-    if (var < 1) or (var > 12):
-        return 'NA'
-    else:
-        return m_list[var-1]
 
 #---------------------------------------------------------------------------------------
 #-- read_poc_info: read poc information                                               --
