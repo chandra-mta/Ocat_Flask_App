@@ -49,8 +49,7 @@ def create_schedule_table():
 #
 #--- find today's date
 #
-    ltime = time.strftime('%Y:%j:%H:%M:%S', time.gmtime())
-    stime = int(CxoTime(ltime).secs)
+    stime = CxoTime().secs
 #
 #--- read poc info
 #
@@ -80,7 +79,7 @@ def create_schedule_table():
             [ophone, cphone, hphone, email]  = poc_dict[name]
 
         start = dtime_to_ctime(start)
-        stop  = dtime_to_ctime(stop)
+        stop  = dtime_to_ctime(stop) + 86400 #: Function returns the start of the day, so add one day to make the range inclusive of the final day in schedule
 
         if (stime >= start) and (stime < stop):
             line = line + '<tr style="color:blue; background-color:lime">'
