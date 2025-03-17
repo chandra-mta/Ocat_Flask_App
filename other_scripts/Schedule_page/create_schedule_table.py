@@ -487,12 +487,12 @@ def dtime_to_ctime(dtime):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--mode", choices = ['flight','test'], required = True, help = "Determine running mode.")
-    parser.add_argument("-e", '--email', nargs = '*', required = False, help = "List of emails to recieve notifications")
+    parser.add_argument("-e", '--email', nargs = '*', required = False, help = "List of emails to receive notifications")
     args = parser.parse_args()
 
     if args.mode == 'test':
 #
-#--- Change pathing to test case. Considering the amoutn of intermediary files,
+#--- Change pathing to test case. Considering the amount of intermediary files,
 #--- copying test version of these files manually is the most direct testing method
 #
         USINT_DIR = f"{os.getcwd()}/test/outTest"
