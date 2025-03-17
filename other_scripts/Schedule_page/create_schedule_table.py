@@ -119,7 +119,7 @@ def create_schedule_table():
 #
 #--- update this week's poc list
 #
-    update_this_week_poc(k_list, d_dict, poc_dict, stime)
+    update_this_week_poc(k_list, d_dict, stime)
 
 #---------------------------------------------------------------------------------------
 #-- read_schedule: read the schedule data table                                       --
@@ -149,7 +149,7 @@ def read_schedule():
         eyear = atemp[6]
         try:
             poc   = atemp[7]
-        except:
+        except IndexError:
             poc = 'TBD'
         key = f"{syear}{smon:>02}{sday:>02}"
         etime = f"{syear}{emon:>02}{eday:>02}"
@@ -198,7 +198,7 @@ def schedule_notification(k_list, d_dict, poc_dict, stime):
     sending out various notifications
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
+            poc_dict    --- a dictionary of poc information, key: name
             stime       --- today's time in seconds in 1998.1.1
     output: email sent
     """
@@ -228,7 +228,7 @@ def check_schedule_fill(k_list, stime):
     check whether the poc schedule is running out in about 3 months and if so send out email
     input:  k_list  --- a list of poc schedule starting time in <yyyy><mm><dd>
             stime   --- today's time in seconds in 1998.1.1
-            it also read: <house_keeping>/Schedule/add_scehdule_log (the last logged time)
+            it also read: <house_keeping>/Schedule/add_schedule_log (the last logged time)
                           <house_keeping>/Schedule/add_schedule (template)
     output: email sent
     """
@@ -354,7 +354,7 @@ def second_notification(k_list, d_dict, poc_dict, stime):
     send second notification to POC
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
+            poc_dict    --- a dictionary of poc information, key: name
             stime       --- today's time in seconds in 1998.1.1
                   <house_keeping>/Schedule/second_notification (template)
     output: email sent
@@ -418,12 +418,11 @@ def send_mail(subject, text, address_dict):
 #-- update_this_week_poc: update this_week_person_in_charge table                      -
 #---------------------------------------------------------------------------------------
 
-def update_this_week_poc(k_list, d_dict, poc_dict, stime):
+def update_this_week_poc(k_list, d_dict, stime):
     """
     update this_week_person_in_charge table
     input:  k_list      --- a list of poc schedule starting time in <yyyy><mm><dd>
             d_dict      --- a dictionary of schedule information, key: <yyyy><mm>dd>
-            poc_dict    --- a dictionary of poc informaiton, key: name
             stime       --- today's time in seconds in 1998.1.1
                 <too_contact_dir>/this_week_person_in_charge
     output: updated: <too_contact_dir>/this_week_person_in_charge
