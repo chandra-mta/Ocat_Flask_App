@@ -230,11 +230,11 @@ def send_too_notification(ct_dict, asis, rev_dict):
         text  = otype.upper() + ' observation ' + str(obsid) + ' parameter updates were ' 
         text  = text + 'submitted.\n\n'
 
-        text  = text + '\tTOO ID:     ' + ct_dict['tooid'][-1]       + '\n'
-        text  = text + '\tTOO Type:   ' + ct_dict['too_type'][-1]    + '\n'
-        text  = text + '\tTOO Tigger: ' + ct_dict['too_trig'][-1]    + '\n'
-        text  = text + '\tREMARKS:    ' + ct_dict['too_remarks'][-1] + '\n\n\n'
-        text  = text + current_app.config['HTTP_ADDRESS'] + '/chkupdata/' + str(obsid) + '.' + rev_dict[obsid]  + '\n'
+        text  = text + '\tTOO ID:     ' + str(ct_dict['tooid'][-1])       + '\n'
+        text  = text + '\tTOO Type:   ' + str(ct_dict['too_type'][-1])    + '\n'
+        text  = text + '\tTOO Tigger: ' + str(ct_dict['too_trig'][-1])    + '\n'
+        text  = text + '\tREMARKS:    ' + str(ct_dict['too_remarks'][-1]) + '\n\n\n'
+        text  = text + current_app.config['HTTP_ADDRESS'] + '/chkupdata/' + str(obsid) + '.' + str(rev_dict[obsid])  + '\n'
         text  = text + "\n\n" + mail_end
  
         subject = otype.upper() + ' observation ' + str(obsid) + ' parameter updates'
