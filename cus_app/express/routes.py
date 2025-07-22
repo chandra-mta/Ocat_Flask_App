@@ -40,6 +40,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 now    = int(Chandra.Time.DateTime().secs)
 today  = ocf.convert_chandra_time_to_display2(now, tformat='%m/%d/%y')
 
+null_list  = [None, 'NA', 'NULL', 'None', 'null', 'none', '', '<Blank>']
+
 #----------------------------------------------------------------------------------
 #-- before_request: this will be run before every time index is called          ---
 #----------------------------------------------------------------------------------
@@ -188,6 +190,7 @@ def check_obsid_status(obsid_list):
                         <poc>   --- current user is not a POC initiated this sign-off process
                         2       --- obsid is not in the database
                         <status>--- status of the observation (e.g., observed, canceled, archived etc)
+                        3       --- No assigned SI Mode so it cannot be approved
             o_list          --- a list of obsids which can be approved
     """
     user     = current_user.username
@@ -223,11 +226,16 @@ def check_obsid_status(obsid_list):
 #
 #--- get information about the obsid
 #
-        info, status = get_obsid_info(obsid)
+        info, status, si_mode = get_obsid_info(obsid)
+#
+#--- If the obsid does not have an assigned SI mode, then mark with 3, and it cannot be approved.
+#
+        if si_mode in null_list:
+            info.append(3)
 #
 #--- if observation status is not unobserved or scheduled, mark it
 #
-        if not (status in ['unobserved', 'scheduled', 'untriggered']):
+        elif not (status in ['unobserved', 'scheduled', 'untriggered']):
             info.append(status)
 #
 #--- if the obsid is already in approved list, mark by 1
@@ -279,7 +287,7 @@ def get_obsid_info(obsid):
     info_list.append(p_dict['targname'])
     info_list.append(p_dict['pi_name'])
 
-    return info_list, p_dict['status']
+    return info_list, p_dict['status'], p_dict['si_mode']
 
 #----------------------------------------------------------------------------------
 #-- approve_obsid: approve the obsid                                             --
