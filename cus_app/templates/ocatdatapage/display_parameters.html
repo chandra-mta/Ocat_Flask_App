@@ -32,17 +32,26 @@
 <!-- ASIS case -->
 <!-- -->
 {% if asis == 'asis' %}
-
-    {% if ct_dict['approved'][-1] == 0 %}
+    {% if ct_dict['si_mode'][-1] in null_list %}
+    <p style='font-weight:bold;'>
+    You have checked that this Obsid ({{ ct_dict['obsid'][-1] }}) is ready for flight. 
+    However, this obsid does not have an SI Mode assigned, as so it cannot be approved.
+    </p>
+    <input type='submit' name='return'   value='Previous Page'>
+    {% elif ct_dict['approved'][-1] == 0 %}
         <p style='font-weight:bold;'>
         You have checked that this Obsid ({{ ct_dict['obsid'][-1] }}) is ready for flight. 
         Any parameter changes you made will not be submitted with this request.
         </p>
+        <input type='submit' name='return'   value='Previous Page'>
+        <input type='submit' name='finalize' value='Finalize'>
     {% else %}
         <p style='font-weight:bold;color:red;'>
         You have checked that this Obsid ({{ ct_dict['obsid'][-1] }}) is ready for flight, 
         but this observation is already on the approved list. Do you want to proceed?
         </p>
+        <input type='submit' name='return'   value='Previous Page'>
+        <input type='submit' name='finalize' value='Finalize'>
     {% endif %}
 <!-- -->
 <!-- REMOVE case -->
@@ -62,6 +71,8 @@
         However, this observation is not on the approved list yet. Do you want to proceed?
         </p>
     {% endif %}
+    <input type='submit' name='return'   value='Previous Page'>
+    <input type='submit' name='finalize' value='Finalize'>
 <!-- -->
 <!-- CLONE case -->
 <!-- -->
@@ -87,6 +98,8 @@
             {% endautoescape %}
         </p>
     {% endif %}
+    <input type='submit' name='return'   value='Previous Page'>
+    <input type='submit' name='finalize' value='Finalize'>
 
 <!-- -->
 <!-- NORMAL submission case -->
@@ -284,6 +297,8 @@
     If these values are correct, click the Finalize button. Otherwise, use the Previous Page button
     to go back to the main page. 
     </p>
+    <input type='submit' name='return'   value='Previous Page'>
+    <input type='submit' name='finalize' value='Finalize'>
 {% endif %}
 
 <!-- -->
@@ -301,9 +316,6 @@
 {{ pass_list_back(awin_list, ct_dict) }}
 
 <input type='hidden' name='asis' value="{{ asis }}">
-
-<input type='submit' name='return'   value='Previous Page'>
-<input type='submit' name='finalize' value='Finalize'>
 
 </form>
 <div style='padding-bottom:30px;'></div>

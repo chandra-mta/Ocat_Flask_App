@@ -20,7 +20,7 @@
 {% macro cellset(info) %}
     {% if info[6] == 0 %}
         <tr>
-    {% elif (info[6] == 1) or (info[6] == 2) or (info[6] in ['observed', 'archived', 'canceled', 'discarded']) %}
+    {% elif (info[6] == 1) or (info[6] == 2) or (info[6] == 3) or (info[6] in ['observed', 'archived', 'canceled', 'discarded']) %}
         <tr style='background-color:rgb(255, 0, 0, 0.2);'>
     {% else %}
         <tr style='background-color:rgb(255, 185, 0, 0.6);'>
@@ -44,6 +44,9 @@
 
         {% elif info[6] == 2 %}
             <td class='cent'>Obsid is not in the Database</td>
+        
+        {% elif info[6] == 3 %}
+            <td class='cent'>SI Mode not assigned.</td>
 
         {% else %}
             {% if info[6] in ['observed', 'archived', 'canceled', 'discarded'] %}
