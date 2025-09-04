@@ -190,6 +190,20 @@ via either the cxc or icxc servers. Links for icxc only are marked with
 <tr>
 <td width=48%>
 
+<p>
+  To view the <b>SPLIT CONSTRAINT</b> field...
+</p>
+<center>
+    <form>
+<p>
+     MP's Ocat Data Page (4 or 5 digit ObsID):
+     <input type=text   name="mp_obsid"    id="mp_obsid" size=10>
+     <input type=submit name='mp_ocat_page' value='Submit' formaction='javascript:OpenMPOcatPage()'>
+      </form>
+</center>
+<p>
+  Split Interval is non-blank only if Split Constraint=Y
+</p>
 <h2> <center> TOO/DDT Stuff </center> </h2>
 
 <ul>
@@ -203,7 +217,7 @@ via either the cxc or icxc servers. Links for icxc only are marked with
   <li><font color=red><small>[i]</small></font>
    <a href="https://icxc.cfa.harvard.edu/uspp/TOO/cycle27_toos.html">
    TOO trigger criteria (AO27)</a> and related info.
-  <li><font color=red><small>[i]</small></font>
+ <li><font color=red><small>[i]</small></font>
    <a href="https://icxc.cfa.harvard.edu/uspp/TOO/cycle26_toos.html">
    TOO trigger criteria (AO26)</a> and related info.
 </ul>
@@ -302,6 +316,11 @@ via either the cxc or icxc servers. Links for icxc only are marked with
       var  obsid = document.getElementById('obsid').value;
       var  html  = "{{url_for('ocatdatapage.index')}}" + obsid;
       window.open(html,'Ocatdatapage'+obsid);
+  } 
+  function OpenMPOcatPage(){
+      var  obsid = document.getElementById('mp_obsid').value;
+      var  html  = "https://icxc.harvard.edu/cgi-bin/mp/target_param.cgi?" + obsid;
+      window.open(html,'MPOcatdatapage'+obsid);
   } 
   function OpenOrupdate(){
     window.open("{{url_for('orupdate.index')}}",'Orupdate')
