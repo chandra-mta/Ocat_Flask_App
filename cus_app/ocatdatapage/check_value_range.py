@@ -19,7 +19,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 import cus_app.supple.ocat_common_functions     as ocf
 
-null_list = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'Na', 'None', None]
+null_list = ['','N', 'NO', 'NULL', 'NA', 'NONE', 'n', 'No', 'Null', 'null', 'Na', 'None', None]
 
 #-----------------------------------------------------------------------------------------------
 #-- check_value_range: check whether the values are in the expected range                     --
