@@ -456,7 +456,7 @@ def update_status_data_file(ct_dict, user, asis, data, obsidrev):
             hrc_si  = 'NULL'
     
             if ct_dict['hrc_si_mode'][-1] in ['', 'default', 'DEFAULT', 'NULL']:
-                hrc_si  = 'NA'
+                hrc_si  = 'NULL'
 
             else:
                 #for hparam in ['hrc_si_mode', 'hrc_timing_mode', 'hrc_zero_block']:
