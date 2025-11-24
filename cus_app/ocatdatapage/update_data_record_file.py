@@ -879,7 +879,9 @@ def check_targname_change(ct_dict):
     input:  ct_dict --- a dict of <param> <--> <information>
     output: either <blank> or <obsid>
     """
-    if ct_dict['targname'][-2]  != ct_dict['targname'][-1]:
+    old = " ".join(ct_dict['targname'][-2].strip().split())
+    new = " ".join(ct_dict['targname'][-1].strip().split())
+    if old  != new:
         return [ct_dict['obsid'][-1],]
     else:
         return []
