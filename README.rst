@@ -2,6 +2,10 @@
 Using Ocat Flask Application
 ============================
 
+**MARKED FOR DEPRECATION**
+This repository still contains several supplemental Usint support pages and scripts which must be implemented into the flask-usint repository. 
+
+
 This repo contains the Python Flask application supporting the `Usint Website <https://cxc.cfa.harvard.edu/wsgi/cus/usint/>`_ as well as legacy Usint supporting non-Flask Python scripts.
 For information related to the webserver backend and support and development of this application, consult the Flask/Usint folder in the MTA shared drive.
 
