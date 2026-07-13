@@ -206,7 +206,6 @@ POC duty sign-up sheet.
 related scripts:
     
 * other_scripts/create_schedule_table.py
-* other_scripts/write_this_week_too_poc.py
 
 data:
 
@@ -231,8 +230,7 @@ other scripts
 
 This directory keeps non-Flask Python scripts which support legacy Usint uses.
 
-* create_schedule_table.py --- Create a static HTML and send out notifications.
-* write_this_week_too_poc.py --- Write out the current POC at /home/mta/TOO-POC.
+* create_schedule_table.py --- Create a static HTML and send out notifications. Also write /home/mta/TOO-POC.
 
 related scripts
 ===============
