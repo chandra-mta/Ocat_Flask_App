@@ -1,8 +1,7 @@
+General:
+--------
 
-send_sign_off_req.perl  sends out signoff requests to user. 
-
-naggem.pl is a script to parse the updates log and nag (via email) people who haven't
-signed off changes they requested
+signoff_request.poy script sends out email notifications if a revision is awaiting signoff.
 
 Dir: /data/mta4/CUS/www/Usint/ 
 See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_send_sign_off_req.html
@@ -10,24 +9,22 @@ See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_send_sig
 
 Script:
 -------
-send_sign_off_req.perl  
-naggem.pl
+signoff_request_wrap_script
+signoff_request_main_script
+signoff_request.py
 
 Data:
 -----
-/data/mta4/CUS/www/Usint/Pass_dir/usint_users
-/data/mta4/CUS/www/Usint/Pass_dir/user_email_list
-/data/mta4/CUS/www/Usint/ocat/updates_table.list
-/data/mta4/CUS/www/Usint/ocat/updates/<obsid>.<ver#>
+/data/mta4/CUS/Data/Env/.cxcweb-env
+<ocat_dir>/updates_table.list
+/data/mta4/CUS/Data/users/app.db
+<obs_ss>/sot_ocat.out
+
+
 
 Output:
 -------
 email sent out
 
-Cron job:
----------
-c3po-v as cus
-0 5 * * 0-6 perl /data/mta4/CUS/www/Usint/send_sign_off_req.perl >> $HOME/Logs/send_sign_off_req.cron 
-
-c3po-v as mta
-0 4 * * 0-6 perl /data/mta4/CUS/www/Usint/naggem.pl >> $HOME/Logs/naggem.cron
+cus@r2d2-v
+0 4 * * 0-6 cd /data/mta4/CUS/www/Usint/; /data/mta4/CUS/www/Usint/signoff_request_wrap_script >> $HOME/Logs/signoff_request.cron 2>&1
