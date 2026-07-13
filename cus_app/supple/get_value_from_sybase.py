@@ -27,7 +27,7 @@ import sybpydb
 #
 #--- set parameters
 #
-pass_dir = '/data/mta4/CUS/www/Usint/Pass_dir/'
+pass_dir = '/data/mta4/CUS/authorization/'
 serv     = 'ocatsqlsrv'
 usr      = 'mtaops_internal_web'
 line     = pass_dir + '.targpass_internal'

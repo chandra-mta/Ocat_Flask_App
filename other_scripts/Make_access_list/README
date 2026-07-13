@@ -1,14 +1,11 @@
 
 This set of scripts makes a list of users who can access to the observations (PI/observer). 
 
-Dir: /data/mta4/obs_ss/ 
-See also: https://cxc.cfa.harvard.edu/mta_days/mta_script_list/USINT/ti_make_access_list.html
+Dir: /data/mta4/obs_ss/
 
 Scripts:
 --------
-make_access_list_wrap
-make_access_list_main
-make_access_list.perl
+make_access_list.py
 
 Data:
 -----
@@ -16,9 +13,9 @@ SyBase access
 
 Output:
 -------
-/data/mta4/CUS/www/Usint/ocat/access_list
+<obs_ss>/access_list
 
 Cron job:
 ---------
 c3po-v as mta
-0 12,18,23 * * 0-6 cd /data/mta4/obs_ss; /data/mta4/obs_ss/make_access_list_wrap >> $HOME/Logs/make_access.cron 
+6 12,18,23 * * 0-6 cd /data/mta4/obs_ss; /data/mta4/obs_ss/make_access_list.py >> $HOME/Logs/make_access.cron 2>&1 
