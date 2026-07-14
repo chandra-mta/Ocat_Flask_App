@@ -50,7 +50,7 @@ Directories:
 ============
 
 '/data/mta4/obs_ss/':                                           obs_ss
-'/data/mta4/CUS/www/Usint/Pass_dir/':                           pass_dir
+'/data/mta4/CUS/authorization/':                           pass_dir
 '/data/mta4/CUS/www/Usint/ocat/Working_dir/cus/':               ctemp_dir
 '/data/mta4/CUS/www/Usint/ocat/Working_dir/http/':              htemp_dir
 '/data/mta4/CUS/www/Usint/ocat/Working_dir/mta/':               mtemp_dir

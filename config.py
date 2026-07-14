@@ -27,7 +27,7 @@ class BaseConfig(object):
     #
     LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
     OBS_SS = "/data/mta4/obs_ss/"
-    PASS_DIR = "/data/mta4/CUS/www/Usint/Pass_dir/"
+    PASS_DIR = "/data/mta4/CUS/authorization/"
     REV_VERSION = "test_database"
     OCAT_DIR = "/proj/web-cxc/cgi-gen/mta/Obscat/ocat/"
     INFO_DIR = "/proj/web-cxc/cgi-gen/mta/Obscat/ocat/Info_save/too_contact_info/"
