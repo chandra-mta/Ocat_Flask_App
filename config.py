@@ -6,7 +6,7 @@ import binascii
 class BaseConfig(object):
     CONFIGURATION_NAME = "baseconfig"
     HTTP_ADDRESS = "http://127.0.0.1:5000"
-    ADMINS = ["william.aaron@cfa.harvard.edu"]
+    ADMINS = ["mtadude@cfa.harvard.edu", "bradw@cfa.harvard.edu"]
     TEST_NOTIFICATIONS = True
     #
     # --- Database and CSRF secret key
