@@ -17,7 +17,7 @@ sys.path.append(
 # --- Determine the configuration when creating the application
 #
 _CONFIGURATION_NAME = "localhost"
-_ADMINS = ["william.aaron@cfa.harvard.edu"]
+_ADMINS = ["mtadude@cfa.harvard.edu", "bradw@cfa.harvard.edu"]
 #
 # --- Application imports and running
 #
