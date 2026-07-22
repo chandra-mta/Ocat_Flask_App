@@ -277,7 +277,7 @@ def get_obsid_info(obsid):
     try:
         p_dict = rod.read_ocat_data(obsid)
     except:
-        return [obsid, '', '', '', '', ''], 'na', 'na'
+        return [obsid, '', '', '', '', ''], 'na'
 
     info_list   = []
     info_list.append(obsid)
