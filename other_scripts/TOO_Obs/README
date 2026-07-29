@@ -15,8 +15,7 @@ too_ddt_wrap_script
 too_ddt_main_script         --- control scripts
 
 update_obs_lists.py         --- find triggered ddt/too and update related files
-                                input:  ./Msave/mta_mail
-                                        <obs_ss>/sot_ocat.out
+                                input:  <obs_ss>/sot_ocat.out
                                         <too_dir>/special_obsid_poc_list
                                 output: <too_dir>/too_list
                                         <too_dir>/ddt_list
@@ -65,10 +64,6 @@ Directories:
 =====
 Input
 =====
-
-<bin_dir>/Msave/mta_mail            --- this one is a copy of mta mail archive. we need to copy to a local
-                                        directry as "mta" and change the permission so that cus can read it.
-                                        see cron job section below.
 <obs_ss>/sot_cat.out                --- ascii version of sql database
 sql database                        --- accessed by readSQL.py
 <too_dir>/special_obsid_poc_list    --- special assignment of poc to obsids
@@ -104,8 +99,3 @@ Cron Job
 r2d2-v as cus
 
 50 *  * * * cd  /data/mta4/CUS/www/Usint/TOO_Obs; /data/mta4/CUS/www/Usint/TOO_Obs/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron
-
-r2d2-v as mta
-45 * * * * rm -f /data/mta4/CUS/www/Usint/TOO_Obs/Msave/mta_mail; cp /stage/mail/mta /data/mta4/CUS/www/Usint/TOO_Obs/Msave/mta_mail; chmod 777 /data/mta4/CUS/www/Usint/TOO_Obs/Msave/mta_mail
-
-

@@ -53,8 +53,6 @@ dmon1 = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 dmon2 = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335] 
 solar = ['mercury', 'venus','earth', 'moon', 'mars','jupiter','saturn', 'uranus', 'neptune', 'pluto']
 
-m_dir   = '/data/mta4/CUS/www/Usint/TOO_Obs/Msave/'
-
 #----------------------------------------------------------------------------------------------
 #-- update_obs_lists: read mta archive email, find triggered ddt/too and update related files 
 #----------------------------------------------------------------------------------------------
@@ -81,10 +79,6 @@ def update_obs_lists():
 #--- each list in dectionay form
 #
     [ddt_dict, too_dict, new_dict] = read_too_ddt_lists()   
-#
-#--- ddt/too read from email in a list form
-#
-    [obsids, pnum, seqnum, otypes] = collect_potential_obs()
 #
 #--- a dictioinary: obsid <---> [otype, date, seqnum, prpnum, target, status] 
 #--- from sot database; include, observed, scheduled, and unobserved
@@ -225,7 +219,7 @@ def update_obs_lists():
 #
 #--- new_obs_list with title line
 #
-    cmd = 'cat ' +  m_dir + 'new_list_header ' + too_dir 
+    cmd = 'cat ' +  too_dir + 'new_list_header ' + too_dir 
     cmd = cmd    + 'new_obs_list >  ' + too_dir + 'new_obs_list.txt'
     os.system(cmd)
 
@@ -372,129 +366,6 @@ def replace_poc(line, poc):
     line  = line + atemp[6] 
 
     return line
-
-#----------------------------------------------------------------------------------------------
-#-- collect_potential_obs: read mta mail archive and find potential ddt/too triggered email  --
-#----------------------------------------------------------------------------------------------
-
-def collect_potential_obs():
-    """
-    read mta mail archive and find potential ddt/too triggered email
-    input:  none but read from /stage/mail/mta
-    output: obsids  --- a list of obsids
-            prpnum  --- a list of proposla numbers
-            seqnum  --- a list of sequence numbers
-            otypes   --- a list of otype
-
-    """
-#
-#--- a list of obsids currently in the lists
-#
-    obs_list = create_obsids_on_the_list()
-#
-#--- read email  archive
-#
-    ifile = m_dir + 'mta_mail'
-    data  = read_data_file(ifile)
-
-    chk    = 0
-    kdate  = ''
-    obsids = []
-    prpnum = []
-    seqnum = []
-    otype  = []
-    for ent in data:
-        mc = re.search('Date:', ent)
-        if mc is not None:
-            kdate = ent
-
-        if chk == 0:
-            mc1 = re.search('Recently Approved ', ent)
-            if mc1 is not None:
-                mc = re.search('Subject', ent)
-                if mc is not None:
-                    mc = re.search('Re:', ent)
-                    if mc is None:
-                        chk = 1
-            else:
-                continue
-        else:
-            mc2 = re.search('From:',  ent)
-            if mc2 is not None:
-                chk = 0
-                continue
-
-            mc3 = re.search('Obsid ',  ent)
-            mc4 = re.search('Obsids ', ent)
-            if (mc3 is not None) or (mc4 is not None):
-#
-#--- only when the observation is triggered in the past two hours, notify the obsid
-#
-                if check_time_limit(kdate, lhr=2) == 0:
-                    continue
-
-                atemp = re.split('\s+', ent)
-                for wrd in atemp:
-                    mc5 = re.search('\(', wrd)
-                    if mc5 is not None:
-                        break
-                    else:
-                        wrd = wrd.replace('\,', '')
-                        wrd.strip()
-                        if mcf.chkNumeric(wrd):
-                            val = int(float(wrd))
-#
-#--- check whether the obsid is already in too_list or ddt_list
-#
-                            if val in obs_list:
-                                continue
-#
-#--- check repeater
-#
-                            if not (val in obsids):
-                                obsids.append(val)
-#
-#--- get proposal # and seq #
-#
-                                try:
-                                    atemp = re.split('#: ' , ent)
-                                    btemp = re.split(',', atemp[1])
-                                    prpnum.append(btemp[0].strip())
-                                except:
-                                    prpnum.append(-999)
-                
-                                try:
-                                    btemp = re.split('\)', atemp[2])
-                                    seqnum.append(btemp[0].strip())
-                                except:
-                                    seqnum.append(-999)
-                
-                                mc = re.search('DDT', ent)
-                                if mc is not None:
-                                    otype.append('ddt')
-                                else:
-                                    otype.append('too')
-
-                chk = 0
-#
-#--- if there is a new obs, notify
-#
-    if len(obsids) > 0:
-        line = 'The following obsid is activated via email:\n\n'
-        for  obsid in obsids:
-            line = line + 'Obsid: ' + str(obsid) + '\n'
-    
-        fo   = open(zspace, 'w')
-        fo.write(line)
-        fo.close()
-    
-        cmd = 'cat ' + zspace + '| mailx -s "Subject: New TOO/DDT in Email" tisobe@cfa.harvard.edu'
-        os.system(cmd)
-    
-        mcf.rm_file(zspace)
-
-    
-    return [obsids, prpnum, seqnum, otype]
 
 #----------------------------------------------------------------------------------------------
 #-- create_obsids_on_the_list: create a list of obsids which are already in too_list and ddt_list 
