@@ -36,7 +36,7 @@ update_tooddt_prop_list.py  --- update tooddt_prop_obsid_list/propno_poc_list
                                 output: <too_dir>/tooddt_prop_obsid_list
                                         <too_dir>/propno_poc_list
 
-readSQL.py                  --- read data from sql database
+read_sql.py                  --- read data from sql database
                                 input: obsid
 
                                 output :(group_id, pre_id, pre_min_lead, pre_max_lead, grating, type, instrument,   \
@@ -55,11 +55,12 @@ Directories:
 '/data/mta4/CUS/www/Usint/ocat/Working_dir/mta/':               mtemp_dir
 '/data/mta4/CUS/www/Usint/ocat/Info_save/':                     data_dir
 '/data/mta4/CUS/www/Usint/ocat/Info_save/too_contact_info/':    too_dir
+'/data/mta4/CUS/www/Usint/ocat/house_keeping/':                 house_keeping
 '/data/mta4/CUS/www/Usint/ocat/':                               ocat_dir
 '/data/mta4/CUS/www/Usint/':                                    cusdir
 '/usr/bin/':                                                    op_dir
 '/data/mta4/CUS/www/Usint/TOO_Obs':                             bin_dir
-'/data/mta/Script/Python_script2.7/':                           mta_dir
+'/data/mta/Script/Python3.6/MTA/':                              mta_dir
 
 =====
 Input
@@ -98,4 +99,4 @@ Cron Job
 =========
 r2d2-v as cus
 
-50 *  * * * cd  /data/mta4/CUS/www/Usint/TOO_Obs; /data/mta4/CUS/www/Usint/TOO_Obs/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron
+50 *  * * * cd  /data/mta4/CUS/www/Usint/TOO_Obs/Scripts; /data/mta4/CUS/www/Usint/TOO_Obs/Scripts/too_ddt_wrap_script >> $HOME/Logs/too_ddt_update.cron
