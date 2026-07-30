@@ -110,7 +110,7 @@
             <ul>
             {% for ent in wnote %}
                 {% if ent != '' %}
-                    <li style='color:red;font-size:130%;'>{{ ent }} </li>
+                    <li style='color:red;font-size:130%;'>{{ ent | safe}} </li>
                 {% endif %}
             {% endfor %}
             </ul>
