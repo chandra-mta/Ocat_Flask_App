@@ -4,9 +4,9 @@
  * PROPOSAL DB WHICH NEEDED FOR SOT_ANSWER.CGI
  * THIS IS A SLIMMED VERSION OF JOHN.SQL IN /data/udoc2/targets/
  *
- * THIS SQL SCRIPT IS MAINTAINED BY T. ISOBE (TIOSBE@CFA.HARVARD.EDU)
+ * THIS SQL SCRIPT IS MAINTAINED BY W. Aaron (william.sao.si.edu)
  *
- * LAST UPDATE DEC 6, 2006
+ * LAST UPDATE DEC 15, 2016
  *
  */ 
 
@@ -109,11 +109,18 @@ set
 	PI_name = s.last 
 from 
 	#sot_ocat j,
+/*
 	axafusers..person_short s,
 	prop_info p 
+*/
+    view_pi s,
+	prop_info p 
 where 
+	j.ocat_propid = p.ocat_propid;
+/*
 	j.ocat_propid = p.ocat_propid and 
 	p.piid = s.pers_id;
+*/
 
 /* (adding observer name -- 7/6/99 ) */
 
@@ -123,17 +130,25 @@ set
 	Observer = s.last 
 from 
 	#sot_ocat j,
+/*
 	axafusers..person_short s,
 	prop_info p 
+*/
+    view_coi s,
+	prop_info p 
 where 
+	j.ocat_propid = p.ocat_propid;
+/*
 	p.coi_contact = 'Y' and
 	j.ocat_propid = p.ocat_propid and 
 	p.coin_id = s.pers_id;
+*/
 
 /* 
  * Observer same as PI when coi_contact = N
  */
 
+/*    
 update 
 	#sot_ocat 
 set 
@@ -142,9 +157,12 @@ from
 	#sot_ocat j,
 	axafusers..person_short s,
 	prop_info p 
+    view_coi
+	prop_info p 
 where 
 	p.coi_contact = 'N' and
 	j.ocat_propid = p.ocat_propid;
+*/
 
 
 /* 
