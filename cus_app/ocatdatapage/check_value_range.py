@@ -292,7 +292,8 @@ def grating_check(ct_dict, warning_list):
     output: warning_list    --- an updated warning_list
     """
     if ct_dict['grating'][-2] != ct_dict['grating'][-1]:
-        note = 'The grating was updated. This Change requires CDO approval.\n'
+        note = 'The grating was updated. This change requires CDO approval.\n'
+        note = note + '<a href="https://cxc.cfa.harvard.edu/cus/InstrumentChanges.html" target="_blank">Instrument Changes Explanation.</a>\n'
         warning_list.append(note)
 
     return warning_list
@@ -358,6 +359,7 @@ def instrument_check(ct_dict, warning_list):
         note = 'The instrument was changed. '
         note = note + 'You need a CDO approval for this change. If you already have '
         note = note + 'the permission, please indicate so in the comment section.\n'
+        note = note + '<a href="https://cxc.cfa.harvard.edu/cus/InstrumentChanges.html" target="_blank">Instrument Changes Explanation.</a>\n'
 #
 #--- if the instrument is change from acis to hrc or another way around, all parameter values
 #--- of the original instrument are nullified; so notify that, too
